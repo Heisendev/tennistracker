@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "server and db for tennis tracker",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "server.ts",
+  "scripts": {
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js",
+    "init-db": "node init-db.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
