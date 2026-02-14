@@ -1,11 +1,11 @@
-import type { Player } from "../types";
+import type { Player, NewPlayer } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3003';
 
 export interface PlayersApi {
     getPlayers: () => Promise<Player[]>;
     getPlayerById: (id: string) => Promise<Player>;
-    createPlayer: (player: Player) => Promise<Player>;
+    createPlayer: (player: NewPlayer) => Promise<Player>;
 }
 
 export const playersApi: PlayersApi = {
@@ -29,7 +29,7 @@ export const playersApi: PlayersApi = {
             }, 500); // Simulate 1 second delay
         });
     },
-    createPlayer: async (newPlayer: Player): Promise<Player> => {
+    createPlayer: async (newPlayer: NewPlayer): Promise<Player> => {
         // Simulate creating a new player
         const response = await fetch(`${API_URL}/players`, {
             method: 'POST',

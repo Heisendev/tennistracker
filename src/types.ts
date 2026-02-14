@@ -1,8 +1,11 @@
-export type Player = {
-  id: number;
+export type NewPlayer = {
   firstname: string;
   lastname: string;
   country: string;
+}
+
+export type Player = NewPlayer & {
+  id: number;
   seed?: number;
 };
 
@@ -19,13 +22,17 @@ export type MatchStats = {
   totalPointsWon: { a: number; b: number; isPercentage: boolean };
 };
 
-export type MatchData = {
-  id: string;
+export type NewMatch = {
   tournament: string;
   round: string;
   surface: string;
   date: string;
-  duration: string;
+  playerA: string;
+  playerB: string;
+}
+
+export type Match = Omit<NewMatch, "playerA"| "playerB"> & {
+  id: string;
   playerA: Player;
   playerB: Player;
   winner: "A" | "B";

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { playersApi } from "../services/players.api";
-import type { Player } from "../types";
+import type { Player, NewPlayer } from "../types";
 import { queryClient } from "@providers/query-client";
 const PLAYERS_QUERY_KEY = ['players'];
 
@@ -20,7 +20,7 @@ export function usePlayerById(id: string) {
 
 export function useCreatePlayer() {
     return useMutation({
-        mutationFn: (newPlayer: Player) => playersApi.createPlayer(newPlayer),
+        mutationFn: (newPlayer: NewPlayer) => playersApi.createPlayer(newPlayer),
         onSuccess: () => {
             // Invalidate and refetch players after creating a new one
             queryClient.invalidateQueries({queryKey: PLAYERS_QUERY_KEY});

@@ -39,13 +39,13 @@ CREATE TABLE IF NOT EXISTS matchs (
     round TEXT NOT NULL,
     surface TEXT NOT NULL,
     date TEXT NOT NULL,
-    duration TEXT NOT NULL,
+    duration TEXT,
     playerA_id INTEGER NOT NULL,
     playerB_id INTEGER NOT NULL,
     playerA_seed INTEGER,
     playerB_seed INTEGER,
-    winner TEXT NOT NULL CHECK(winner IN ('A', 'B')),
-    tossWinner TEXT NOT NULL CHECK(tossWinner IN ('A', 'B')),
+    winner TEXT CHECK(winner IN ('A', 'B')),
+    tossWinner TEXT CHECK(tossWinner IN ('A', 'B')),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (playerA_id) REFERENCES players(id),
     FOREIGN KEY (playerB_id) REFERENCES players(id)
@@ -110,9 +110,9 @@ db.exec(`
 `);
 
 db.exec(`INSERT INTO matchs (tournament, round, surface, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, winner, tossWinner) VALUES 
-    ('Wimbledon', 'Final', 'Grass', '2023-07-16', '2h30m', 1, 3, 1, 3, 'A', 'B'), 
-    ('US Open', 'Semi-Final', 'Hard', '2023-09-10', '3h15m', 3, 7, 3, 7, 'B', 'A'), 
-    ('Roland Garros', 'Quarter-Final', 'Clay', '2023-06-05', '2h45m', 1, 2, 1, 2, 'A', 'B'); `);
+    ('Wimbledon', 'Final', 'Grass', '22026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A', 'B'), 
+    ('US Open', 'Semi-Final', 'Hard', '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B', 'A'), 
+    ('Roland Garros', 'Quarter-Final', 'Clay', '2023-06-12T15:57:31.000Z', '2h45m', 1, 2, 1, 2, 'A', 'B'); `);
 
 console.log('');
 console.log('✅ Database initialization complete!');

@@ -1,4 +1,4 @@
-import type { MatchData } from '../types';
+import type { Match, NewMatch } from '../types';
 
 /* const matchData: MatchData[] = [
     {
@@ -194,9 +194,9 @@ import type { MatchData } from '../types';
 }]; */
 
 export interface MatchsApi {
-    getMatchs: () => Promise<MatchData[]>;
-    getmatchById: (id: string) => Promise<MatchData>;
-    createMatch: (match: MatchData) => Promise<MatchData>;
+    getMatchs: () => Promise<Match[]>;
+    getmatchById: (id: string) => Promise<Match>;
+    createMatch: (match: NewMatch) => Promise<Match>;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3003';
@@ -217,7 +217,7 @@ export const matchsApi: MatchsApi = {
         const data = await response.json();
         return data;
     },
-    createMatch: async (match: MatchData) => {
+    createMatch: async (match: NewMatch) => {
         const response = await fetch(`${API_URL}/matchs`, {
             method: 'POST',
             headers: {
