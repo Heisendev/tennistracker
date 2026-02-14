@@ -1,6 +1,5 @@
 import express from 'express';
 import { getDatabase } from '../db.js';
-import { get } from 'http';
 
 const router = express.Router();
 
@@ -50,6 +49,28 @@ router.get('/', (req, res) => {
             res.json(matchs); 
     } catch (error) {
         console.error("Error fetching matchs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.post('/', (req, res) => {
+    console.log(req.body);
+    try {
+        const {tournament, surface, round, date, playerA, playerB} = req.body;
+        if(!tournament || !playerA || !playerB || !surface || !date || !round ){
+            return res.status(400).json({error: "missing required field"})
+        }
+
+        const db = getDatabase();
+        const stmt = db.prepare(`
+           INSERT INTO matchs (tournament, surface, round, playerA_id, playerB_id, date)
+           VALUES (?, ?, ?, ?, ?, ?) 
+        `);
+        const result = stmt.run(tournament, surface, round, playerA, playerB, date);
+
+        res.status(201).json({id: result.lastInsertRowId, tournament, surface, round, playerA, playerB, date})
+    } catch (error) {
+        console.error("Error creating match:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
