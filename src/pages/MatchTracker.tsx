@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Watch, useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import type { SelectMenuOption } from "@components/ui/Countryselector/types";
 import Input from "@components/ui/Input";
 import CountrySelector from "@components/ui/Countryselector/CountrySelector";
@@ -40,14 +40,12 @@ const MatchTracker = () => {
     playerB_country: SelectMenuOption["value"]
   }
 
-const {data: players, isLoading: playerLoading, isError} = usePlayers();
+const {data: players} = usePlayers();
 
   const {
     register,
     handleSubmit,
-    getFieldState,
     setValue,
-    formState: {  },
   } = useForm<Inputs>({ defaultValues });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)

@@ -1,7 +1,7 @@
 import { COUNTRIES } from "./countries";
 import type { SelectMenuOption } from "./types";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import Input from "../Input";
 
@@ -20,9 +20,11 @@ export default function CountrySelector({
 }: CountrySelectorProps) {
 
   const [isOpen, setIsOpen] = useState(false);
-  const onToggle = () => setIsOpen(!isOpen);
+  const onToggle = useCallback(() => setIsOpen(!isOpen), [isOpen]);
   // Default this to a country's code to preselect it
   const ref = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState("");
+
   useEffect(() => {
     const mutableRef = ref as RefObject<HTMLDivElement>;
 
@@ -44,7 +46,7 @@ export default function CountrySelector({
     };
   }, [ref, onToggle, isOpen]);
 
-  const [query, setQuery] = useState("");
+  
 
   return (
     <div ref={ref}>

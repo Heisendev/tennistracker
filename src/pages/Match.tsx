@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 
-import type { MatchData } from '../types';
+// import type { MatchData } from '../types';
 import MatchHeader from '@components/MatchHeader';
 import PlayerHeader from '@components/PlayerHeader';
 import { MatchSummary } from '@components/MatchSummary';
@@ -9,7 +9,7 @@ import { useMatchById } from '../hooks/useMatchs';
 
 import './App.css'
 
-const matchData: MatchData[] = [{
+/* const matchData: MatchData[] = [{
   id: "alcaraz-zverev-2024-rolandgarros-final",
   tournament: "Roland Garros",
   round: "Final",
@@ -199,10 +199,10 @@ const matchData: MatchData[] = [{
       totalPointsWon: { a: 142, b: 118, isPercentage: false },
     },
   ]
-}];
+}]; */
 
 const Match = () => {
-  let params = useParams();
+  const params = useParams();
   const { data: match, isLoading } = useMatchById(params.id!);
   if (isLoading || !match) {
     return <div>Loading...</div>;

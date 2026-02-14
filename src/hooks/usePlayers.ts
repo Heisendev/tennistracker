@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { playersApi } from "../services/players.api";
-import type { MatchData, Player } from "../types";
+import type { Player } from "../types";
 import { queryClient } from "@providers/query-client";
 const PLAYERS_QUERY_KEY = ['players'];
 
