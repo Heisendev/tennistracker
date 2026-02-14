@@ -12,11 +12,11 @@ const sections = [
     ready: true,
   },
   {
-    title: "Live Tracker",
-    description: "Follow matches in real-time with point-by-point updates",
-    icon: Radio,
-    to: "/live",
-    ready: false,
+    title: "Players",
+    description: "Browse and manage your roster of tracked players",
+    icon: Users,
+    to: "/players",
+    ready: true,
   },
   {
     title: "Create Match",
@@ -26,11 +26,11 @@ const sections = [
     ready: true,
   },
   {
-    title: "Players",
-    description: "Browse and manage your roster of tracked players",
-    icon: Users,
-    to: "/players",
-    ready: true,
+    title: "Live Tracker",
+    description: "Follow matches in real-time with point-by-point updates",
+    icon: Radio,
+    to: "/live",
+    ready: false,
   },
   {
     title: "Matches",
