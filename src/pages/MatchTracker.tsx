@@ -1,68 +1,67 @@
-import { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import type { SelectMenuOption } from "@components/ui/Countryselector/types";
+import { useNavigate } from "react-router";
 import Input from "@components/ui/Input";
-import CountrySelector from "@components/ui/Countryselector/CountrySelector";
-import { COUNTRIES } from "@components/ui/Countryselector/countries";
 import { usePlayers } from "../hooks/usePlayers";
+import { useCreateMatch } from "../hooks/useMatchs";
+import DatePicker from "react-datepicker";
+import { useEffect, useState } from "react";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const defaultValues = {
-  playerA_country: "FR" as SelectMenuOption["value"],
-  playerB_country: "FR" as SelectMenuOption["value"],
-  tournament_name: "",
-  surface: "Clay" as const,
-  round: 1,
-  playerA_name: "",
-  playerA_surname: "",
-  playerA_seed: 0,
-  playerB_name: "",
-  playerB_surname: "",
-  playerB_seed: 0,
+  tournament: "",
+  surface: "Hard" as const,
+  round: "1",
+  date: "",
+  playerA: "",
+  playerB: "",
 };
 
 const MatchTracker = () => {
-  const [countryA, setCountryA] = useState<SelectMenuOption["value"]>("FR");
-  const [countryB, setCountryB] = useState<SelectMenuOption["value"]>("FR");
+  const navigate = useNavigate();
+  const { mutate } = useCreateMatch();
+  
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+
+  const handleChange = (date: Date | null) => {
+    console.log(date?.toISOString())
+    setSelectedDate(date);
+  };
 
   type Inputs = {
-    existing_player1: string
-    existing_player2: string
-    tournament_name: string
+    playerA: string
+    playerB: string
+    tournament: string
+    date: string
     surface: "Clay" | "Hard" | "Grass"
-    round: number
-    playerA_country: SelectMenuOption["value"]
-    playerA_name: string
-    playerA_surname: string
-    playerA_seed: number
-    playerB_name: string
-    playerB_surname: string
-    playerB_seed: number
-    playerB_country: SelectMenuOption["value"]
+    round: string
   }
 
-const {data: players} = usePlayers();
+  const {data: players} = usePlayers();
 
   const {
     register,
     handleSubmit,
-    setValue,
+    watch,
   } = useForm<Inputs>({ defaultValues });
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+  const selectedPlayer1 = watch("playerA");
+  const selectedPlayer2 = watch("playerB");
 
   useEffect(() => {
-    register("playerA_country");
-    register("playerB_country");
+    register("date");
   }, [register]);
 
-  const handleChangeA = (value: SelectMenuOption["value"]) => { 
-    setCountryA(value);
-    setValue("playerA_country", value);
-  }
-
-  const handleChangeB = (value: SelectMenuOption["value"]) => { 
-    setCountryB(value);
-    setValue("playerB_country", value);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log(selectedDate)
+    console.log(data);
+    data.date=selectedDate!.toISOString();
+    mutate(data, {
+      onSuccess: async() => {
+        console.log("MATCH CREATED");
+        navigate("/matches")
+      }
+    })
   }
 
   return (
@@ -72,7 +71,7 @@ const {data: players} = usePlayers();
         <fieldset className="border-0 flex flex-col text-left mb-4 max-w-md mx-auto">
           <legend className="font-display text-xl mb-4">Tournament Informations</legend>
           <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-            <Input id="tournament_name" label="Tournament's name" placeholder="Wimbledon" {...register("tournament_name")}/>
+            <Input id="tournament" label="Tournament's name" placeholder="Wimbledon" {...register("tournament")}/>
           </div>
           <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
             <label htmlFor="surface">Surface</label>
@@ -83,72 +82,37 @@ const {data: players} = usePlayers();
             </div>
           </div>
           <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-            <Input id="round" label="Round" placeholder="Round 1" {...register("round", { valueAsNumber: true })}/>
+            <Input id="round" label="Round" placeholder="Round 1" {...register("round")}/>
+          </div>
+          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+            <label htmlFor="date">Date</label>
+            <DatePicker id="date" selected={selectedDate} onChange={handleChange} />
           </div>
         </fieldset>
-        <fieldset className="border-0 flex flex-col mx-auto md:flex-row text-left">
+        <fieldset className="border-0 mx-auto max-w-md text-left">
           <legend className="font-display text-xl mb-4">Players</legend>
-          <fieldset className="w-1/2">
-            <legend className="font-display">Player 1</legend>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label htmlFor="existing_player1">Use an Existing Player</label>
-              {/* register select input for existing players */}
-              <select id="existing_player1" {...register("existing_player1")} className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option value="">Select an existing player</option>
-                {players && players.map(player => (
+          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+            <label className="flex items-center gap-2" htmlFor="player1">Player A</label>
+            <select id="player1" {...register("playerA")} className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option value="">Select an existing player</option>
+              {players && players
+                .filter(player => player.id.toString() !== selectedPlayer2)
+                .map(player => (
                   <option key={player.id} value={player.id}>{player.firstname} {player.lastname}</option>
                 ))}
-              </select>
-            </div>
-            <div className="text-center my-2 text-gray-900">or create a player</div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerA_name" label="First name" placeholder="Rafael" {...register("playerA_name")}/>
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerA_surname" label="Last name" placeholder="Nadal" {...register("playerA_surname")}/>
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerA_seed" label="Seed number" placeholder="12" {...register("playerA_seed", { valueAsNumber: true })} />
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label htmlFor="playerA_country">Country</label>
-              <CountrySelector 
-                id="playerA_country" 
-                onChange={handleChangeA}
-                selectedValue={COUNTRIES.find((option) => option.value === countryA) || COUNTRIES[0]} />
-              
-            </div>
-          </fieldset>
-          <fieldset className="w-1/2">
-            <legend className="font-display">player 2</legend>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label htmlFor="existing_player2">Use an Existing Player</label>
-              {/* register select input for existing players */}
-              <select id="existing_player2" {...register("existing_player2")} className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option value="">Select an existing player</option>
-                {players && players.map(player => (
+            </select>
+          </div>
+          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+            <label className="flex items-center gap-2" htmlFor="player2">Player B</label>
+            <select id="player2" {...register("playerB")} className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option value="">Select an existing player</option>
+              {players && players
+                .filter(player => player.id.toString() !== selectedPlayer1)
+                .map(player => (
                   <option key={player.id} value={player.id}>{player.firstname} {player.lastname}</option>
                 ))}
-              </select>
-            </div>
-            <div className="text-center my-2 text-gray-900">or create a player</div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerB_name" label="First name" placeholder="Carlos" {...register("playerB_name")}/>
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerB_surname" label="Last name" placeholder="Nadal" {...register("playerB_surname")}/>
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerB_seed" label="Seed number" placeholder="12" {...register("playerB_seed", { valueAsNumber: true })}/>
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label htmlFor="playerB_country">Country</label>
-              <CountrySelector 
-                id="playerB_country" 
-                onChange={handleChangeB}
-                selectedValue={COUNTRIES.find((option) => option.value === countryB) || COUNTRIES[0]} />
-            </div>
-          </fieldset>
+            </select>
+          </div>
         </fieldset>
         <input type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" value="Create Match" />
       </form>
