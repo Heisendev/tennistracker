@@ -25,9 +25,9 @@ console.log('Creating tables if they do not exist...');
 db.exec(`
 CREATE TABLE IF NOT EXISTS players (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    firstname TEXT NOT NULL,
+    lastname TEXT NOT NULL,
     country TEXT NOT NULL,
-    seed INTEGER,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );`); 
 
@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS matchs (
     duration TEXT NOT NULL,
     playerA_id INTEGER NOT NULL,
     playerB_id INTEGER NOT NULL,
+    playerA_seed INTEGER,
+    playerB_seed INTEGER,
     winner TEXT NOT NULL CHECK(winner IN ('A', 'B')),
     tossWinner TEXT NOT NULL CHECK(tossWinner IN ('A', 'B')),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -94,6 +96,23 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_match_stats_match_id ON match_stats(match_id);
 `);
 
+db.exec(`
+    INSERT INTO players (firstname, lastname, country) VALUES 
+    ('Carlos', 'Alcaraz', 'ES'), 
+    ('Jannik', 'Sinner', 'IT'),
+    ('Novak', 'Djokovic', 'RS'),
+    ('Alexander', 'Zverev', 'DE'), 
+    ('Lorenzo', 'Musetti', 'IT'), 
+    ('Felix', 'Auger-Aliassime', 'CA'), 
+    ('Taylor', 'Fritz', 'USA'), 
+    ('Rafael', 'Nadal', 'ES'), 
+    ('Roger', 'Federer', 'CH');
+`);
+
+db.exec(`INSERT INTO matchs (tournament, round, surface, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, winner, tossWinner) VALUES 
+    ('Wimbledon', 'Final', 'Grass', '2023-07-16', '2h30m', 1, 3, 1, 3, 'A', 'B'), 
+    ('US Open', 'Semi-Final', 'Hard', '2023-09-10', '3h15m', 3, 7, 3, 7, 'B', 'A'), 
+    ('Roland Garros', 'Quarter-Final', 'Clay', '2023-06-05', '2h45m', 1, 2, 1, 2, 'A', 'B'); `);
 
 console.log('');
 console.log('✅ Database initialization complete!');

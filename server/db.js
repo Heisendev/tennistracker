@@ -5,7 +5,7 @@ import { dirname, join } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const dbPath = join(__dirname, 'tennis_tracker.db');
+const dbPath = join(__dirname, '../database/tennistracker.db');
 
 let db;
 
