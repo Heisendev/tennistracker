@@ -7,6 +7,7 @@ import Match from '@pages/Match.tsx'
 import Home from '@pages/Home.tsx'
 import MatchTracker from '@pages/MatchTracker.tsx'
 import Matches from '@pages/Matches'
+import CreatePlayer from '@pages/CreatePlayer'
 
 import './index.css'
 import Players from '@pages/Players'
@@ -21,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
       <Route path="/matches/" element={<Matches />} />
       <Route path="/matches/:id" element={<Match />} />
       <Route path="/players" element={<Players />} />
-
+      <Route path="/players/new" element={<CreatePlayer />} />
     </Routes>
     </BrowserRouter>
     </AppProviders>
