@@ -5,6 +5,7 @@ import MatchHeader from '@components/MatchHeader';
 import PlayerHeader from '@components/PlayerHeader';
 import { MatchSummary } from '@components/MatchSummary';
 import { MatchStats } from '@components/MatchStats';
+import { useMatchById } from '../hooks/useMatchs';
 
 import './App.css'
 
@@ -202,8 +203,10 @@ const matchData: MatchData[] = [{
 
 const Match = () => {
   let params = useParams();
-  const matchId = matchData.findIndex(match => match.id === params.id)
-  const match = matchData[matchId]
+  const { data: match, isLoading } = useMatchById(params.id!);
+  if (isLoading || !match) {
+    return <div>Loading...</div>;
+  }
   return (
     <>
       <div className="">
@@ -222,7 +225,7 @@ const Match = () => {
         <MatchSummary playerA={match.playerA} playerB={match.playerB} winner={match.winner} />
         <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300">
           <h2 className="text-xl font-bold mb-4">Match Statistics</h2>
-          {Object.entries(match.stats[0]).map(([key, value]) => (
+          {match.stats &&Object.entries(match.stats[0]).map(([key, value]) => (
             typeof value === "object" && value !== null &&
             <MatchStats
               key={key}

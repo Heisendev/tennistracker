@@ -4,6 +4,7 @@ import { useMatches } from "../hooks/useMatchs";
 
 const Home = () => {
 const { data: matches, isLoading, error } = useMatches();
+console.log(matches);
   return (
     <div className="flex flex-col h-screen items-center justify-center">
       <h1 className="text-4xl font-bold">Welcome to Tennis Tracker!</h1>
@@ -14,7 +15,7 @@ const { data: matches, isLoading, error } = useMatches();
       <h2 className="mt-4 text-xl font-semibold">Recent Matches</h2>
       {isLoading && <p>Loading...</p>}
       {matches && matches.length > 0 && matches.map(match => ( 
-      (<Link key={match.id} to={`/matches/${match.id}`} className="mt-4 px-6 py-3 hover:bg-primary-dark transition-colors">{match.playerA.name} vs {match.playerB.name} - {match.tournament} {match.round} </Link> ) ))}
+      (<Link key={match.id} to={`/matches/${match.id}`} className="mt-4 px-6 py-3 hover:bg-primary-dark transition-colors">{match.playerA.firstname} {match.playerA.lastname} vs {match.playerB.firstname} {match.playerB.lastname} - {match.tournament} {match.round} </Link> ) ))}
     </div>
   );
 };

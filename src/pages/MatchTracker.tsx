@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { Watch, useForm, type SubmitHandler } from "react-hook-form";
 import type { SelectMenuOption } from "@components/ui/Countryselector/types";
 import Input from "@components/ui/Input";
 import CountrySelector from "@components/ui/Countryselector/CountrySelector";
 import { COUNTRIES } from "@components/ui/Countryselector/countries";
+import { usePlayers } from "../hooks/usePlayers";
 
 const defaultValues = {
   playerA_country: "FR" as SelectMenuOption["value"],
@@ -24,8 +25,10 @@ const MatchTracker = () => {
   const [countryB, setCountryB] = useState<SelectMenuOption["value"]>("FR");
 
   type Inputs = {
+    existing_player1: string
+    existing_player2: string
     tournament_name: string
-    surface: | "Clay" | "Hard" | "Grass"
+    surface: "Clay" | "Hard" | "Grass"
     round: number
     playerA_country: SelectMenuOption["value"]
     playerA_name: string
@@ -37,9 +40,12 @@ const MatchTracker = () => {
     playerB_country: SelectMenuOption["value"]
   }
 
+const {data: players, isLoading: playerLoading, isError} = usePlayers();
+
   const {
     register,
     handleSubmit,
+    getFieldState,
     setValue,
     formState: {  },
   } = useForm<Inputs>({ defaultValues });
@@ -87,13 +93,24 @@ const MatchTracker = () => {
           <fieldset className="w-1/2">
             <legend className="font-display">Player 1</legend>
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+              <label htmlFor="existing_player1">Use an Existing Player</label>
+              {/* register select input for existing players */}
+              <select id="existing_player1" {...register("existing_player1")} className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="">Select an existing player</option>
+                {players && players.map(player => (
+                  <option key={player.id} value={player.id}>{player.firstname} {player.lastname}</option>
+                ))}
+              </select>
+            </div>
+            <div className="text-center my-2 text-gray-900">or create a player</div>
+            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
               <Input id="playerA_name" label="First name" placeholder="Rafael" {...register("playerA_name")}/>
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
               <Input id="playerA_surname" label="Last name" placeholder="Nadal" {...register("playerA_surname")}/>
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerA_seed" label="Seed number" placeholder="12" {...register("playerA_seed", { valueAsNumber: true })}/>
+              <Input id="playerA_seed" label="Seed number" placeholder="12" {...register("playerA_seed", { valueAsNumber: true })} />
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
               <label htmlFor="playerA_country">Country</label>
@@ -106,6 +123,17 @@ const MatchTracker = () => {
           </fieldset>
           <fieldset className="w-1/2">
             <legend className="font-display">player 2</legend>
+            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+              <label htmlFor="existing_player2">Use an Existing Player</label>
+              {/* register select input for existing players */}
+              <select id="existing_player2" {...register("existing_player2")} className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="">Select an existing player</option>
+                {players && players.map(player => (
+                  <option key={player.id} value={player.id}>{player.firstname} {player.lastname}</option>
+                ))}
+              </select>
+            </div>
+            <div className="text-center my-2 text-gray-900">or create a player</div>
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
               <Input id="playerB_name" label="First name" placeholder="Carlos" {...register("playerB_name")}/>
             </div>
