@@ -6,6 +6,8 @@ interface MatchHeaderProps {
   duration: string;
 }
 
+const formatDate = (date:string) => new Date(date).toLocaleString("fr-FR", {day:"numeric", month:"numeric",year:"numeric"});
+
 const MatchHeader = ({ tournament, round, surface, date, duration }: MatchHeaderProps) => {
   return (
     <div
@@ -25,7 +27,7 @@ const MatchHeader = ({ tournament, round, surface, date, duration }: MatchHeader
         <span className="w-1 h-1 rounded-full bg-muted-foreground" />
         <span className="capitalize">{surface}</span>
         <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-        <span>{date}</span>
+        <span>{formatDate(date)}</span>
         <span className="w-1 h-1 rounded-full bg-muted-foreground" />
         <span>{duration}</span>
       </div>
