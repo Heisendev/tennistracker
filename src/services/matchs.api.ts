@@ -195,15 +195,37 @@ const matchData: MatchData[] = [
 
 export interface MatchsApi {
     getMatchs: () => Promise<MatchData[]>;
+    getmatchById: (id: string) => Promise<MatchData>;
+    createMatch: (match: MatchData) => Promise<MatchData>;
 }
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3003';
 
 export const matchsApi: MatchsApi = {
     getMatchs: async () => {
         // Simulate an API call with a delay
+        const response = await fetch(`${API_URL}/matchs`);
+        const data = await response.json();
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(matchData);
-            }, 500); // 500ms delay
+                resolve(data);
+            }, 1000); // Simulate 1 second delay
         });
     },
+    getmatchById: async (id: string) => {
+        const response = await fetch(`${API_URL}/matchs/${id}`);
+        const data = await response.json();
+        return data;
+    },
+    createMatch: async (match: MatchData) => {
+        const response = await fetch(`${API_URL}/matchs`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(match),
+        });
+        const data = await response.json();
+        return data;
+    }
 };

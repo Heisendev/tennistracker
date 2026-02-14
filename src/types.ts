@@ -1,8 +1,9 @@
 export type Player = {
-  name: string;
+  id: number;
+  firstname: string;
+  lastname: string;
   country: string;
   seed?: number;
-  sets: number[];
 };
 
 export type MatchStats = {
