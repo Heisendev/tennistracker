@@ -1,3 +1,10 @@
+![React](https://img.shields.io/badge/React-18-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)
+![Tests](https://img.shields.io/badge/Tests-Jest%20%2B%20RTL-green)
+![Accessibility](https://img.shields.io/badge/Accessibility-WCAG-informational)
+
+# TennisTracker
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
