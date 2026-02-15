@@ -38,19 +38,19 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     try {
-        const { firstname, lastname, country } = req.body;
+        const { firstname, lastname, country, hand, backhand, rank } = req.body;
         if (!firstname || !lastname || !country) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
         const db = getDatabase();
         const stmt = db.prepare(`
-            INSERT INTO players (firstname, lastname, country)
-            VALUES (?, ?, ?)
+            INSERT INTO players (firstname, lastname, country, hand, backhand, rank)
+            VALUES (?, ?, ?, ?, ?, ?)
         `);
-        const result = stmt.run(firstname, lastname, country);
+        const result = stmt.run(firstname, lastname, country, hand || null, backhand || null, rank || null);
         
-        res.status(201).json({ id: result.lastInsertRowid, firstname, lastname, country }); 
+        res.status(201).json({ id: result.lastInsertRowid, firstname, lastname, country, hand: hand || null, backhand: backhand || null, rank: rank || null }); 
     } catch (error) {
         console.error("Error creating player:", error);
         res.status(500).json({ error: "Internal server error" });

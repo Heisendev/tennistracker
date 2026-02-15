@@ -1,6 +1,9 @@
 export type NewPlayer = {
   firstname: string;
   lastname: string;
+  rank?: number;
+  hand?: 'Left' | 'Right';
+  backhand?: 'One-handed' | 'Two-handed';
   country: string;
 }
 

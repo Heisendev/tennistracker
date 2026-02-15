@@ -25,8 +25,11 @@ console.log('Creating tables if they do not exist...');
 db.exec(`
 CREATE TABLE IF NOT EXISTS players (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rank INTEGER,
     firstname TEXT NOT NULL,
     lastname TEXT NOT NULL,
+    hand TEXT CHECK(hand IN ('Left', 'Right')),
+    backhand TEXT CHECK(backhand IN ('One-handed', 'Two-handed')),
     country TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );`); 
@@ -97,16 +100,16 @@ db.exec(`
 `);
 
 db.exec(`
-    INSERT INTO players (firstname, lastname, country) VALUES 
-    ('Carlos', 'Alcaraz', 'ES'), 
-    ('Jannik', 'Sinner', 'IT'),
-    ('Novak', 'Djokovic', 'RS'),
-    ('Alexander', 'Zverev', 'DE'), 
-    ('Lorenzo', 'Musetti', 'IT'), 
-    ('Felix', 'Auger-Aliassime', 'CA'), 
-    ('Taylor', 'Fritz', 'USA'), 
-    ('Rafael', 'Nadal', 'ES'), 
-    ('Roger', 'Federer', 'CH');
+    INSERT INTO players (rank, firstname, lastname, hand, backhand, country) VALUES 
+    (1, 'Carlos', 'Alcaraz', 'Right', 'Two-handed', 'ES'), 
+    (2, 'Jannik', 'Sinner', 'Right', 'Two-handed', 'IT'),
+    (3, 'Novak', 'Djokovic', 'Right', 'Two-handed', 'RS'),
+    (4, 'Alexander', 'Zverev', 'Right', 'Two-handed', 'DE'), 
+    (5, 'Lorenzo', 'Musetti', 'Right', 'Two-handed', 'IT'), 
+    (6, 'Felix', 'Auger-Aliassime', 'Right', 'Two-handed', 'CA'), 
+    (7, 'Taylor', 'Fritz', 'Right', 'Two-handed', 'USA'), 
+    (8, 'Rafael', 'Nadal', 'Right', 'Two-handed', 'ES'), 
+    (9, 'Roger', 'Federer', 'Right', 'One-handed', 'CH');
 `);
 
 db.exec(`INSERT INTO matchs (tournament, round, surface, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, winner, tossWinner) VALUES 
