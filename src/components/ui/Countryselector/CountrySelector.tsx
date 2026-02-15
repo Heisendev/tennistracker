@@ -18,7 +18,6 @@ export default function CountrySelector({
   onChange,
   selectedValue,
 }: CountrySelectorProps) {
-
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = useCallback(() => setIsOpen(!isOpen), [isOpen]);
   // Default this to a country's code to preselect it
@@ -35,8 +34,8 @@ export default function CountrySelector({
         isOpen
       ) {
         console.log(isOpen);
-      setIsOpen(false);
-      setQuery("");
+        setIsOpen(false);
+        setQuery("");
       }
     };
 
@@ -45,8 +44,6 @@ export default function CountrySelector({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [ref, onToggle, isOpen]);
-
-  
 
   return (
     <div ref={ref}>
@@ -106,7 +103,13 @@ export default function CountrySelector({
             >
               <div className="sticky top-0 z-10 bg-white">
                 <li className="lg:flex lg:gap-2 text-gray-900 cursor-default select-none relative py-2 px-3 list-none">
-                  <Input autoComplete={"off"} id="search" name="search" label="Search country" onChange={(e) => setQuery(e.target.value)}></Input>
+                  <Input
+                    autoComplete={"off"}
+                    id="search"
+                    name="search"
+                    label="Search country"
+                    onChange={(e) => setQuery(e.target.value)}
+                  ></Input>
                 </li>
                 <hr />
               </div>
@@ -117,14 +120,14 @@ export default function CountrySelector({
                 }
               >
                 {COUNTRIES.filter((country) =>
-                  country.title.toLowerCase().startsWith(query.toLowerCase())
+                  country.title.toLowerCase().startsWith(query.toLowerCase()),
                 ).length === 0 ? (
                   <li className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9">
                     No countries found
                   </li>
                 ) : (
                   COUNTRIES.filter((country) =>
-                    country.title.toLowerCase().startsWith(query.toLowerCase())
+                    country.title.toLowerCase().startsWith(query.toLowerCase()),
                   ).map((value, index) => {
                     return (
                       <li

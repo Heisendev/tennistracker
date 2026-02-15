@@ -6,13 +6,22 @@ interface MatchHeaderProps {
   duration: string;
 }
 
-const formatDate = (date:string) => new Date(date).toLocaleString("fr-FR", {day:"numeric", month:"numeric",year:"numeric"});
+const formatDate = (date: string) =>
+  new Date(date).toLocaleString("fr-FR", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+  });
 
-const MatchHeader = ({ tournament, round, surface, date, duration }: MatchHeaderProps) => {
+const MatchHeader = ({
+  tournament,
+  round,
+  surface,
+  date,
+  duration,
+}: MatchHeaderProps) => {
   return (
-    <div
-      className="text-center mb-8"
-    >
+    <div className="text-center mb-8">
       <div className="inline-flex items-center gap-2 mb-2">
         <div className="w-2 h-2 rounded-full bg-primary" />
         <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">

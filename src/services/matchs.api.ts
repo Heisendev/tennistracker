@@ -1,4 +1,4 @@
-import type { Match, NewMatch } from '../types';
+import type { Match, NewMatch } from "../types";
 
 /* const matchData: MatchData[] = [
     {
@@ -194,38 +194,38 @@ import type { Match, NewMatch } from '../types';
 }]; */
 
 export interface MatchsApi {
-    getMatchs: () => Promise<Match[]>;
-    getmatchById: (id: string) => Promise<Match>;
-    createMatch: (match: NewMatch) => Promise<Match>;
+  getMatchs: () => Promise<Match[]>;
+  getmatchById: (id: string) => Promise<Match>;
+  createMatch: (match: NewMatch) => Promise<Match>;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3003';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3003";
 
 export const matchsApi: MatchsApi = {
-    getMatchs: async () => {
-        // Simulate an API call with a delay
-        const response = await fetch(`${API_URL}/matchs`);
-        const data = await response.json();
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(data);
-            }, 1000); // Simulate 1 second delay
-        });
-    },
-    getmatchById: async (id: string) => {
-        const response = await fetch(`${API_URL}/matchs/${id}`);
-        const data = await response.json();
-        return data;
-    },
-    createMatch: async (match: NewMatch) => {
-        const response = await fetch(`${API_URL}/matchs`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(match),
-        });
-        const data = await response.json();
-        return data;
-    }
+  getMatchs: async () => {
+    // Simulate an API call with a delay
+    const response = await fetch(`${API_URL}/matchs`);
+    const data = await response.json();
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(data);
+      }, 1000); // Simulate 1 second delay
+    });
+  },
+  getmatchById: async (id: string) => {
+    const response = await fetch(`${API_URL}/matchs/${id}`);
+    const data = await response.json();
+    return data;
+  },
+  createMatch: async (match: NewMatch) => {
+    const response = await fetch(`${API_URL}/matchs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(match),
+    });
+    const data = await response.json();
+    return data;
+  },
 };

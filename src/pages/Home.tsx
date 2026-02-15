@@ -6,7 +6,8 @@ import SectionCard from "@components/SectionCard";
 const sections = [
   {
     title: "Match Stats",
-    description: "Post-match head-to-head stat breakdowns with animated comparisons",
+    description:
+      "Post-match head-to-head stat breakdowns with animated comparisons",
     icon: BarChart3,
     to: "/matches",
     ready: true,
@@ -44,9 +45,7 @@ const sections = [
 const Home = () => {
   return (
     <div className="min-h-screen bg-background court-texture flex flex-col items-center justify-center px-4 py-16">
-      <div
-        className="text-center mb-12"
-      >
+      <div className="text-center mb-12">
         <h1 className="text-5xl md:text-7xl font-display tracking-wider text-foreground glow-text">
           Tennis Lab
         </h1>
@@ -55,13 +54,14 @@ const Home = () => {
         </p>
       </div>
 
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl w-full"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl w-full">
         {sections.map((s) => (
           <div key={s.title}>
             {s.ready ? (
-              <Link to={s.to} className="block group visited:text-gray-800 text-gray-800">
+              <Link
+                to={s.to}
+                className="block group visited:text-gray-800 text-gray-800"
+              >
                 <SectionCard section={s} />
               </Link>
             ) : (

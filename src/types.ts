@@ -2,10 +2,10 @@ export type NewPlayer = {
   firstname: string;
   lastname: string;
   rank?: number;
-  hand?: 'Left' | 'Right';
-  backhand?: 'One-handed' | 'Two-handed';
+  hand?: "Left" | "Right";
+  backhand?: "One-handed" | "Two-handed";
   country: string;
-}
+};
 
 export type Player = NewPlayer & {
   id: number;
@@ -32,13 +32,13 @@ export type NewMatch = {
   date: string;
   playerA: string;
   playerB: string;
-}
+};
 
-export type Match = Omit<NewMatch, "playerA"| "playerB"> & {
+export type Match = Omit<NewMatch, "playerA" | "playerB"> & {
   id: string;
   playerA: Player;
   playerB: Player;
   winner: "A" | "B";
   tossWinner: "A" | "B";
-  stats: MatchStats[] ;
+  stats: MatchStats[];
 };

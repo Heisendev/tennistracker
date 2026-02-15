@@ -1,13 +1,13 @@
-import { useParams } from 'react-router';
+import { useParams } from "react-router";
 
 // import type { MatchData } from '../types';
-import MatchHeader from '@components/MatchHeader';
-import PlayerHeader from '@components/PlayerHeader';
-import { MatchSummary } from '@components/MatchSummary';
-import { MatchStats } from '@components/MatchStats';
-import { useMatchById } from '../hooks/useMatchs';
+import MatchHeader from "@components/MatchHeader";
+import PlayerHeader from "@components/PlayerHeader";
+import { MatchSummary } from "@components/MatchSummary";
+import { MatchStats } from "@components/MatchStats";
+import { useMatchById } from "../hooks/useMatchs";
 
-import './App.css'
+import "./App.css";
 
 /* const matchData: MatchData[] = [{
   id: "alcaraz-zverev-2024-rolandgarros-final",
@@ -220,24 +220,34 @@ const Match = () => {
       </div>
       <div className="max-w-4xl mx-auto flex flex-row justify-between">
         <PlayerHeader player={match.playerA} winner={match.winner === "A"} />
-        <PlayerHeader player={match.playerB} winner={match.winner === "B"}/>
+        <PlayerHeader player={match.playerB} winner={match.winner === "B"} />
       </div>
-        <MatchSummary playerA={match.playerA} playerB={match.playerB} winner={match.winner} />
-        <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300">
-          <h2 className="text-xl font-bold mb-4">Match Statistics</h2>
-          {match.stats &&Object.entries(match.stats[0]).map(([key, value]) => (
-            typeof value === "object" && value !== null &&
-            <MatchStats
-              key={key}
-              label={key.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
-              playerA={value.a}
-              playerB={value.b}
-              isPercentage={value.isPercentage}
-            />
-          ))}
-        </div>
+      <MatchSummary
+        playerA={match.playerA}
+        playerB={match.playerB}
+        winner={match.winner}
+      />
+      <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300">
+        <h2 className="text-xl font-bold mb-4">Match Statistics</h2>
+        {match.stats &&
+          Object.entries(match.stats[0]).map(
+            ([key, value]) =>
+              typeof value === "object" &&
+              value !== null && (
+                <MatchStats
+                  key={key}
+                  label={key
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (str) => str.toUpperCase())}
+                  playerA={value.a}
+                  playerB={value.b}
+                  isPercentage={value.isPercentage}
+                />
+              ),
+          )}
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default Match
+export default Match;
