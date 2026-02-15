@@ -12,17 +12,26 @@ const defaultValues = {
     firstname: "",
     lastname: "",
     country: "FR" as SelectMenuOption["value"],
+    hand: "Right" as const,
+    backhand: "Two-handed" as const,
+    rank: undefined as number | undefined,
 };
+
+type HandOption = "Left" | "Right";
 
 const CreatePlayer = () => {
     const navigate = useNavigate();
     const { mutate } = useCreatePlayer();
     const [country, setCountry] = useState<SelectMenuOption["value"]>("FR");
+    const [hand, setHand] = useState<HandOption>("Right");
     
     type Inputs = {
         country: SelectMenuOption["value"]
         firstname: string
         lastname: string
+        hand: "Left" | "Right"
+        backhand: "One-handed" | "Two-handed"
+        rank?: number
     }
 
     const {
@@ -51,14 +60,31 @@ const CreatePlayer = () => {
     }
 
     return (
-    <div className="bg-white p-6 rounded-xl">
+    <div className="bg-white max-w-lg mx-auto p-6 rounded-xl">
         <h1>Create a new player</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerA_name" label="First name" placeholder="Rafael" {...register("firstname")}/>
+              <Input id="firstname" label="First name" placeholder="Rafael" {...register("firstname")}/>
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input id="playerA_surname" label="Last name" placeholder="Nadal" {...register("lastname")}/>
+              <Input id="lastname" label="Last name" placeholder="Nadal" {...register("lastname")}/>
+            </div>
+            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+                <label htmlFor="hand">Hand</label>
+                <div role="radiogroup">
+                    <input type="radio" value="Left"  {...register("hand")}/> Left
+                    <input type="radio" value="Right"  {...register("hand")}/> Right
+                </div>
+            </div>
+            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+              <label htmlFor="backhand">Backhand</label>
+                <div role="radiogroup">
+                <input type="radio" value="One-handed"  {...register("backhand")}/> One-handed
+                <input type="radio" value="Two-handed"  {...register("backhand")}/> Two-handed
+                </div>
+            </div>
+            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+              <Input id="rank" label="Rank" placeholder="1" type="number" {...register("rank")}/>
             </div>
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
               <label htmlFor="player_country">Country</label>
@@ -67,7 +93,7 @@ const CreatePlayer = () => {
                 onChange={handleChange}
                 selectedValue={COUNTRIES.find((option) => option.value === country) || COUNTRIES[0]} />
             </div>
-            <input type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" value="Create Match" />
+            <input type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" value="Create Player" />
         </form>
     </div>
   )
