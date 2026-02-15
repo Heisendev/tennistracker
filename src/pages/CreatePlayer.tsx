@@ -60,7 +60,7 @@ const CreatePlayer = () => {
     }
 
     return (
-    <div className="bg-white max-w-lg mx-auto p-6 rounded-xl">
+    <div className="bg-white max-w-lg mx-auto p-6 m-8 rounded-xl">
         <h1>Create a new player</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
             <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
