@@ -107,7 +107,7 @@ db.exec(`
     (4, 'Alexander', 'Zverev', 'Right', 'Two-handed', 'DE'), 
     (5, 'Lorenzo', 'Musetti', 'Right', 'Two-handed', 'IT'), 
     (6, 'Felix', 'Auger-Aliassime', 'Right', 'Two-handed', 'CA'), 
-    (7, 'Taylor', 'Fritz', 'Right', 'Two-handed', 'USA'), 
+    (7, 'Taylor', 'Fritz', 'Right', 'Two-handed', 'US'), 
     (8, 'Rafael', 'Nadal', 'Right', 'Two-handed', 'ES'), 
     (9, 'Roger', 'Federer', 'Right', 'One-handed', 'CH');
 `);
