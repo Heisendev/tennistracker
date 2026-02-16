@@ -1,0 +1,78 @@
+{
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "french": "Français",
+    "name": "Name",
+    "email": "Email",
+    "country": "Country",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "home": {
+    "title": "Tennis Lab",
+    "matchStats": "Match Stats",
+    "matchStatsDesc": "Post-match head-to-head stat",
+    "players": "Players",
+    "playersDesc": "Browse and manage your roster of tracked players",
+    "createMatch": "Create Match",
+    "createMatchDesc": "Log a new match with scores, stats, and player details",
+    "liveTracker": "Live Tracker",
+    "liveTrackerDesc": "Follow matches in real-time with point-by-point updates",
+    "matches": "Matches",
+    "matchesDesc": "View the full archive of recorded matches"
+  },
+  "navigation": {
+    "home": "Home",
+    "players": "Players",
+    "matches": "Matches",
+    "newMatch": "New Match"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "submit": "Submit",
+    "add": "Add",
+    "close": "Close"
+  },
+  "players": {
+    "title": "Players",
+    "allPlayers": "All Players",
+    "createPlayer": "Create Player",
+    "editPlayer": "Edit Player",
+    "deletePlayer": "Delete Player",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "playerDetails": "Player Details",
+    "noPlayers": "No players found",
+    "addFirstPlayer": "Add your first player",
+    "One-handed": "One-handed backhand",
+    "Two-handed": "Two-handed backhand",
+    "Left": "Left-handed",
+    "Right": "Right-handed"
+  },
+  "matches": {
+    "title": "Matches",
+    "allMatches": "All Matches",
+    "createMatch": "Create Match",
+    "editMatch": "Edit Match",
+    "matchDetails": "Match Details",
+    "winner": "Winner",
+    "loser": "Loser",
+    "score": "Score",
+    "date": "Date",
+    "duration": "Duration",
+    "noMatches": "No matches found",
+    "confirmedMatches": "Confirmed Matches"
+  },
+  "forms": {
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address"
+    }
+  }
+}

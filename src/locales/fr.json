@@ -1,0 +1,78 @@
+{
+  "common": {
+    "language": "Langue",
+    "english": "English",
+    "french": "Français",
+    "name": "Nom",
+    "email": "Email",
+    "country": "Pays",
+    "back": "Retour",
+    "loading": "Chargement...",
+    "error": "Erreur"
+  },
+  "home": {
+    "title": "Tennis Lab",
+    "matchStats": "Statistiques de Match",
+    "matchStatsDesc": "Statistiques post-match",
+    "players": "Joueurs",
+    "playersDesc": "Parcourez et gérez votre liste de joueurs suivi",
+    "createMatch": "Créer un Match",
+    "createMatchDesc": "Enregistrez un nouveau match avec les scores, les statistiques et les détails des joueurs",
+    "liveTracker": "Suivi en Direct",
+    "liveTrackerDesc": "Suivez les matchs en temps réel avec les mises à jour point par point",
+    "matches": "Matchs",
+    "matchesDesc": "Consultez l'archive complète des matchs enregistrés"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "players": "Joueurs",
+    "matches": "Matchs",
+    "newMatch": "Nouveau Match"
+  },
+  "buttons": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "submit": "Soumettre",
+    "add": "Ajouter",
+    "close": "Fermer"
+  },
+  "players": {
+    "title": "Joueurs",
+    "allPlayers": "Tous les Joueurs",
+    "createPlayer": "Créer un Joueur",
+    "editPlayer": "Modifier le Joueur",
+    "deletePlayer": "Supprimer le Joueur",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "playerDetails": "Détails du Joueur",
+    "noPlayers": "Aucun joueur trouvé",
+    "addFirstPlayer": "Ajoutez votre premier joueur",
+    "One-handed": "Revers à une main",
+    "Two-handed": "Revers à deux mains",
+    "Left": "Gaucher",
+    "Right": "Droitier"
+  },
+  "matches": {
+    "title": "Matchs",
+    "allMatches": "Tous les Matchs",
+    "createMatch": "Créer un Match",
+    "editMatch": "Modifier le Match",
+    "matchDetails": "Détails du Match",
+    "winner": "Gagnant",
+    "loser": "Perdant",
+    "score": "Score",
+    "date": "Date",
+    "duration": "Durée",
+    "noMatches": "Aucun match trouvé",
+    "confirmedMatches": "Matchs Confirmés"
+  },
+  "forms": {
+    "validation": {
+      "required": "Ce champ est obligatoire",
+      "invalidEmail": "Veuillez entrer une adresse e-mail valide"
+    }
+  }
+}
