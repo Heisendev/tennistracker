@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import playersRouter from './routes/players.js';
 import matchsRouter from './routes/matchs.js';
+import liveScoringRouter from './routes/live-scoring.js';
 
 dotenv.config({ path: join(dirname(fileURLToPath(import.meta.url)), '.env') });
 
@@ -26,6 +27,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/players', playersRouter);
 app.use('/matchs', matchsRouter);
+app.use('/live-scoring', liveScoringRouter);
 
 app.listen(PORT, '127.0.0.1', () => {
     console.log(`Server is running on http://127.0.0.1:${PORT}`);
