@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { usePlayers } from "../hooks/usePlayers";
+import { usePlayers } from "../../hooks/usePlayers";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router";
 import Input from "@components/ui/Input";
+import { useTranslation } from "react-i18next";
 
 const container = {
   hidden: {},
@@ -20,6 +21,7 @@ const item = {
 };
 
 const Players = () => {
+  const { t } = useTranslation();
   const { data: players, isLoading } = usePlayers();
 
   const [search, setSearch] = useState("");
@@ -32,8 +34,9 @@ const Players = () => {
 
   return (
     <div>
-      <div className="backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-4">
+      {/* Search */}
+      <div className="backdrop-blur-sm sticky top-0 z-10 border-b border-gray-300 bg-white">
+        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
           <Link
             to="/"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -41,21 +44,18 @@ const Players = () => {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="text-3xl font-display tracking-wider text-foreground">
-            Players
+            {t("players.title")}
           </h1>
           <Link
-            className="text-s bg-white border border-gray-300 p-2 visited:text-gray-900 rounded-l ml-auto"
+            className="bg-(--bg-interactive-secondary) hover:bg-(--bg-interactive-secondary-hover) border border-(--bg-color-brand) text-(--bg-color-brand) px-4 py-2 text-sm rounded ml-auto"
             to="/players/new"
           >
-            Add a player
+            {t("players.createPlayer")}
           </Link>
-          <span className="text-s text-muted-foreground font-display">
-            {filtered.length} players
-          </span>
         </div>
       </div>
       <div className="m-8">
-        <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto px-4 py-8">
           {/* Search */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -71,19 +71,22 @@ const Players = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              <span className="text-s text-muted-foreground font-display ml-auto flex items-center">
+                {filtered.length} {t("players.title").toLowerCase()}
+              </span>
             </div>
           </motion.div>
           {/* Player list */}
-          <motion.div
-            className="grid gap-3"
+          <motion.ul
+            className="grid gap-3 list-none pl-0"
             variants={container}
             initial="hidden"
             animate="show"
             key={search}
           >
             {filtered.map((player) => (
-              <motion.div key={player.id} variants={item}>
-                <div className="group relative bg-white border border-gray-400  rounded-lg p-4 md:p-5 hover:border-primary/40 transition-all duration-300 hover:glow-primary">
+              <motion.li key={player.id} variants={item}>
+                <div className="group relative bg-white border border-gray-400  rounded-lg p-4 md:p-5 hover:border-gray-600 transition-all duration-300 hover:glow-primary">
                   <div className="flex items-center gap-4 md:gap-6">
                     {/* Rank */}
                     <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
@@ -104,15 +107,15 @@ const Players = () => {
                           {player.firstname} {player.lastname}
                         </h2>
                         <p className="text-xs text-muted-foreground font-mono">
-                          {player.hand} • {player.backhand} BH
+                          {t(`players.${player.hand}`)} • {t(`players.${player.backhand}`) }
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </motion.li>
             ))}
-          </motion.div>
+          </motion.ul>
         </div>
       </div>
     </div>
