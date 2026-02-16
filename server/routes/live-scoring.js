@@ -236,7 +236,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
             WHERE ls.session_id = ? AND ls.set_number = ? AND lg.game_winner IS NULL
             ORDER BY lg.game_number DESC LIMIT 1
         `).get(sessionId, session.current_set);
-        
+        console.log('Current game:', currentGame, sessionId, session);
         if (!currentGame) {
             return res.status(400).json({ error: 'No active game found' });
         }
@@ -278,7 +278,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
             
             db.prepare('UPDATE live_games SET game_winner = ?, points_a = ?, points_b = ? WHERE id = ?')
                 .run(gameWinner, pointsUpdate.points_a, pointsUpdate.points_b, currentGame.id);
-            
+            console.log(`Game won by Player ${gameWinner}, final score: ${pointsUpdate.points_a}-${pointsUpdate.points_b}, server: ${currentGame.server}`);
             // Record game won event
             db.prepare(`
                 INSERT INTO live_match_events (session_id, event_type, set_number, player)
@@ -295,6 +295,11 @@ router.post('/sessions/:sessionId/point', (req, res) => {
             
             const gamesA = setScores.games_a || 0;
             const gamesB = setScores.games_b || 0;
+            
+            // Update the set with new game counts
+            db.prepare('UPDATE live_sets SET games_a = ?, games_b = ? WHERE id = ?')
+                .run(gamesA, gamesB, currentGame.set_id);
+            
             let setWinner = null;
             
             // Check set winner logic
@@ -320,10 +325,17 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     db.prepare('UPDATE live_match_sessions SET current_set = ? WHERE id = ?')
                         .run(nextSet, sessionId);
                     
-                    db.prepare(`
+                    const newSetResult = db.prepare(`
                         INSERT INTO live_sets (session_id, set_number, games_a, games_b, is_tiebreak)
                         VALUES (?, ?, ?, ?, ?)
                     `).run(sessionId, nextSet, 0, 0, 0);
+                    
+                    // Create first game of new set - alternate server
+                    const nextServer = currentGame.server === 'A' ? 'B' : 'A';
+                    db.prepare(`
+                        INSERT INTO live_games (set_id, game_number, points_a, points_b, server)
+                        VALUES (?, ?, ?, ?, ?)
+                    `).run(newSetResult.lastInsertRowid, 1, 0, 0, nextServer);
                 }
             } else {
                 // Next game - alternate server
