@@ -5,7 +5,7 @@ import { queryClient } from "@providers/query-client";
 
 const MATCHES_QUERY_KEY = ["matches"];
 
-export function useMatches() {
+export function useGetMatches() {
   return useQuery<Match[], Error>({
     queryKey: MATCHES_QUERY_KEY,
     queryFn: matchsApi.getMatchs,
@@ -26,5 +26,13 @@ export function useCreateMatch() {
       // Invalidate and refetch matches after creating a new one
       queryClient.invalidateQueries({ queryKey: MATCHES_QUERY_KEY });
     },
+  });
+}
+
+export function useLiveMatch(id: string) {
+  return useQuery<Match, Error>({
+    queryKey: ["liveMatch", id],
+    queryFn: () => matchsApi.getmatchById(id),
+    refetchInterval: 5000, // Refetch every 5 seconds for live updates
   });
 }

@@ -1,8 +1,8 @@
 import { Link } from "react-router";
-import { useMatches } from "../hooks/useMatchs";
+import { useGetMatches } from "../hooks/useMatchs";
 
 const Matches = () => {
-  const { data: matches, isLoading } = useMatches();
+  const { data: matches, isLoading } = useGetMatches();
   console.log(matches);
   return (
     <div className="flex flex-col h-screen items-center justify-center">
