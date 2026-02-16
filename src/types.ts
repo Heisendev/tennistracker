@@ -38,7 +38,8 @@ export type Match = Omit<NewMatch, "playerA" | "playerB"> & {
   id: string;
   playerA: Player;
   playerB: Player;
-  winner: "A" | "B";
-  tossWinner: "A" | "B";
-  stats: MatchStats[];
+  winner?: "A" | "B";
+  tossWinner?: "A" | "B";
+  stats?: MatchStats[];
+  duration?: string;
 };
