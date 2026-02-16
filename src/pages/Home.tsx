@@ -1,53 +1,60 @@
 import { Link } from "react-router";
 import { BarChart3, Radio, PenSquare, Users, List } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import SectionCard from "@components/SectionCard";
-
-const sections = [
-  {
-    title: "Match Stats",
-    description:
-      "Post-match head-to-head stat breakdowns with animated comparisons",
-    icon: BarChart3,
-    to: "/matches",
-    ready: true,
-  },
-  {
-    title: "Players",
-    description: "Browse and manage your roster of tracked players",
-    icon: Users,
-    to: "/players",
-    ready: true,
-  },
-  {
-    title: "Create Match",
-    description: "Log a new match with scores, stats, and player details",
-    icon: PenSquare,
-    to: "/newmatch",
-    ready: true,
-  },
-  {
-    title: "Live Tracker",
-    description: "Follow matches in real-time with point-by-point updates",
-    icon: Radio,
-    to: "/live",
-    ready: false,
-  },
-  {
-    title: "Matches",
-    description: "View the full archive of recorded matches",
-    icon: List,
-    to: "/matches",
-    ready: false,
-  },
-];
+import { LanguageSelector } from "@components/LanguageSelector";
 
 const Home = () => {
+  const { t } = useTranslation();
+
+  const sections = [
+    {
+      title: t("home.matchStats"),
+      description: t("home.matchStatsDesc"),
+      icon: BarChart3,
+      to: "/matches",
+      ready: true,
+    },
+    {
+      title: t("home.players"),
+      description: t("home.playersDesc"),
+      icon: Users,
+      to: "/players",
+      ready: true,
+    },
+    {
+      title: t("home.createMatch"),
+      description: t("home.createMatchDesc"),
+      icon: PenSquare,
+      to: "/newmatch",
+      ready: true,
+    },
+    {
+      title: t("home.liveTracker"),
+      description: t("home.liveTrackerDesc"),
+      icon: Radio,
+      to: "/live",
+      ready: false,
+    },
+    {
+      title: t("home.matches"),
+      description: t("home.matchesDesc"),
+      icon: List,
+      to: "/matches",
+      ready: false,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background court-texture flex flex-col items-center justify-center px-4 py-16">
+      <div className="absolute top-4 right-4">
+        <LanguageSelector />
+      </div>
+
       <div className="text-center mb-12">
-        <h1 className="text-5xl md:text-7xl font-display tracking-wider text-foreground glow-text">
-          Tennis Lab
+        <h1 className="text-5xl md:text-7xl font-display tracking-wider text-foreground flex glow-text">
+          <img src="../../logo.png" alt="" className="inline-block md:mr-6 md:max-h-16 mr-4 max-h-11" />{t("home.title")}
         </h1>
         <p className="mt-3 text-muted-foreground text-sm md:text-base tracking-widest uppercase">
           Experimental Stats Viewer
