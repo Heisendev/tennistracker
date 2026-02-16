@@ -143,13 +143,49 @@
 
 @layer base {
   * {
+    --bg-color-disabled: #efeff5;
+    --bg-color-brand: #21212e;
+    
+    --bg-interactive-primary: #3b37f2;
+    --bg-interactive-primary-hover: #1613d7;
+    --bg-interactive-primary-active: #0a08ad;
+
+    --bg-interactive-secondary: #f4f4ff;
+    --bg-interactive-secondary-hover: #e7e7ff;
+    --bg-interactive-secondary-active: #cfcffe;
+
+    --bg-interactive-success: #3e8537;
+    --bg-interactive-success-hover: #327030;
+    --bg-interactive-success-active: #2a5c2c;
+
+    --bg-interactive-danger: #e31f1e;
+    --bg-interactive-danger-hover: #cf0f0f;
+    --bg-interactive-danger-active: #a41206;
+
+    --bg-dataviz-blue: #297af2;
+    --bg-dataviz-green: #009ba5;
+    --bg-dataviz-red: #fc091a;
+    --bg-dataviz-pink: #ff48b6;
+    --bg-dataviz-orange: #ff5c00;
+    --bg-dataviz-purple: #7023b7;
+
+    --bg-background-alert-info: #3c89f7;
+    --bg-background-alert-success: #61ad55;
+    --bg-background-alert-warning: #f3a01f;
+    --bg-background-alert-danger: #f34e4d;
+
 
   }
   body {
     font-family: 'Inter', sans-serif;
-    @apply bg-gray-100;
+    background-color: var(--gray-100);
     margin: 0;
   }
+
+  input, select {
+    font-family: 'Inter', sans-serif;
+  }
+
   h1, h2, h3, .font-display {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 0.05em;
