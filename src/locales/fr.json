@@ -69,6 +69,13 @@
     "noMatches": "Aucun match trouvé",
     "confirmedMatches": "Matchs Confirmés"
   },
+  "liveMatch": {
+    "in-progress": "Match en cours",
+    "scheduled": "Match programmé",
+    "completed": "Match terminé",  
+    "paused": "Match en pause",
+    "startLiveMatch": "Démarrer le Match en Direct"
+  },
   "forms": {
     "validation": {
       "required": "Ce champ est obligatoire",

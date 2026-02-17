@@ -69,6 +69,13 @@
     "noMatches": "No matches found",
     "confirmedMatches": "Confirmed Matches"
   },
+  "liveMatch": {
+    "in-progress": "Match in progress",
+    "scheduled": "Match scheduled",
+    "completed": "Match completed",  
+    "paused": "Match paused",
+    "startLiveMatch": "Start Live Match"
+  },
   "forms": {
     "validation": {
       "required": "This field is required",
