@@ -35,7 +35,7 @@ export type NewMatch = {
 };
 
 export type Match = Omit<NewMatch, "playerA" | "playerB"> & {
-  id: string;
+  id: number;
   playerA: Player;
   playerB: Player;
   winner?: "A" | "B";
@@ -43,3 +43,37 @@ export type Match = Omit<NewMatch, "playerA" | "playerB"> & {
   stats?: MatchStats[];
   duration?: string;
 };
+
+export type LiveMatch = Omit<Match, "stats" | "duration"> & {
+  matchId: string;
+  status: "scheduled" | "in-progress" | "completed" | "suspended";
+  currentSet: number;
+  currentServer: "A" | "B";
+  MatchStartTime?: string;
+  MatchEndTime?: string;
+  tournament: string;
+  round: string;
+  surface: string;
+  date: string;
+  playerA: Player;
+  playerB: Player;
+  sets: Set[];
+  currentGame?: CurrentGame;
+};
+
+export type Set = {
+  set_number: number;
+  games_a: number;
+  games_b: number;
+  is_tiebreak?: number;
+  tiebreak_points_a?: number;
+  tiebreak_points_b?: number;
+  set_winner?: "A" | "B";
+}
+
+export type CurrentGame = {
+  points_a: number;
+  points_b: number;
+  server: "A" | "B";
+  gameNumber: number;
+}
