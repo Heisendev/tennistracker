@@ -209,9 +209,9 @@ const Match = () => {
   const { data: liveMatch } = useLiveMatch(match?.id);
   const addPoint = addPointToLiveMatch();
 
-  const handleAddPoint = (liveMatchId: number, player: 'A' | 'B') => {
+  const handleAddPoint = (matchId: number, liveMatchId: number, player: 'A' | 'B') => {
     // Logic to start live match goes here
-    addPoint.mutate({ liveMatchId, player });
+    addPoint.mutate({ matchId, liveMatchId, player });
   };
 
   if (isLoading || !match) {
@@ -239,8 +239,8 @@ const Match = () => {
       )}
       {liveMatch && !liveMatch.error && (
       <div>
-        <Button onClick={() => handleAddPoint(liveMatch.id, 'A')} variant="secondary" disabled={addPoint.isPending}>Point A</Button>
-        <Button onClick={() => handleAddPoint(liveMatch.id, 'B')} variant="secondary" disabled={addPoint.isPending}>Point B</Button>
+        <Button onClick={() => handleAddPoint(match.id, liveMatch.id, 'A')} variant="secondary" disabled={addPoint.isPending}>Point A</Button>
+        <Button onClick={() => handleAddPoint(match.id, liveMatch.id, 'B')} variant="secondary" disabled={addPoint.isPending}>Point B</Button>
         {addPoint.error && <p style={{ color: 'red' }}>Error: {addPoint.error.message}</p>}
       </div>
       )}

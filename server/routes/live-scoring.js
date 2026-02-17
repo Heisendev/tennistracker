@@ -130,10 +130,10 @@ router.post('/sessions', (req, res) => {
  * GET /api/live-scoring/sessions/:sessionId
  * Get detailed session info with current score
  */
-router.get('/sessions/:sessionId', (req, res) => {
+router.get('/sessions/:matchId', (req, res) => {
     try {
         const db = getDatabase();
-        const { sessionId } = req.params;
+        const { matchId } = req.params;
 
         const session = db.prepare(`
             SELECT 
@@ -164,8 +164,8 @@ router.get('/sessions/:sessionId', (req, res) => {
             JOIN matchs m ON m.id = s.match_id
             JOIN players pa ON pa.id = m.playerA_id
             JOIN players pb ON pb.id = m.playerB_id
-            WHERE s.id = ?
-        `).get(sessionId);
+            WHERE s.match_id = ?
+        `).get(matchId);
 
         if (!session) {
             return res.status(404).json({ error: 'Session not found' });
@@ -180,7 +180,7 @@ router.get('/sessions/:sessionId', (req, res) => {
             FROM live_sets
             WHERE session_id = ?
             ORDER BY set_number
-        `).all(sessionId);
+        `).all(session.id);
 
         // Get current game score
         const currentGame = db.prepare(`
@@ -194,7 +194,7 @@ router.get('/sessions/:sessionId', (req, res) => {
                     SELECT id FROM live_sets WHERE session_id = ? AND set_number = ?
                 ) AND game_winner IS NULL
             )
-        `).get(sessionId, sessionId, session.current_set, sessionId, session.current_set);
+        `).get(session.id, session.id, session.current_set, session.id, session.current_set);
 
         // Get match stats for all sets
         const matchStats = db.prepare(`
@@ -204,7 +204,7 @@ router.get('/sessions/:sessionId', (req, res) => {
             FROM live_match_stats
             WHERE session_id = ?
             ORDER BY set_number, player
-        `).all(sessionId);
+        `).all(session.id);
 
         // Organize stats by set and player
         const statsBySet = {};
