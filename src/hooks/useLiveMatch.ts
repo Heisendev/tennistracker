@@ -25,6 +25,29 @@ export function useLiveMatch(id?: number) {
     queryFn: () => liveMatchApi.getLiveMatchById(String(id)),
   });
 }
+
+export function addPointToLiveMatch() {
+  return useMutation({
+    mutationFn: ({ liveMatchId, player }: { liveMatchId: number; player: 'A' | 'B' }) => liveMatchApi.addPoint(liveMatchId, player),
+    onSuccess: (data, variables) => {
+      console.log('Point added successfully, refetching match data:', variables.liveMatchId);
+      // Invalidate the specific liveMatch query with the correct ID to trigger refetch
+      queryClient.invalidateQueries({ 
+        queryKey: ["liveMatch", variables.liveMatchId] 
+      });
+    },
+    onError: (error) => {
+      console.error('Error adding point:', error);
+    },
+  });
+}
+
+/* export function useGetMatches() {
+  return useQuery<Match[], Error>({
+    queryKey: MATCHES_QUERY_KEY,
+    queryFn: matchsApi.getMatchs,
+  });
+}
 /* export function useGetMatches() {
   return useQuery<Match[], Error>({
     queryKey: MATCHES_QUERY_KEY,

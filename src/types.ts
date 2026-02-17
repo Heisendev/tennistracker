@@ -59,6 +59,7 @@ export type LiveMatch = Omit<Match, "stats" | "duration"> & {
   playerB: Player;
   sets: Set[];
   currentGame?: CurrentGame;
+  error?: string;
 };
 
 export type Set = {

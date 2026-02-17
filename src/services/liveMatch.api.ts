@@ -4,27 +4,48 @@ import type { LiveMatch } from "src/types";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3003";
 
 export interface LiveMatchApi {
-  createLiveMatch: (matchid: number) => Promise<LiveMatch>;
-  getLiveMatchById: (id: string) => Promise<LiveMatch>;
+    createLiveMatch: (matchid: number) => Promise<LiveMatch>;
+    getLiveMatchById: (id: string) => Promise<LiveMatch>;
+    addPoint: (liveMatchId: number, player: 'A' | 'B') => Promise<LiveMatch>;
 }
 
 export const liveMatchApi: LiveMatchApi = {
-  createLiveMatch: async (matchid: number) => {
-    const response = await fetch(`${API_URL}/live-scoring/sessions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ match_id: matchid }),
-    });
-    const data = await response.json();
-    return data;
-  },
-  getLiveMatchById: async (id: string) => {
-    const response = await fetch(`${API_URL}/live-scoring/sessions/${id}`);
-    const data = await response.json();
-    return data;
-  },
+    createLiveMatch: async (matchid: number) => {
+        const response = await fetch(`${API_URL}/live-scoring/sessions`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ match_id: matchid }),
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to create live match: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return data;
+    },
+    getLiveMatchById: async (id: string) => {
+        const response = await fetch(`${API_URL}/live-scoring/sessions/${id}`);
+        if (!response.ok) {
+            throw new Error(`Failed to get live match: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return data;
+    },
+    addPoint: async (liveMatchId: number, player: 'A' | 'B') => {
+        const response = await fetch(`${API_URL}/live-scoring/sessions/${liveMatchId}/point`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ winner: player }),
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to add point: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return data;
+    },
 };
 /* export const liveMatchApi: LiveMatchApi = [{
   matchId: "1",

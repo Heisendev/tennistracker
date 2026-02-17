@@ -5,8 +5,9 @@ import MatchHeader from "@components/MatchHeader";
 import PlayerHeader from "@components/PlayerHeader";
 import { MatchSummary } from "@components/MatchSummary";
 import { MatchStats } from "@components/MatchStats";
+import { Button } from "@components/ui/Button";
 import { useMatchById } from "../hooks/useMatchs";
-import { useLiveMatch } from "../hooks/useLiveMatch";
+import { useLiveMatch, addPointToLiveMatch } from "../hooks/useLiveMatch";
 
 import "./App.css";
 
@@ -206,22 +207,27 @@ const Match = () => {
   const params = useParams();
   const { data: match, isLoading } = useMatchById(params.id!);
   const { data: liveMatch } = useLiveMatch(match?.id);
+  const addPoint = addPointToLiveMatch();
+
+  const handleAddPoint = (liveMatchId: number, player: 'A' | 'B') => {
+    // Logic to start live match goes here
+    addPoint.mutate({ liveMatchId, player });
+  };
+
   if (isLoading || !match) {
     return <div>Loading...</div>;
   }
   return (
     <>
-      <div className="">
-        <MatchHeader
+      <MatchHeader
           match={match}
           liveMatch={liveMatch}
         />
-      </div>
       <div className="max-w-4xl mx-auto flex flex-row justify-between">
         <PlayerHeader player={match.playerA} winner={match.winner === "A"} />
         <PlayerHeader player={match.playerB} winner={match.winner === "B"} />
       </div>
-      {liveMatch && (
+      {liveMatch && !liveMatch.error && (
         <MatchSummary
           currentGame={liveMatch.currentGame}
           isLive={liveMatch.status === "in-progress"}
@@ -230,6 +236,13 @@ const Match = () => {
           playerB={liveMatch.playerB}
           winner={liveMatch.winner}
         />
+      )}
+      {liveMatch && !liveMatch.error && (
+      <div>
+        <Button onClick={() => handleAddPoint(liveMatch.id, 'A')} variant="secondary" disabled={addPoint.isPending}>Point A</Button>
+        <Button onClick={() => handleAddPoint(liveMatch.id, 'B')} variant="secondary" disabled={addPoint.isPending}>Point B</Button>
+        {addPoint.error && <p style={{ color: 'red' }}>Error: {addPoint.error.message}</p>}
+      </div>
       )}
       <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300">
         <h2 className="text-xl font-bold mb-4">Match Statistics</h2>
