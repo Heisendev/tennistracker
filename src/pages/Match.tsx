@@ -6,6 +6,7 @@ import PlayerHeader from "@components/PlayerHeader";
 import { MatchSummary } from "@components/MatchSummary";
 import { MatchStats } from "@components/MatchStats";
 import { useMatchById } from "../hooks/useMatchs";
+import { useLiveMatch } from "../hooks/useLiveMatch";
 
 import "./App.css";
 
@@ -204,6 +205,7 @@ import "./App.css";
 const Match = () => {
   const params = useParams();
   const { data: match, isLoading } = useMatchById(params.id!);
+  const { data: liveMatch } = useLiveMatch(match?.id);
   if (isLoading || !match) {
     return <div>Loading...</div>;
   }
@@ -211,22 +213,24 @@ const Match = () => {
     <>
       <div className="">
         <MatchHeader
-          tournament={match.tournament}
-          round={match.round}
-          surface={match.surface}
-          date={match.date}
-          duration={match.duration}
+          match={match}
+          liveMatch={liveMatch}
         />
       </div>
       <div className="max-w-4xl mx-auto flex flex-row justify-between">
         <PlayerHeader player={match.playerA} winner={match.winner === "A"} />
         <PlayerHeader player={match.playerB} winner={match.winner === "B"} />
       </div>
-      <MatchSummary
-        playerA={match.playerA}
-        playerB={match.playerB}
-        winner={match.winner}
-      />
+      {liveMatch && (
+        <MatchSummary
+          currentGame={liveMatch.currentGame}
+          isLive={liveMatch.status === "in-progress"}
+          sets={liveMatch.sets}
+          playerA={liveMatch.playerA}
+          playerB={liveMatch.playerB}
+          winner={liveMatch.winner}
+        />
+      )}
       <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300">
         <h2 className="text-xl font-bold mb-4">Match Statistics</h2>
         {match.stats &&

@@ -1,55 +1,118 @@
-import type { Player } from "../types";
+import type { CurrentGame, Player, Set } from "../types";
 
 interface MatchSummaryProps {
   playerA: Player;
   playerB: Player;
-  winner: "A" | "B";
+  winner?: "A" | "B";
+  sets?: Set[];
+  isLive?: boolean;
+  currentGame?: CurrentGame
+}
+
+const FormatScore = (Sx: number, Sy: number): string => {
+  if (Sx > 3 && Sy === Sx) {
+    return "40";
+  }
+  if (Sx > 3 && Sy < Sx) {
+    return "Av";
+  }
+  if (Sx > 3 && Sy > Sx) {
+    return "";
+  }
+   return `${Sx}`;
 }
 
 export const MatchSummary = ({
+  currentGame,
+  sets,
   playerA,
   playerB,
   winner,
+  isLive = false,
 }: MatchSummaryProps) => {
+
+  const realScore = ["0", "15", "30", "40", "A"];
+  
+  const gridFormat = isLive ? "1fr_repeat(6,48px)"
+    : "1fr_repeat(5,48px)";
+    const setsPlayed = isLive ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5];
   return (
-    <div className="mb-8 max-w-4xl mx-auto grid grid-cols-[1fr_repeat(5,48px)]  bg-white items-center border border-gray-300 rounded-lg">
+    <div className={`mb-8 max-w-4xl mx-auto grid grid-cols-[${gridFormat}] bg-white items-center border border-gray-300 rounded-lg`}>
       <div className="px-4 py-2 h-6" />
-      {[1, 2, 3, 4, 5].map((set) => (
+      {setsPlayed.map((set, index) => {
+        if (index === setsPlayed.length -1) {
+          return (
+          <div
+          key={set}
+          className="text-center text-xs text-muted-foreground font-medium py-2"
+        >
+          CP
+        </div>    
+          )
+        }
+        return (
         <div
           key={set}
           className="text-center text-xs text-muted-foreground font-medium py-2"
         >
-          {/* playerA.sets[set - 1] !== undefined ? `S${set}` : "" */}S{set}
+          S{set}
         </div>
-      ))}
+        )
+      })}
       <div
         className={`px-4 py-4 flex items-center gap-2 h-6 border-t border-gray-300 ${winner === "A" ? "text-foreground" : "text-muted-foreground"}`}
       >
         {winner === "A" && <div className="w-1 h-6 rounded-full bg-primary" />}
-        <span>{playerA.firstname}</span>
+        {currentGame && currentGame.server === "A" ? "*" : ""}
+        <span>{playerA.firstname} {playerA.lastname}</span>
       </div>
-      {[0, 1, 2, 3, 4].map((index) => (
+      {setsPlayed.map((index, i) => {
+      if (i === setsPlayed.length -1) {
+          return (
+          <div
+            key={index}
+            className="text-center text-xs text-muted-foreground font-medium py-2"
+          >
+          {currentGame && FormatScore(currentGame.points_a, currentGame.points_b)}
+        </div>    
+          )
+        }
+        return (
         <div
           key={index}
           className={`text-center py-4 font-medium h-6 border-t border-gray-300 `}
         >
-          1
+          {sets && sets[i] ? sets[i].games_a : ""}
         </div>
-      ))}
+        )
+      })}
       <div
         className={`px-4 py-4 flex items-center gap-2 h-6 border-t border-gray-300 ${winner === "B" ? "text-foreground" : "text-muted-foreground"}`}
       >
         {winner === "B" && <div className="w-1 h-6 rounded-full bg-primary" />}
-        <span>{playerB.firstname}</span>
+        {currentGame && currentGame.server === "B" ? "*" : ""}
+        <span>{playerB.firstname} {playerB.lastname}</span>
       </div>
-      {[0, 1, 2, 3, 4].map((index) => (
+      {setsPlayed.map((index, i) => {
+      if (i === setsPlayed.length -1) {
+          return (
+          <div
+            key={index}
+            className="text-center text-xs text-muted-foreground font-medium py-2"
+          >
+          {currentGame && FormatScore(currentGame.points_b, currentGame.points_a)}
+        </div>    
+          )
+        }
+        return (
         <div
           key={index}
           className={`text-center py-4 font-medium h-6 border-t border-gray-300 `}
         >
-          {index}
+          {sets && sets[i] ? sets[i].games_b : ""}
         </div>
-      ))}
+        )
+      })}
     </div>
   );
 };
