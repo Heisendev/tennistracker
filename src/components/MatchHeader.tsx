@@ -27,7 +27,7 @@ const MatchHeader = ({ match, liveMatch }: { match: Match, liveMatch: LiveMatch 
     <>
       <Header title={t("matchStats")}/>
       <div className="text-center mb-8">
-        {liveMatch &&
+        {liveMatch && liveMatch.status &&
         <div className="inline-flex items-center gap-2 mb-2">
           <div className="w-2 h-2 rounded-full bg-primary" />
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">

@@ -139,6 +139,51 @@
   .text-stat-secondary {
     color: hsl(200 70 50);
   }
+  .bounce {
+    background-color: #dfff4f;
+    border-radius: 100%;
+    height: 15px;
+    left: calc(50% - 50px);
+    right: calc(50% - 50px);
+    width: 15px;
+    animation: bounce 1s ease-in-out infinite;
+    animation-fill-mode: both;
+    animation-direction: alternate;
+  }
+  @keyframes bounce {
+    from {
+      top: 25%;
+      transform: scaleX(79.5%) scaleY(65%);
+    }
+    to {
+      top: 100%;
+    }
+  }
+  .bounceshadow {
+    border-radius: 100%;
+    bottom: 32.5%;
+    left: calc(50% - 50px);
+    right: calc(50% - 50px);
+    content: '';
+    background-color: black;
+    filter: blur(3px);
+    width: 15px;
+    height: 5px;
+    animation: shadow .5s ease-in-out infinite;
+    animation-fill-mode: both;
+    animation-direction: alternate;
+    z-index: -1;
+  }
+  @keyframes shadow {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: .5;
+    transform: scale(100%);
+  }
+}
 }
 
 @layer base {
