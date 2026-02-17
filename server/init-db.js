@@ -214,10 +214,10 @@ db.exec(`
     (9, 'Roger', 'Federer', 'Right', 'One-handed', 'CH');
 `);
 
-db.exec(`INSERT INTO matchs (tournament, round, surface, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, winner, tossWinner) VALUES 
-    ('Wimbledon', 'Final', 'Grass', '2026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A', 'B'), 
-    ('US Open', 'Semi-Final', 'Hard', '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B', 'A'), 
-    ('Roland Garros', 'Quarter-Final', 'Clay', '2023-06-12T15:57:31.000Z', '2h45m', 1, 2, 1, 2, 'A', 'B'); `);
+db.exec(`INSERT INTO matchs (tournament, round, surface, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES 
+    ('Wimbledon', 'Final', 'Grass', '2026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A'), 
+    ('US Open', 'Semi-Final', 'Hard', '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B'), 
+    ('Roland Garros', 'Quarter-Final', 'Clay', '2023-06-12T15:57:31.000Z', '2h45m', 1, 2, 1, 2, 'A'); `);
 
 console.log('');
 console.log('✅ Database initialization complete!');
