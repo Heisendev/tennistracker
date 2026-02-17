@@ -71,7 +71,7 @@ export const MatchSummary = ({
           return (
             <div
               key={index}
-              className="text-center text-xs text-muted-foreground font-medium py-2"
+              className="text-center text-xs text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
             >
               {currentGame && FormatScore(currentGame.points_a, currentGame.points_b)}
             </div>
@@ -99,7 +99,7 @@ export const MatchSummary = ({
           return (
             <div
               key={index}
-              className="text-center text-xs text-muted-foreground font-medium py-2"
+              className="text-center text-xs text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
             >
               {currentGame && FormatScore(currentGame.points_b, currentGame.points_a)}
             </div>
