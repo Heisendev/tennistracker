@@ -1,8 +1,8 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router";
 import Input from "@components/ui/Input";
-import { usePlayers } from "../hooks/usePlayers";
-import { useCreateMatch } from "../hooks/useMatchs";
+import { usePlayers } from "../../hooks/usePlayers";
+import { useCreateMatch } from "../../hooks/useMatchs";
 import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
 
