@@ -209,10 +209,10 @@ router.get('/sessions/:matchId', (req, res) => {
         // Organize stats by set and player
         const statsBySet = {};
         matchStats.forEach(stat => {
-            if (!statsBySet[stat.set_number]) {
-                statsBySet[stat.set_number] = {};
+            if (!statsBySet["set_" + stat.set_number]) {
+                statsBySet["set_" + stat.set_number] = {};
             }
-            statsBySet[stat.set_number][stat.player] = stat;
+            statsBySet["set_" + stat.set_number][stat.player] = stat;
         });
 
         session.sets = sets;
