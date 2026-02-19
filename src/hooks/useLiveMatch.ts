@@ -17,6 +17,22 @@ export function useCreateLiveMatch() {
     });
 }
 
+export function updateLiveMatchStatus() {
+    return useMutation({
+        mutationFn: ({liveMatchId, status}: {liveMatchId: number, status: "scheduled" | "in-progress" | "completed" | "suspended"}) => liveMatchApi.updateLiveMatchStatus(liveMatchId, status),
+        onSuccess: (data) => {
+            console.log('Live match status updated successfully, refetching match data');
+            // Invalidate the specific liveMatch query with the correct ID to trigger refetch
+            queryClient.invalidateQueries({
+                queryKey: ["liveMatch", data.matchId]
+            });
+        },
+        onError: (error) => {
+            console.error('Error updating live match status:', error);
+        },
+    });
+}
+
 export function useLiveMatch(id?: number) {
     return useQuery<LiveMatch, Error>({
         retry: false,
