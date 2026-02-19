@@ -11,19 +11,33 @@ export type Player = NewPlayer & {
   id: number;
   seed?: number;
 };
-
+export type MatchStatsSet = {
+  A?: MatchStatsSetPlayer;
+  B?: MatchStatsSetPlayer;
+}
 export type MatchStats = {
-  setNumber: number;
-  aces: { a: number; b: number; isPercentage: boolean };
-  doubleFaults: { a: number; b: number; isPercentage: boolean };
-  firstServe: { a: number; b: number; isPercentage: boolean };
-  firstServeWon: { a: number; b: number; isPercentage: boolean };
-  secondServeWon: { a: number; b: number; isPercentage: boolean };
-  winners: { a: number; b: number; isPercentage: boolean };
-  unforcedErrors: { a: number; b: number; isPercentage: boolean };
-  breakPointsWon: { a: number; b: number; isPercentage: boolean };
-  totalPointsWon: { a: number; b: number; isPercentage: boolean };
+  set_1?: MatchStatsSet;
+  set_2?: MatchStatsSet;
+  set_3?: MatchStatsSet;
+  set_4?: MatchStatsSet;
+  set_5?: MatchStatsSet;
 };
+
+export type MatchStatsSetPlayer = {
+  aces: number;
+  break_points_faced: number;
+  break_points_won: number;
+  double_faults: number;
+  first_serve_count: number;
+  first_serve_won: number;
+  player: "A" | "B";
+  second_serve_won: number;
+  serves_total: number;
+  set_number: number;
+  total_points_won: number;
+  unforced_errors: number;
+  winners: number
+}
 
 export type NewMatch = {
   tournament: string;
@@ -60,6 +74,7 @@ export type LiveMatch = Omit<Match, "stats" | "duration"> & {
   sets: Set[];
   currentGame?: CurrentGame;
   error?: string;
+  matchStats?: MatchStats;
 };
 
 export type Set = {
