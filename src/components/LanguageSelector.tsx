@@ -19,7 +19,7 @@ export const LanguageSelector = () => {
       title={`${t('common.language')}: ${i18n.language === 'en' ? t('common.english') : t('common.french')}`}
     >
       <Globe className="w-4 h-4" />
-      <span>{i18n.language.toUpperCase()}</span>
+      <span className="ml-2">{i18n.language.toUpperCase()}</span>
     </Button>
   );
 };

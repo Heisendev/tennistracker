@@ -34,7 +34,6 @@ const Players = () => {
 
   return (
     <div>
-      {/* Search */}
       <div className="backdrop-blur-sm sticky top-0 z-10 border-b border-gray-300 bg-white">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
           <Link
@@ -107,7 +106,7 @@ const Players = () => {
                           {player.firstname} {player.lastname}
                         </h2>
                         <p className="text-xs text-muted-foreground font-mono">
-                          {t(`players.${player.hand}`)} • {t(`players.${player.backhand}`) }
+                          {t(`players.${player.hand}`)} • {t(`players.${player.backhand}`)}
                         </p>
                       </div>
                     </div>
