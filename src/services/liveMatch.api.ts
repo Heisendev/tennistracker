@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3003";
 
 export interface LiveMatchApi {
     createLiveMatch: (matchid: number) => Promise<LiveMatch>;
+    updateLiveMatchStatus: (liveMatchId: number, status: "scheduled" | "in-progress" | "completed" | "suspended") => Promise<LiveMatch>;
     getLiveMatchById: (id: string) => Promise<LiveMatch>;
     addPoint: (liveMatchId: number, player: 'A' | 'B') => Promise<LiveMatch>;
 }
@@ -20,6 +21,20 @@ export const liveMatchApi: LiveMatchApi = {
         });
         if (!response.ok) {
             throw new Error(`Failed to create live match: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return data;
+    },
+    updateLiveMatchStatus: async (liveMatchId: number, status: "scheduled" | "in-progress" | "completed" | "suspended") => {
+        const response = await fetch(`${API_URL}/live-scoring/sessions/${liveMatchId}/status`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status }),
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to update live match status: ${response.statusText}`);
         }
         const data = await response.json();
         return data;
