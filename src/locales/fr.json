@@ -72,6 +72,7 @@
   "liveMatch": {
     "in-progress": "Match en cours",
     "scheduled": "Match programmé",
+    "complete": "Finir le Match",  
     "completed": "Match terminé",  
     "paused": "Match en pause",
     "startLiveMatch": "Démarrer le Match en Direct"
