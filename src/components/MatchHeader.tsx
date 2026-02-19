@@ -2,7 +2,7 @@ import type { LiveMatch, Match } from "src/types";
 import Header from "./Header";
 
 import { useTranslation } from "react-i18next";
-import { useCreateLiveMatch } from "../hooks/useLiveMatch";
+import { updateLiveMatchStatus, useCreateLiveMatch } from "../hooks/useLiveMatch";
 import { Button } from "./ui/Button";
 
 const formatDate = (date: string) =>
@@ -15,6 +15,7 @@ const formatDate = (date: string) =>
 const MatchHeader = ({ match, liveMatch }: { match: Match, liveMatch: LiveMatch | undefined }) => {
   const { tournament, round, surface, date, duration } = match; 
   const createLiveMatch = useCreateLiveMatch();
+  const updateMatchStatus = updateLiveMatchStatus();
 
   const handleStartLiveMatch = () => {
     // Logic to start live match goes here
@@ -28,14 +29,20 @@ const MatchHeader = ({ match, liveMatch }: { match: Match, liveMatch: LiveMatch 
       <Header title={t("matchStats")}/>
       <div className="text-center mb-8">
         {liveMatch && liveMatch.status &&
-        <div className="inline-flex items-center gap-2 mb-2">
+        <div className="inline-flex items-center gap-2 my-4">
           <div className="w-2 h-2 rounded-full bg-primary" />
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             {t(`liveMatch.${liveMatch?.status.toLowerCase()}`)}  
           </span>
+          {liveMatch.status === "scheduled" && <Button onClick={() => updateMatchStatus.mutate({ liveMatchId: liveMatch.id, status: "in-progress" })} variant="secondary">
+            {t("liveMatch.start")}
+          </Button>}
+          {liveMatch.status === "in-progress" && <Button onClick={() => updateMatchStatus.mutate({ liveMatchId: liveMatch.id, status: "completed" })} variant="secondary">
+            {t("liveMatch.complete")}
+          </Button>}
         </div>
         }
-        <h1 className="text-4xl md:text-6xl font-display text-foreground mb-3">
+        <h1 className="text-4xl md:text-6xl font-display text-foreground my-3">
           {tournament}
         </h1>
         <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
