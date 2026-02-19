@@ -4,10 +4,10 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { AppProviders } from "@providers/AppProviders";
 import "./i18n";
 
-import Match from "@pages/Match.tsx";
+import Match from "@pages/matches/Match";
 import Home from "@pages/Home.tsx";
-import MatchTracker from "@pages/MatchTracker.tsx";
-import Matches from "@pages/Matches";
+import MatchTracker from "@pages/matches/CreateMatch";
+import Matches from "@pages/matches/Matches";
 import CreatePlayer from "@pages/players/CreatePlayer";
 
 import "./index.css";
