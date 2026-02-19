@@ -1,7 +1,7 @@
 interface MatchStatsProps {
   label: string;
-  playerA: number;
-  playerB: number;
+  playerA: number | "A" | "B";
+  playerB: number | "A" | "B";
   isPercentage?: boolean;
 }
 
@@ -9,8 +9,14 @@ export const MatchStats = ({
   label,
   playerA,
   playerB,
-  isPercentage,
+  isPercentage = false,
 }: MatchStatsProps) => {
+  if (typeof playerA === "string" || typeof playerB === "string" || label === "set_number") {
+    return (
+      <>
+      </>
+    );
+  }
   const maxVal = isPercentage ? 100 : Math.max(playerA, playerB, 1);
   const widthA = (playerA / maxVal) * 100;
   const widthB = (playerB / maxVal) * 100;

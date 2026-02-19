@@ -36,7 +36,7 @@ export const MatchSummary = ({
     : "1fr_repeat(5,48px)";
   const setsPlayed = isLive ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5];
   return (
-    <div className={`mb-8 max-w-4xl mx-auto grid grid-cols-[${gridFormat}] bg-white items-center border border-gray-300 rounded-lg`}>
+    <div className={"mb-8 max-w-4xl mx-auto grid bg-white items-center border border-gray-300 rounded-lg" + (isLive ? " grid-cols-[1fr_repeat(6,48px)]" : " grid-cols-[1fr_repeat(5,48px)]")} style={{ gridTemplateColumns: gridFormat }}>
       <div className="px-4 py-2 h-6" />
       {setsPlayed.map((set, index) => {
         if (index === setsPlayed.length - 1) {
