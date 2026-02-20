@@ -144,15 +144,15 @@
   .stat-gradient {
     background: linear-gradient(
       90deg,
-      hsl(90 75% 45% / 0.9),
+      var(--bg-dataviz-green) 0%,
       hsl(90 75% 55% / 0.6)
     );
   }
   .stat-gradient-secondary {
     background: linear-gradient(
       90deg,
-      hsl(200 70% 50% / 0.9),
-      hsl(200 70% 60% / 0.6)
+      hsl(200 70% 60% / 0.6),
+      var(--bg-dataviz-blue) 100%
     );
   }
   .court-texture {
@@ -247,6 +247,8 @@
     --bg-background-alert-success: #61ad55;
     --bg-background-alert-warning: #f3a01f;
     --bg-background-alert-danger: #f34e4d;
+
+    --bg-background-accent-gradient: #f7f7fa;
   }
 
   #root {
@@ -260,7 +262,7 @@
 
   body {
     font-family: "Inter", sans-serif;
-    background-color: var(--gray-100);
+    background-color: var(--bg-background-accent-gradient);
     margin: 0;
   }
 
@@ -272,6 +274,7 @@
   h1,
   h2,
   h3,
+  h4,
   .font-display {
     font-family: "Bebas Neue", sans-serif;
     letter-spacing: 0.05em;
