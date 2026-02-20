@@ -16,35 +16,79 @@ import {
 
 import type { MatchStatsSet } from "src/types";
 
+import { useTranslation } from "react-i18next";
+
 import { useMatchById } from "../../hooks/useMatchs";
-import { useLiveMatch, addPointToLiveMatch } from "../../hooks/useLiveMatch";
+import { useLiveMatch, useAddPointToLiveMatch } from "../../hooks/useLiveMatch";
+import { AlertCircle, Target, Zap } from "lucide-react";
+import { useState } from "react";
 
 const Match = () => {
   const params = useParams();
   const { data: match, isLoading } = useMatchById(params.id!);
   const { data: liveMatch } = useLiveMatch(match?.id);
-  const addPoint = addPointToLiveMatch();
+  const addPoint = useAddPointToLiveMatch();
+  const { t } = useTranslation();
+  const [serveType, setServeType] = useState<"first" | "second">("first");
 
-  const handleAddPoint = (matchId: number, liveMatchId: number, player: 'A' | 'B') => {
+  const handleAddPoint = (matchId: number, liveMatchId: number, player?: 'A' | 'B', serveResult?: string, serveType?: string, winnerShot?: string) => {
     // Logic to start live match goes here
-    addPoint.mutate({ matchId, liveMatchId, player });
+    addPoint.mutate({ matchId, liveMatchId, player, serveResult, serveType, winnerShot });
+    if (serveResult === 'error') {
+      setServeType("second");
+    } else {
+      setServeType("first");
+    }
   };
 
   if (isLoading || !match) {
     return <div>Loading...</div>;
   }
 
+  const initialStats: MatchStatsSet = {
+    A: {
+      aces: 0,
+      break_points_faced: 0,
+      break_points_won: 0,
+      double_faults: 0,
+      first_serve_count: 0,
+      first_serve_won: 0,
+      player: "A",
+      second_serve_won: 0,
+      serves_total: 0,
+      set_number: 0,
+      total_points_won: 0,
+      unforced_errors: 0,
+      winners: 0
+    },
+    B: {
+      aces: 0,
+      break_points_faced: 0,
+      break_points_won: 0,
+      double_faults: 0,
+      first_serve_count: 0,
+      first_serve_won: 0,
+      player: "B",
+      second_serve_won: 0,
+      serves_total: 0,
+      set_number: 0,
+      total_points_won: 0,
+      unforced_errors: 0,
+      winners: 0
+    }
+  };
+
   const formatStats = (stats: MatchStatsSet) => {
     if (!stats) return "No stats available";
-    const playerA = stats.A || undefined;
-    const playerB = stats.B || undefined;
-    if (!playerA && !playerB) return "No stats available";
+    const playerA = stats.A || initialStats.A;
+    const playerB = stats.B || initialStats.B;
+
     return Object.entries(playerA || {}).map(([key, value]) => {
       console.log(`Player A - ${key}: ${value}`);
       const statsDisplay = {
         "label": key,
         "playerA": value,
-        "playerB": playerB ? (playerB as any)[key] : "N/A",
+        "playerB": playerB[key as keyof typeof playerB],
       };
       return <MatchStats key={key} {...statsDisplay} />;
     });
@@ -71,24 +115,64 @@ const Match = () => {
         />
       )}
       {liveMatch && !liveMatch.error && liveMatch.status === "in-progress" && (
-        <div>
-          <Button onClick={() => handleAddPoint(match.id, liveMatch.id, 'A')} variant="secondary" disabled={addPoint.isPending}>Point A</Button>
-          <Button onClick={() => handleAddPoint(match.id, liveMatch.id, 'B')} variant="secondary" disabled={addPoint.isPending}>Point B</Button>
+        <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 mb-4">
+          <h2 className="text-xl font-bold mb-4">{t('liveMatch.controls')}</h2>
+          {(liveMatch.currentGame?.server && liveMatch.currentGame?.server === "A") ? (
+            <h3>{t('liveMatch.currentServer')}: {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}</h3>
+          ) : (<h3>{t('liveMatch.currentServer')}: {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}</h3>)}
+          <div className="mb-2 p-8">
+            <h4 className="text-left mb-1">{t('liveMatch.serve')}</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="secondary" disabled={serveType === "second"} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'error', 'first')}>
+                {t("liveMatch.stats.first_serve_fault")}
+              </Button>
+              <Button variant="secondary" disabled={serveType === "first"} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'double-fault', 'second')}>
+                <AlertCircle className="w-3.5 h-3.5 mr-2" />
+                {t("liveMatch.stats.double_faults")}
+              </Button>
+              <div className="col-span-2">
+                <Button variant="secondary" style={{ width: '100%' }} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'ace', serveType)}>
+                  <Zap className="w-3.5 h-3.5 mr-2 text-primary" />
+                  {t("liveMatch.stats.ace")}
+                </Button>
+              </div>
+            </div>
+            <h4 className="text-left mb-1">{t('liveMatch.stats.winner')}</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, liveMatch.id, 'A', undefined, undefined, 'winner')}>
+                <Target className="w-3.5 h-3.5 mr-2" />
+                {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}
+              </Button>
+              <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, liveMatch.id, 'B', undefined, undefined, 'winner')}>
+                <Target className="w-3.5 h-3.5 mr-2" />
+                {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}
+              </Button>
+            </div>
+            <h4 className="text-left mb-1">{t('liveMatch.stats.unforced_error')}</h4>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, liveMatch.id, 'B', undefined, undefined, 'error')}>
+                {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}
+              </Button>
+              <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, liveMatch.id, 'A', undefined, undefined, 'error')}>
+                {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}
+              </Button>
+            </div>
+          </div>
           {addPoint.error && <p style={{ color: 'red' }}>Error: {addPoint.error.message}</p>}
         </div>
       )}
 
       {liveMatch && liveMatch.matchStats &&
         <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300">
-          <h2 className="text-xl font-bold mb-4">Match Statistics</h2>
+          <h2 className="text-xl font-bold mb-4">{t('liveMatch.matchStatistics')}</h2>
           <Tabs defaultIndex={0}>
             <TabList>
-              {Object.entries(liveMatch?.matchStats || {}).map(([], i) => {
-                return <Tab index={i}>Set {i + 1}</Tab>;
+              {Object.entries(liveMatch.matchStats).map(([key], i) => {
+                return <Tab key={key} index={i}>Set {i + 1}</Tab>;
               })}
             </TabList>
             <TabPanels>
-              {Object.entries(liveMatch?.matchStats || {}).map(([key]) => {
+              {Object.entries(liveMatch.matchStats).map(([key]) => {
                 const statKey = `${key}` as keyof typeof liveMatch.matchStats;
                 if (liveMatch && liveMatch.matchStats && liveMatch.matchStats[statKey]) {
                   return <TabPanel>

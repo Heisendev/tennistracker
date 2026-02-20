@@ -1,4 +1,4 @@
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router";
 import Input from "@components/ui/Input";
 import { usePlayers } from "../../hooks/usePlayers";
@@ -40,10 +40,10 @@ const MatchTracker = () => {
 
   const { data: players } = usePlayers();
 
-  const { register, handleSubmit, watch } = useForm<Inputs>({ defaultValues });
+  const { register, handleSubmit, control } = useForm<Inputs>({ defaultValues });
 
-  const selectedPlayer1 = watch("playerA");
-  const selectedPlayer2 = watch("playerB");
+  const selectedPlayer1 = useWatch({ control, name: "playerA" });
+  const selectedPlayer2 = useWatch({ control, name: "playerB" });
 
   useEffect(() => {
     register("date");

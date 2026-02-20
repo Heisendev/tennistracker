@@ -12,8 +12,8 @@ export type Player = NewPlayer & {
   seed?: number;
 };
 export type MatchStatsSet = {
-  A?: MatchStatsSetPlayer;
-  B?: MatchStatsSetPlayer;
+  A: MatchStatsSetPlayer;
+  B: MatchStatsSetPlayer;
 }
 export type MatchStats = {
   set_1?: MatchStatsSet;

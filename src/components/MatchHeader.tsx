@@ -2,7 +2,7 @@ import type { LiveMatch, Match } from "src/types";
 import Header from "./Header";
 
 import { useTranslation } from "react-i18next";
-import { updateLiveMatchStatus, useCreateLiveMatch } from "../hooks/useLiveMatch";
+import { useUpdateLiveMatchStatus, useCreateLiveMatch } from "../hooks/useLiveMatch";
 import { Button } from "./ui/Button";
 
 const formatDate = (date: string) =>
@@ -15,7 +15,7 @@ const formatDate = (date: string) =>
 const MatchHeader = ({ match, liveMatch }: { match: Match, liveMatch: LiveMatch | undefined }) => {
   const { tournament, round, surface, date, duration } = match; 
   const createLiveMatch = useCreateLiveMatch();
-  const updateMatchStatus = updateLiveMatchStatus();
+  const updateMatchStatus = useUpdateLiveMatchStatus();
 
   const handleStartLiveMatch = () => {
     // Logic to start live match goes here

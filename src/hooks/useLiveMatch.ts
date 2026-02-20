@@ -17,7 +17,7 @@ export function useCreateLiveMatch() {
     });
 }
 
-export function updateLiveMatchStatus() {
+export function useUpdateLiveMatchStatus() {
     return useMutation({
         mutationFn: ({liveMatchId, status}: {liveMatchId: number, status: "scheduled" | "in-progress" | "completed" | "suspended"}) => liveMatchApi.updateLiveMatchStatus(liveMatchId, status),
         onSuccess: (data) => {
@@ -42,9 +42,9 @@ export function useLiveMatch(id?: number) {
     });
 }
 
-export function addPointToLiveMatch() {
+export function useAddPointToLiveMatch() {
     return useMutation({
-        mutationFn: ({ matchId, liveMatchId, player, serveResult, serveType, winnerShot }: { matchId: number; liveMatchId: number; player?: 'A' | 'B'; serveResult?: string; serveType?: string; winnerShot?: string }) => liveMatchApi.addPoint(liveMatchId, player, serveResult, serveType, winnerShot ),
+        mutationFn: ({ matchId, liveMatchId, player, serveResult, serveType, winnerShot }: { matchId: number; liveMatchId: number; player?: 'A' | 'B'; serveResult?: string; serveType?: string; winnerShot?: string }) => liveMatchApi.addPoint(matchId, liveMatchId, player, serveResult, serveType, winnerShot ),
         onSuccess: (data, variables) => {
             console.log('Point added successfully, refetching match data:', variables);
             // Invalidate the specific liveMatch query with the correct ID to trigger refetch
