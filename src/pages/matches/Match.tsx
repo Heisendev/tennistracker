@@ -115,75 +115,79 @@ const Match = () => {
         />
       )}
       {liveMatch && !liveMatch.error && liveMatch.status === "in-progress" && (
-        <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 mb-4">
+        <>
           <h2 className="text-xl font-bold mb-4">{t('liveMatch.controls')}</h2>
-          {(liveMatch.currentGame?.server && liveMatch.currentGame?.server === "A") ? (
-            <h3>{t('liveMatch.currentServer')}: {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}</h3>
-          ) : (<h3>{t('liveMatch.currentServer')}: {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}</h3>)}
-          <div className="mb-2 p-8">
-            <h4 className="text-left mb-1">{t('liveMatch.serve')}</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="secondary" disabled={serveType === "second"} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'error', 'first')}>
-                {t("liveMatch.stats.first_serve_fault")}
-              </Button>
-              <Button variant="secondary" disabled={serveType === "first"} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'double-fault', 'second')}>
-                <AlertCircle className="w-3.5 h-3.5 mr-2" />
-                {t("liveMatch.stats.double_faults")}
-              </Button>
-              <div className="col-span-2">
-                <Button variant="secondary" style={{ width: '100%' }} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'ace', serveType)}>
-                  <Zap className="w-3.5 h-3.5 mr-2 text-primary" />
-                  {t("liveMatch.stats.ace")}
+          <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 mb-8 py-4">
+            {(liveMatch.currentGame?.server && liveMatch.currentGame?.server === "A") ? (
+              <h3>{t('liveMatch.currentServer')}: {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}</h3>
+            ) : (<h3>{t('liveMatch.currentServer')}: {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}</h3>)}
+            <div className="mb-2 px-8">
+              <h4 className="text-left mb-1">{t('liveMatch.serve')}</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <Button variant="secondary" disabled={serveType === "second"} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'error', 'first')}>
+                  {t("liveMatch.stats.first_serve_fault")}
+                </Button>
+                <Button variant="secondary" disabled={serveType === "first"} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'double-fault', 'second')}>
+                  <AlertCircle className="w-3.5 h-3.5 mr-2" />
+                  {t("liveMatch.stats.double_faults")}
+                </Button>
+                <div className="col-span-2">
+                  <Button variant="secondary" style={{ width: '100%' }} onClick={() => handleAddPoint(match.id, liveMatch.id, undefined, 'ace', serveType)}>
+                    <Zap className="w-3.5 h-3.5 mr-2 text-primary" />
+                    {t("liveMatch.stats.ace")}
+                  </Button>
+                </div>
+              </div>
+              <h4 className="text-left mb-1">{t('liveMatch.stats.winner')}</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, liveMatch.id, 'A', undefined, undefined, 'winner')}>
+                  <Target className="w-3.5 h-3.5 mr-2" />
+                  {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}
+                </Button>
+                <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, liveMatch.id, 'B', undefined, undefined, 'winner')}>
+                  <Target className="w-3.5 h-3.5 mr-2" />
+                  {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}
+                </Button>
+              </div>
+              <h4 className="text-left mb-1">{t('liveMatch.stats.unforced_error')}</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, liveMatch.id, 'B', undefined, undefined, 'error')}>
+                  {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}
+                </Button>
+                <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, liveMatch.id, 'A', undefined, undefined, 'error')}>
+                  {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}
                 </Button>
               </div>
             </div>
-            <h4 className="text-left mb-1">{t('liveMatch.stats.winner')}</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, liveMatch.id, 'A', undefined, undefined, 'winner')}>
-                <Target className="w-3.5 h-3.5 mr-2" />
-                {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}
-              </Button>
-              <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, liveMatch.id, 'B', undefined, undefined, 'winner')}>
-                <Target className="w-3.5 h-3.5 mr-2" />
-                {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}
-              </Button>
-            </div>
-            <h4 className="text-left mb-1">{t('liveMatch.stats.unforced_error')}</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, liveMatch.id, 'B', undefined, undefined, 'error')}>
-                {liveMatch.playerA.firstname} {liveMatch.playerA.lastname}
-              </Button>
-              <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, liveMatch.id, 'A', undefined, undefined, 'error')}>
-                {liveMatch.playerB.firstname} {liveMatch.playerB.lastname}
-              </Button>
-            </div>
+            {addPoint.error && <p style={{ color: 'red' }}>Error: {addPoint.error.message}</p>}
           </div>
-          {addPoint.error && <p style={{ color: 'red' }}>Error: {addPoint.error.message}</p>}
-        </div>
+        </>
       )}
 
       {liveMatch && liveMatch.matchStats &&
-        <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300">
+        <>
           <h2 className="text-xl font-bold mb-4">{t('liveMatch.matchStatistics')}</h2>
-          <Tabs defaultIndex={0}>
-            <TabList>
-              {Object.entries(liveMatch.matchStats).map(([key], i) => {
-                return <Tab key={key} index={i}>Set {i + 1}</Tab>;
-              })}
-            </TabList>
-            <TabPanels>
-              {Object.entries(liveMatch.matchStats).map(([key]) => {
-                const statKey = `${key}` as keyof typeof liveMatch.matchStats;
-                if (liveMatch && liveMatch.matchStats && liveMatch.matchStats[statKey]) {
-                  return <TabPanel>
-                    {formatStats(liveMatch.matchStats[statKey])}
-                  </TabPanel>;
-                }
-                return "No stats available"
-              })}
-            </TabPanels>
-          </Tabs>
-        </div>
+          <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 mb-8 pb-4 pt-8">
+            <Tabs defaultIndex={0}>
+              <TabList>
+                {Object.entries(liveMatch.matchStats).map(([key], i) => {
+                  return <Tab key={key} index={i}>Set {i + 1}</Tab>;
+                })}
+              </TabList>
+              <TabPanels>
+                {Object.entries(liveMatch.matchStats).map(([key]) => {
+                  const statKey = `${key}` as keyof typeof liveMatch.matchStats;
+                  if (liveMatch && liveMatch.matchStats && liveMatch.matchStats[statKey]) {
+                    return <TabPanel>
+                      {formatStats(liveMatch.matchStats[statKey])}
+                    </TabPanel>;
+                  }
+                  return "No stats available"
+                })}
+              </TabPanels>
+            </Tabs>
+          </div>
+        </>
       }
     </>
   );

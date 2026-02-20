@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: tennis-tracker-api
+    env: node
+    region: oregon
+    plan: free
+    startCommand: npm start
+    buildCommand: npm install
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3003
