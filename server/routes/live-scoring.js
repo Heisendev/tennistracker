@@ -239,11 +239,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
         const { sessionId } = req.params;
         const { winner, serve_type, serve_result, rally_type, winner_shot, notes } = req.body;
 
-        if (!winner || !['A', 'B'].includes(winner)) {
-            return res.status(400).json({ error: 'winner must be A or B' });
-        }
-
-        // Get current game
+        // Get current game first to determine server
         const session = db.prepare('SELECT current_set FROM live_match_sessions WHERE id = ?').get(sessionId);
         if (!session) {
             return res.status(404).json({ error: 'Session not found' });
@@ -256,65 +252,210 @@ router.post('/sessions/:sessionId/point', (req, res) => {
             WHERE ls.session_id = ? AND ls.set_number = ? AND lg.game_winner IS NULL
             ORDER BY lg.game_number DESC LIMIT 1
         `).get(sessionId, session.current_set);
-        console.log('Current game:', currentGame, sessionId, session);
+
         if (!currentGame) {
             return res.status(400).json({ error: 'No active game found' });
         }
 
+        // Determine actual point winner based on serve result
+        let pointWinner = winner;
+        
+        // On first serve error, no point is awarded
+        if (serve_result === 'error' && serve_type === 'first') {
+            pointWinner = null;
+        }
+        // On double fault, opponent gets the point
+        else if (serve_result === 'double-fault') {
+            const server = currentGame.server;
+            pointWinner = server === 'A' ? 'B' : 'A';
+        } 
+        else if (serve_result === 'ace') {
+            // Ace always results in point for server
+            pointWinner = currentGame.server;
+        }
+        // If no serve_result, winner is required
+        else if (!pointWinner || !['A', 'B'].includes(pointWinner)) {
+            return res.status(400).json({ error: 'winner must be A or B, or serve_result must be error/double-fault' });
+        }
+
         // Record point
-        const newPoints = winner === 'A' ? currentGame.points_a + 1 : currentGame.points_b + 1;
-        const otherPoints = winner === 'A' ? currentGame.points_b : currentGame.points_a;
+        const newPoints = pointWinner === 'A' ? currentGame.points_a + 1 : (pointWinner === 'B' ? currentGame.points_b + 1 : null);
+        const otherPoints = pointWinner === 'A' ? currentGame.points_b : (pointWinner === 'B' ? currentGame.points_a : null);
 
         db.prepare(`
             INSERT INTO live_points (game_id, point_number, winner, serve_type, serve_result, rally_type, winner_shot, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `).run(currentGame.id, newPoints, winner, serve_type || null, serve_result || null, rally_type || null, winner_shot || null, notes || null);
+        `).run(currentGame.id, (currentGame.points_a || 0) + (currentGame.points_b || 0) + 1, pointWinner || null, serve_type || null, serve_result || null, rally_type || null, winner_shot || null, notes || null);
 
         // Update live_match_stats for the session
         const session_data = db.prepare('SELECT current_set FROM live_match_sessions WHERE id = ?').get(sessionId);
-        let statsRecord = db.prepare(`
-            SELECT id FROM live_match_stats 
-            WHERE session_id = ? AND set_number = ? AND player = ?
-        `).get(sessionId, session_data.current_set, winner);
 
-        if (!statsRecord) {
-            // Create stats record if doesn't exist
-            db.prepare(`
-                INSERT INTO live_match_stats (session_id, set_number, player, total_points_won)
-                VALUES (?, ?, ?, 1)
-            `).run(sessionId, session_data.current_set, winner);
+        // Detect if we were in a break point situation before this point
+        const server = currentGame.server;
+        const receiver = server === 'A' ? 'B' : 'A';
+        const serverPts = server === 'A' ? currentGame.points_a : currentGame.points_b;
+        const receiverPts = receiver === 'A' ? currentGame.points_a : currentGame.points_b;
+        
+        const isBreakPointSituation = (
+            (serverPts  < 3 && receiverPts === 3) ||
+            (serverPts > 2 && receiverPts - serverPts === 1)
+        );
+        
+        // Handle double fault stats on the server
+        if (serve_result === 'double-fault') {
+            const server = currentGame.server;
+            let serverStatsRecord = db.prepare(`
+                SELECT id FROM live_match_stats 
+                WHERE session_id = ? AND set_number = ? AND player = ?
+            `).get(sessionId, session_data.current_set, server);
+
+            if (!serverStatsRecord) {
+                db.prepare(`
+                    INSERT INTO live_match_stats (session_id, set_number, player, double_faults, serves_total)
+                    VALUES (?, ?, ?, 1, 2)
+                `).run(sessionId, session_data.current_set, server);
+            } else {
+                db.prepare(`
+                    UPDATE live_match_stats 
+                    SET double_faults = double_faults + 1, serves_total = serves_total + 2, updated_at = CURRENT_TIMESTAMP
+                    WHERE session_id = ? AND set_number = ? AND player = ?
+                `).run(sessionId, session_data.current_set, server);
+            }
+        }
+        
+        // Only update stats if there's an actual point winner
+        if (pointWinner) {
+            let statsRecord = db.prepare(`
+                SELECT id FROM live_match_stats 
+                WHERE session_id = ? AND set_number = ? AND player = ?
+            `).get(sessionId, session_data.current_set, pointWinner);
+
+            if (!statsRecord) {
+                // Create stats record if doesn't exist
+                // Build the stats object with proper initialization
+                const statsInsert = {
+                    session_id: sessionId,
+                    set_number: session_data.current_set,
+                    player: pointWinner,
+                    total_points_won: 1,
+                    aces: 0,
+                    double_faults: 0,
+                    first_serve_count: 0,
+                    first_serve_won: 0,
+                    second_serve_won: 0,
+                    winners: 0,
+                    unforced_errors: 0,
+                    break_points_won: 0,
+                    break_points_faced: 0,
+                    serves_total: 0
+                };
+
+                // Update based on serve results
+                if (serve_result === 'ace' && serve_type === 'first') {
+                    statsInsert.aces = 1;
+                    statsInsert.first_serve_won = 1;
+                    statsInsert.first_serve_count = 1;
+                    statsInsert.serves_total = 1;
+                } else if (serve_result === 'ace' && serve_type === 'second') {
+                    statsInsert.aces = 1;
+                    statsInsert.second_serve_won = 1;
+                    statsInsert.serves_total = 1;
+                } else if (serve_result === 'won' && serve_type === 'first') {
+                    statsInsert.first_serve_won = 1;
+                    statsInsert.first_serve_count = 1;
+                    statsInsert.serves_total = 1;
+                } else if (serve_result === 'won' && serve_type === 'second') {
+                    statsInsert.second_serve_won = 1;
+                    statsInsert.serves_total = 1;
+                }
+
+                // Update based on shot type
+                if (winner_shot === 'winner') {
+                    statsInsert.winners = 1;
+                } else if (winner_shot === 'error') {
+                    statsInsert.unforced_errors = 1;
+                }
+
+                // Update break points if in break point situation
+                if (isBreakPointSituation) {
+                    if (pointWinner === receiver) {
+                        statsInsert.break_points_won = 1;
+                    } else {
+                        statsInsert.break_points_faced = 1;
+                    }
+                }
+
+                db.prepare(`
+                    INSERT INTO live_match_stats (session_id, set_number, player, total_points_won, aces, double_faults, first_serve_count, first_serve_won, second_serve_won, winners, unforced_errors, break_points_won, break_points_faced, serves_total)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `).run(statsInsert.session_id, statsInsert.set_number, statsInsert.player, statsInsert.total_points_won, statsInsert.aces, statsInsert.double_faults, statsInsert.first_serve_count, statsInsert.first_serve_won, statsInsert.second_serve_won, statsInsert.winners, statsInsert.unforced_errors, statsInsert.break_points_won, statsInsert.break_points_faced, statsInsert.serves_total);
+            } else {
+                // Update existing stats
+                let updateQuery = 'UPDATE live_match_stats SET total_points_won = total_points_won + 1';
+                const params = [sessionId, session_data.current_set, pointWinner];
+
+                // Update based on serve results (only for point winner's perspective)
+                if (serve_result === 'ace' && serve_type === 'first') {
+                    updateQuery += ', aces = aces + 1, first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
+                } else if (serve_result === 'ace' && serve_type === 'second') {
+                    updateQuery += ', aces = aces + 1, second_serve_won = second_serve_won + 1, second_serve_count = second_serve_count + 1, serves_total = serves_total + 1';
+                } else if (serve_result === 'won' && serve_type === 'first') {
+                    updateQuery += ', first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
+                } else if (serve_result === 'won' && serve_type === 'second') {
+                    updateQuery += ', second_serve_won = second_serve_won + 1, serves_total = serves_total + 1';
+                }
+
+                // Update based on shot type
+                if (winner_shot === 'winner') {
+                    updateQuery += ', winners = winners + 1';
+                } else if (winner_shot === 'error') {
+                    updateQuery += ', unforced_errors = unforced_errors + 1';
+                }
+
+                // Update break points if in break point situation
+                if (isBreakPointSituation) {
+                    if (pointWinner === receiver) {
+                        updateQuery += ', break_points_won = break_points_won + 1';
+                    } else {
+                        updateQuery += ', break_points_faced = break_points_faced + 1';
+                    }
+                }
+
+                updateQuery += ', updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND set_number = ? AND player = ?';
+
+                db.prepare(updateQuery).run(...params);
+            }
         } else {
-            // Update existing stats
-            let updateQuery = 'UPDATE live_match_stats SET total_points_won = total_points_won + 1';
-            const params = [sessionId, session_data.current_set, winner];
+            // First serve error - no game points change, just record the serve attempt
+            const server = currentGame.server;
+            let serverStatsRecord = db.prepare(`
+                SELECT id FROM live_match_stats 
+                WHERE session_id = ? AND set_number = ? AND player = ?
+            `).get(sessionId, session_data.current_set, server);
 
-            // Update based on serve results
-            if (serve_result === 'ace') {
-                updateQuery += ', aces = aces + 1, first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
-            } else if (serve_result === 'double-fault') {
-                updateQuery += ', double_faults = double_faults + 1, serves_total = serves_total + 2';
-            } else if (serve_result === 'error' && serve_type === 'first') {
-                updateQuery += ', first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
-            } else if (serve_result === 'won' && serve_type === 'first') {
-                updateQuery += ', first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
-            } else if (serve_result === 'won' && serve_type === 'second') {
-                updateQuery += ', second_serve_won = second_serve_won + 1, serves_total = serves_total + 1';
+            if (!serverStatsRecord) {
+                db.prepare(`
+                    INSERT INTO live_match_stats (session_id, set_number, player, first_serve_count, serves_total)
+                    VALUES (?, ?, ?, 1, 1)
+                `).run(sessionId, session_data.current_set, server);
+            } else {
+                db.prepare(`
+                    UPDATE live_match_stats 
+                    SET first_serve_count = first_serve_count + 1, serves_total = serves_total + 1, updated_at = CURRENT_TIMESTAMP
+                    WHERE session_id = ? AND set_number = ? AND player = ?
+                `).run(sessionId, session_data.current_set, server);
             }
-
-            // Update based on shot type
-            if (winner_shot === 'winner') {
-                updateQuery += ', winners = winners + 1';
-            } else if (winner_shot === 'error') {
-                updateQuery += ', unforced_errors = unforced_errors + 1';
-            }
-
-            updateQuery += ', updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND set_number = ? AND player = ?';
-
-            db.prepare(updateQuery).run(...params);
+            
+            res.json({
+                message: 'First serve fault recorded',
+                game: { points_a: currentGame.points_a, points_b: currentGame.points_b },
+                gameWon: false
+            });
+            return;
         }
 
         // Update game points
-        const pointsUpdate = winner === 'A'
+        const pointsUpdate = pointWinner === 'A'
             ? { points_a: newPoints, points_b: otherPoints }
             : { points_a: otherPoints, points_b: newPoints };
 
@@ -324,13 +465,13 @@ router.post('/sessions/:sessionId/point', (req, res) => {
 
         if (isTiebreak) {
             if ((newPoints >= 7 && newPoints - otherPoints >= 2) || (otherPoints >= 7 && otherPoints - newPoints >= 2)) {
-                gameWinner = newPoints > otherPoints ? winner : (winner === 'A' ? 'B' : 'A');
+                gameWinner = newPoints > otherPoints ? pointWinner : (pointWinner === 'A' ? 'B' : 'A');
             }
         } else {
             if (newPoints >= 4 && newPoints - otherPoints >= 2) {
-                gameWinner = winner;
+                gameWinner = pointWinner;
             } else if (otherPoints >= 4 && otherPoints - newPoints >= 2) {
-                gameWinner = winner === 'A' ? 'B' : 'A';
+                gameWinner = pointWinner === 'A' ? 'B' : 'A';
             }
         }
 
@@ -424,6 +565,27 @@ router.post('/sessions/:sessionId/point', (req, res) => {
     } catch (error) {
         console.error('Error recording point:', error);
         res.status(500).json({ error: 'Failed to record point' });
+    }
+});
+
+router.get('/sessions/:sessionId/points', (req, res) => {
+    try {        const db = getDatabase();
+        const { sessionId } = req.params;
+
+        const points = db.prepare(`
+            SELECT lp.point_number, lp.winner, lp.serve_type, lp.serve_result, lp.rally_type, lp.winner_shot, lp.notes,
+                   lg.game_number, ls.set_number
+            FROM live_points lp
+            JOIN live_games lg ON lg.id = lp.game_id
+            JOIN live_sets ls ON ls.id = lg.set_id
+            WHERE ls.session_id = ?
+            ORDER BY ls.set_number, lg.game_number, lp.point_number
+        `).all(sessionId);
+
+        res.json(points);
+    } catch (error) {
+        console.error('Error fetching points:', error);
+        res.status(500).json({ error: 'Failed to fetch points' });
     }
 });
 
