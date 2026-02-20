@@ -75,7 +75,29 @@
     "complete": "End Match",  
     "completed": "Match completed",  
     "paused": "Match paused",
-    "startLiveMatch": "Start Live Match"
+    "startLiveMatch": "Start Live Match",
+    "controls": "Live Match Controls",
+    "firstServe": "First Serve",
+    "currentServer": "Current Server",
+    "serve": "Serve",
+    "matchStatistics": "Match Statistics",
+    "stats": {
+      "ace": "Ace",
+      "aces": "Aces",
+      "double_faults": "Double Faults",
+      "first_serve_count": "First Serve Count",
+      "first_serve_won": "First Serve Won",
+      "second_serve_won": "Second Serve Won",
+      "winner": "Winner Shot",
+      "winners": "Winners",
+      "break_points_won": "Break Points Won",
+      "break_points_faced": "Break Points Faced",
+      "unforced_error": "Unforced Error",
+      "unforced_errors": "Unforced Errors",
+      "total_points_won": "Total Points Won",
+      "serves_total": "Total Serves",
+      "first_serve_fault": "First Serve Fault"
+    }
   },
   "forms": {
     "validation": {

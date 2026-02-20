@@ -26,9 +26,11 @@ const PlayerHeader = ({ player, winner }: PlayerHeaderProps) => {
         <h2 className="text-2xl md:text-3xl">
           {player.firstname} {player.lastname}
         </h2>
-        <div className="border border-gray-200 pt-0.5 pb-0.5 pl-3 pr-3 text-xs text-muted-foreground rounded-sm">
-          {player.seed ? "[" + player.seed + "]" : "N/Add"}
-        </div>
+        {player.seed &&
+            <div className="border border-gray-200 pt-0.5 pb-0.5 pl-3 pr-3 text-xs text-muted-foreground rounded-sm">
+              {player.seed ? "[" + player.seed + "]" : "N/Add"}
+            </div>
+        }
       </div>
     </div>
   );

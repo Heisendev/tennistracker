@@ -45,7 +45,6 @@ export const MatchSummary = ({
               key={set}
               className="text-center text-xs text-muted-foreground font-medium py-2"
             >
-              CP
             </div>
           )
         }

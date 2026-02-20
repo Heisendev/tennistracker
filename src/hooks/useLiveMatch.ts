@@ -44,7 +44,7 @@ export function useLiveMatch(id?: number) {
 
 export function addPointToLiveMatch() {
     return useMutation({
-        mutationFn: ({ matchId, liveMatchId, player }: { matchId: number; liveMatchId: number; player: 'A' | 'B' }) => liveMatchApi.addPoint(liveMatchId, player),
+        mutationFn: ({ matchId, liveMatchId, player, serveResult, serveType, winnerShot }: { matchId: number; liveMatchId: number; player?: 'A' | 'B'; serveResult?: string; serveType?: string; winnerShot?: string }) => liveMatchApi.addPoint(liveMatchId, player, serveResult, serveType, winnerShot ),
         onSuccess: (data, variables) => {
             console.log('Point added successfully, refetching match data:', variables);
             // Invalidate the specific liveMatch query with the correct ID to trigger refetch

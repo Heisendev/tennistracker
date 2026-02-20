@@ -75,7 +75,29 @@
     "complete": "Finir le Match",  
     "completed": "Match terminé",  
     "paused": "Match en pause",
-    "startLiveMatch": "Démarrer le Match en Direct"
+    "startLiveMatch": "Démarrer le Match en Direct",
+    "controls": "Contrôles du Match en Direct",
+    "firstServe": "Premier Service",
+    "currentServer": "Serveur Actuel",
+    "serve": "Service",
+    "matchStatistics": "Statistiques du Match",
+    "stats": {
+      "ace": "Ace",
+      "aces": "Aces",
+      "double_faults": "Double Fautes",
+      "first_serve_count": "Nombre de Premiers Services",
+      "first_serve_won": "Premiers Services Gagnés",
+      "second_serve_won": "Seconds Services Gagnés",
+      "winner": "Coup Gagnant",
+      "winners": "Coups Gagnants",
+      "break_points_won": "Points de Break Gagnés",
+      "break_points_faced": "Points de Break Subis",
+      "unforced_error": "Faute Directe",
+      "unforced_errors": "Fautes Directes",
+      "total_points_won": "Total Points Gagnés",
+      "serves_total": "Total de Services",
+      "firstServeFault": "Faute de Premier Service"
+    }
   },
   "forms": {
     "validation": {

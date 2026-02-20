@@ -7,7 +7,7 @@ export interface LiveMatchApi {
     createLiveMatch: (matchid: number) => Promise<LiveMatch>;
     updateLiveMatchStatus: (liveMatchId: number, status: "scheduled" | "in-progress" | "completed" | "suspended") => Promise<LiveMatch>;
     getLiveMatchById: (id: string) => Promise<LiveMatch>;
-    addPoint: (liveMatchId: number, player: 'A' | 'B') => Promise<LiveMatch>;
+    addPoint: (liveMatchId: number, player?: 'A' | 'B', serveResult?: string, serveType?: string, winnerShot?: string) => Promise<LiveMatch>;
 }
 
 export const liveMatchApi: LiveMatchApi = {
@@ -47,13 +47,13 @@ export const liveMatchApi: LiveMatchApi = {
         const data = await response.json();
         return data;
     },
-    addPoint: async (liveMatchId: number, player: 'A' | 'B') => {
+    addPoint: async (liveMatchId: number, player?: 'A' | 'B', serveResult?: string, serveType?: string, winnerShot?: string) => {
         const response = await fetch(`${API_URL}/live-scoring/sessions/${liveMatchId}/point`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ winner: player }),
+            body: JSON.stringify({ winner: player, serve_result: serveResult, serve_type: serveType, winner_shot: winnerShot }),
         });
         if (!response.ok) {
             throw new Error(`Failed to add point: ${response.statusText}`);
