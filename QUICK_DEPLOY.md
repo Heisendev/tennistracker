@@ -31,7 +31,8 @@ git push origin main
    - **Start Command**: `npm start`
 5. Click **Create Web Service**
 6. Wait for deployment to complete
-7. Copy the service URL (e.g., `https://tennis-tracker-api.onrender.com`)
+7. **Database initializes automatically** ✅ (on first startup)
+8. Copy the service URL (e.g., `https://tennis-tracker-api.onrender.com`)
 
 ## 4. Connect Frontend to Backend
 
@@ -48,12 +49,13 @@ git push origin main
 
 ---
 
-## Troubleshooting
+## Troubleshooting✓
 
 **App loads but no data shows:**
 - Check browser console for network errors
 - Verify `VITE_API_URL` is correct in Vercel
 - Check CORS is configured (should be automatic)
+- Backend initializes with sample players/matches automatically
 
 **Backend deployment fails:**
 - Check Render logs in the dashboard
@@ -61,9 +63,9 @@ git push origin main
 - Verify `package.json` exists in `server/` directory
 
 **Database issues:**
-- On first deploy, the database needs to be initialized
-- SSH into Render and run: `npm run init-db`
-- Or access the API endpoint to trigger database creation
+- Database automatically initializes on first startup
+- If needed, restart the Render service to reinitialize
+- Check Render logs to see initialization progress
 
 ---
 

@@ -118,10 +118,48 @@ This guide explains how to deploy both the frontend and backend of Tennis Tracke
 
 ## Database Considerations
 
-**SQLite on Serverless Platforms:**
-- SQLite works fine with Render and Railway (persistent file storage)
-- Not recommended for Vercel Functions (stateless, file system resets)
-- Consider migrating to PostgreSQL for production (optional)
+### SQLite on Deployment Platforms
+
+Your backend uses **SQLite**, which stores data in local files. Here's how it works on different platforms:
+
+**How it works:**
+- The database file is stored in the `database/` directory
+- On first startup (deployment), the database is automatically created and initialized with tables
+- All subsequent requests use the same database file
+
+**Database Persistence:**
+- **Render.com** ✅ - Default storage is persistent between deploys
+- **Railway.app** ✅ - Can configure persistent volumes
+- **Fly.io** ✅ - Can mount persistent volumes
+- **Vercel** ❌ - Not recommended (serverless, stateless file system)
+
+### Automatic Database Initialization
+
+The database automatically initializes on the **first server startup**:
+1. Creates all necessary tables if they don't exist
+2. Seeds default players and sample matches
+3. Subsequent requests reuse the existing database
+
+**No manual setup required!** Just deploy and the database will be ready.
+
+### Database Files
+
+The `.gitignore` excludes the database from version control:
+```
+database/*  # Local database files are not committed
+```
+
+This is intentional because:
+- Database files are large and binary
+- Each environment (dev, staging, prod) needs its own data
+- Deployment platforms auto-initialize the database
+
+### Backup & Data Persistence
+
+For production deployments:
+1. **Render** - Use their backup features to regularly backup SQLite databases
+2. **Railway** - Configure backup services in dashboard
+3. Consider upgrading to PostgreSQL for larger scale applications
 
 ---
 
