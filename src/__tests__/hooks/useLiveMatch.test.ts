@@ -231,7 +231,7 @@ describe('useLiveMatch Hook', () => {
             const mockUpdatedMatch: Partial<LiveMatch> = {
                 id: liveMatchId,
                 status: newStatus,
-                matchId: 1,
+                matchId: "1",
             };
             setupMockFetch(mockUpdatedMatch);
             const wrapper = createQueryWrapper();
