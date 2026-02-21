@@ -19,6 +19,7 @@ export const liveMatchApi: LiveMatchApi = {
             },
             body: JSON.stringify({ match_id: matchid }),
         });
+        console.log('Create live match response:', response);
         if (!response.ok) {
             throw new Error(`Failed to create live match: ${response.statusText}`);
         }

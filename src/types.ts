@@ -41,7 +41,7 @@ export type MatchStatsSetPlayer = {
 
 export type NewMatch = {
   tournament: string;
-  round: string;
+  round?: string;
   surface: string;
   date: string;
   playerA: string;

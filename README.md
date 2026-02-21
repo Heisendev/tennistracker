@@ -449,9 +449,22 @@ FRONTEND_URL=https://your-vercel-domain.vercel.app
 
 ### Running Tests
 ```bash
-# Future: Add testing suite
+# Run tests once
 npm run test
+
+# Watch mode (auto-rerun on changes)
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+
+# Visual test runner UI
+npm run test:ui
 ```
+
+**Test Framework**: Vitest 4 with React Testing Library  
+**Coverage**: 90+ test cases for APIs, hooks, and utilities  
+**Read**: [TESTING.md](./TESTING.md) for comprehensive testing guide
 
 ## 🤝 Contributing
 
@@ -488,6 +501,7 @@ Contributions are welcome! To contribute:
 
 ## 📚 Documentation
 
+- [TESTING.md](./TESTING.md) - Unit testing guide with Vitest
 - [DEPLOYMENT.md](./DEPLOYMENT.md) - Production deployment guide
 - [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) - Quick deployment checklist
 - [LOCALIZATION.md](./LOCALIZATION.md) - i18n setup and translation guide
