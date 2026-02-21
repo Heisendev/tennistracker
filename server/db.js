@@ -58,35 +58,6 @@ CREATE TABLE IF NOT EXISTS matchs (
 );`);
 
     db.exec(`
-CREATE TABLE IF NOT EXISTS match_stats (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    match_id INTEGER NOT NULL,
-    setNumber INTEGER NOT NULL,
-    aces_a INTEGER,
-    aces_b INTEGER,
-    aces_isPercentage BOOLEAN,
-    doubleFaults_a INTEGER,
-    doubleFaults_b INTEGER,
-    doubleFaults_isPercentage BOOLEAN,
-    firstServe_a INTEGER,
-    firstServe_b INTEGER,
-    firstServeWon_a INTEGER,
-    firstServeWon_b INTEGER,
-    secondServeWon_a INTEGER,
-    secondServeWon_b INTEGER,
-    winners_a INTEGER,
-    winners_b INTEGER,
-    unforcedErrors_a INTEGER,
-    unforcedErrors_b INTEGER,
-    breakPointsWon_a INTEGER,
-    breakPointsWon_b INTEGER,
-    totalPointsWon_a INTEGER,
-    totalPointsWon_b INTEGER,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (match_id) REFERENCES matchs(id)
-);`);
-
-    db.exec(`
 CREATE TABLE IF NOT EXISTS live_match_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     match_id INTEGER NOT NULL UNIQUE,
@@ -187,7 +158,6 @@ CREATE TABLE IF NOT EXISTS live_match_stats (
     db.exec(`
 CREATE INDEX IF NOT EXISTS idx_matchs_playerA_id ON matchs(playerA_id);
 CREATE INDEX IF NOT EXISTS idx_matchs_playerB_id ON matchs(playerB_id);
-CREATE INDEX IF NOT EXISTS idx_match_stats_match_id ON match_stats(match_id);
 CREATE INDEX IF NOT EXISTS idx_live_sessions_match_id ON live_match_sessions(match_id);
 CREATE INDEX IF NOT EXISTS idx_live_sessions_status ON live_match_sessions(status);
 CREATE INDEX IF NOT EXISTS idx_live_sets_session_id ON live_sets(session_id);

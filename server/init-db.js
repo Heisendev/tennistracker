@@ -54,36 +54,6 @@ CREATE TABLE IF NOT EXISTS matchs (
     FOREIGN KEY (playerB_id) REFERENCES players(id)
 );`); 
 
-// MatchStats table by set
-db.exec(`
-CREATE TABLE IF NOT EXISTS match_stats (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    match_id INTEGER NOT NULL,
-    setNumber INTEGER NOT NULL,
-    aces_a INTEGER,
-    aces_b INTEGER,
-    aces_isPercentage BOOLEAN,
-    doubleFaults_a INTEGER,
-    doubleFaults_b INTEGER,
-    doubleFaults_isPercentage BOOLEAN,
-    firstServe_a INTEGER,
-    firstServe_b INTEGER,
-    firstServeWon_a INTEGER,
-    firstServeWon_b INTEGER,
-    secondServeWon_a INTEGER,
-    secondServeWon_b INTEGER,
-    winners_a INTEGER,
-    winners_b INTEGER,
-    unforcedErrors_a INTEGER,
-    unforcedErrors_b INTEGER,
-    breakPointsWon_a INTEGER,
-    breakPointsWon_b INTEGER,
-    totalPointsWon_a INTEGER,
-    totalPointsWon_b INTEGER,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (match_id) REFERENCES matchs(id)
-);`);
-
 // Live Match Sessions - tracks active/ongoing matches
 db.exec(`
 CREATE TABLE IF NOT EXISTS live_match_sessions (
@@ -192,7 +162,6 @@ console.log('Database initialized successfully.');
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_matchs_playerA_id ON matchs(playerA_id);
   CREATE INDEX IF NOT EXISTS idx_matchs_playerB_id ON matchs(playerB_id);
-  CREATE INDEX IF NOT EXISTS idx_match_stats_match_id ON match_stats(match_id);
   CREATE INDEX IF NOT EXISTS idx_live_sessions_match_id ON live_match_sessions(match_id);
   CREATE INDEX IF NOT EXISTS idx_live_sessions_status ON live_match_sessions(status);
   CREATE INDEX IF NOT EXISTS idx_live_sets_session_id ON live_sets(session_id);
@@ -223,13 +192,12 @@ db.exec(`INSERT INTO matchs (tournament, round, surface, date, duration, playerA
 console.log('');
 console.log('✅ Database initialization complete!');
 console.log('   Database location:', dbPath);
-console.log('   Tables created: 9');
-console.log('   Indices created: 11');
+console.log('   Tables created: 8');
+console.log('   Indices created: 10');
 console.log('');
 console.log('📊 Tables:');
 console.log('   - players (player profiles)');
 console.log('   - matchs (match records)');
-console.log('   - match_stats (post-match statistics)');
 console.log('   - live_match_sessions (active/ongoing matches)');
 console.log('   - live_sets (set-level scoring)');
 console.log('   - live_games (game-level scoring)');
