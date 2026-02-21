@@ -14,4 +14,16 @@ export default defineConfig({
       '@providers': path.resolve(__dirname, 'src/providers'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 500, // optional: only changes warning threshold
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          query: ['@tanstack/react-query'],
+          // add other heavy libs here (charts, editor, etc.)
+        },
+      },
+    },
+  },
 })
