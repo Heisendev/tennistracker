@@ -66,7 +66,7 @@ export type LiveMatch = Omit<Match, "stats" | "duration"> & {
   MatchStartTime?: string;
   MatchEndTime?: string;
   tournament: string;
-  round: string;
+  round?: string;
   surface: string;
   date: string;
   playerA: Player;

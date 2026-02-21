@@ -147,7 +147,7 @@ const Match = () => {
       {displayLiveMatch && !displayLiveMatch.error && displayLiveMatch.status === "in-progress" && (
         <>
           <h2 className="text-xl font-bold mb-4">{t('liveMatch.controls')}</h2>
-          <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 mb-8 py-4">
+          <div className="mx-2 max-w-4xl md:mx-auto bg-white rounded-lg border border-gray-300 mb-8 py-4">
             {(displayLiveMatch.currentGame?.server && displayLiveMatch.currentGame?.server === "A") ? (
               <h3>{t('liveMatch.currentServer')}: {displayLiveMatch.playerA.firstname} {displayLiveMatch.playerA.lastname}</h3>
             ) : (<h3>{t('liveMatch.currentServer')}: {displayLiveMatch.playerB.firstname} {displayLiveMatch.playerB.lastname}</h3>)}
@@ -199,7 +199,7 @@ const Match = () => {
       {displayLiveMatch && displayLiveMatch.matchStats &&
         <>
           <h2 className="text-xl font-bold mb-4">{t('liveMatch.matchStatistics')}</h2>
-          <div className=" max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 mb-8 pb-4 pt-8">
+          <div className="mx-2 max-w-4xl md:mx-auto bg-white rounded-lg border border-gray-300 mb-8 pb-4 pt-8">
             <Tabs defaultIndex={0}>
               <TabList>
                 {Object.entries(displayLiveMatch.matchStats).map(([key], i) => {
