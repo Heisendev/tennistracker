@@ -14,7 +14,7 @@ import {
   TabPanel,
 } from "@components/ui/Tabs";
 
-import type { MatchStatsSet, Match, LiveMatch } from "src/types";
+import type { MatchStatsSet, Match as MatchType, LiveMatch } from "src/types";
 
 import { useTranslation } from "react-i18next";
 
@@ -24,7 +24,7 @@ import { AlertCircle, Target, Zap } from "lucide-react";
 import { useState } from "react";
 
 // Create a default live match from a regular match (used when match hasn't started)
-const createDefaultLiveMatch = (match: Match): LiveMatch => ({
+const createDefaultLiveMatch = (match: MatchType): LiveMatch => ({
   id: -1,
   matchId: match.id.toString(),
   tournament: match.tournament,
