@@ -96,7 +96,7 @@
       "unforced_errors": "Fautes Directes",
       "total_points_won": "Total Points Gagnés",
       "serves_total": "Total de Services",
-      "firstServeFault": "Faute de Premier Service"
+      "first_serve_fault": "Faute de Premier Service"
     }
   },
   "forms": {
