@@ -46,6 +46,7 @@ export type NewMatch = {
   date: string;
   playerA: string;
   playerB: string;
+  format: number;
 };
 
 export type Match = Omit<NewMatch, "playerA" | "playerB"> & {
@@ -60,7 +61,7 @@ export type Match = Omit<NewMatch, "playerA" | "playerB"> & {
 
 export type LiveMatch = Omit<Match, "stats" | "duration"> & {
   matchId: string;
-  status: "scheduled" | "in-progress" | "completed" | "suspended";
+  status: "created" | "scheduled" | "in-progress" | "completed" | "suspended";
   currentSet: number;
   currentServer: "A" | "B";
   MatchStartTime?: string;
