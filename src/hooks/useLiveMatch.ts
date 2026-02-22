@@ -9,10 +9,10 @@ const LIVE_MATCH_QUERY_KEY = ["LiveMatch"];
 export function useCreateLiveMatch() {
     return useMutation({
         mutationFn: (matchId: number) => liveMatchApi.createLiveMatch(matchId),
-        onSuccess: () => {
+        onSuccess: (data, variables) => {
+            console.log('Live match created successfully, refetching match data:', data, variables);
             // Invalidate and refetch matches after creating a new one
-            queryClient.invalidateQueries({ queryKey: MATCHES_QUERY_KEY });
-            queryClient.invalidateQueries({ queryKey: LIVE_MATCH_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: [...LIVE_MATCH_QUERY_KEY, ...MATCHES_QUERY_KEY, variables] });
         },
     });
 }
@@ -24,7 +24,7 @@ export function useUpdateLiveMatchStatus() {
             console.log('Live match status updated successfully, refetching match data');
             // Invalidate the specific liveMatch query with the correct ID to trigger refetch
             queryClient.invalidateQueries({
-                queryKey: ["liveMatch", data.matchId]
+                queryKey: [...LIVE_MATCH_QUERY_KEY, ...MATCHES_QUERY_KEY, "matches", data.matchId]
             });
         },
         onError: (error) => {

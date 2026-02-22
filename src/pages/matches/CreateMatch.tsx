@@ -36,6 +36,7 @@ const CreateMatch = () => {
     playerB: string;
     tournament: string;
     date: string;
+    format: number;
     surface: "Clay" | "Hard" | "Grass";
     round: string;
   };
@@ -63,6 +64,12 @@ const CreateMatch = () => {
     });
   };
 
+  const matchFormats = [
+    { value: 0, label: "Grand Slam" },
+    { value: 1, label: "1. Best of 3" },
+    { value: 2, label: "2. (2sets, super tiebreak in 3rd set)" },
+  ];
+
   return (
     <>
       <Header title="Create Match" />
@@ -89,6 +96,24 @@ const CreateMatch = () => {
                     <input type="radio" id="hard" value="Hard" {...register("surface")} /><label htmlFor="hard" className="basis-20 md:basis-33">{t("matches.hard")}</label>
                     <input type="radio" id="grass" value="Grass" {...register("surface")} /><label htmlFor="grass" className="basis-20  md:basis-33">{t("matches.grass")}</label>
                   </div>
+                </div>
+              </div>
+              <div>
+                <div role="radiogroup" aria-labelledby="surface-label" className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
+                  <label className="flex items-center gap-2" htmlFor="format">
+                  {t("matches.selectFormat")}
+                </label>
+                <select
+                  id="format"
+                  {...register("format")}
+                  className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  {matchFormats.map((format) => (
+                    <option key={format.value} value={format.value}>
+                      {format.label}
+                    </option>
+                  ))}
+                </select>
                 </div>
               </div>
               <div className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">

@@ -3,6 +3,7 @@ import type { CurrentGame, Player, Set } from "../types";
 interface MatchSummaryProps {
   playerA: Player;
   playerB: Player;
+  format: number;
   winner?: "A" | "B";
   sets?: Set[];
   isLive?: boolean;
@@ -25,6 +26,7 @@ const FormatScore = (Sx: number, Sy: number): string => {
 
 export const MatchSummary = ({
   currentGame,
+  format,
   sets,
   playerA,
   playerB,
@@ -32,14 +34,17 @@ export const MatchSummary = ({
   isLive = false,
 }: MatchSummaryProps) => {
 
-  const gridFormat = isLive ? "1fr_repeat(6,35px) md:grid-cols-[1fr_repeat(6,48px)]"
-    : "1fr_repeat(5,35px) md:grid-cols-[1fr_repeat(6,48px)]";
-  const setsPlayed = isLive ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5];
+  const numberOfSets = format === 0 ? 5 : 3;
+  console.log(format, numberOfSets)
+  const gridFormat = isLive ? `1fr_repeat(${numberOfSets + 1},35px) md:grid-cols-[1fr_repeat(${numberOfSets + 1},48px)]`
+    : `1fr_repeat(${numberOfSets},35px) md:grid-cols-[1fr_repeat(${numberOfSets},48px)]`;
+  const setsPlayed = numberOfSets===5 ? isLive ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5] : numberOfSets===3 ? isLive ? [1, 2, 3, 4] : [1, 2, 3] : [];
+  console.log("setsPlayed", isLive, setsPlayed);
   return (
-    <div className={"mx-2 mb-8 max-w-4xl md:mx-auto grid bg-white items-center border border-gray-300 rounded-lg" + (isLive ? " grid-cols-[1fr_repeat(6,35px)] md:grid-cols-[1fr_repeat(6,48px)]" : " grid-cols-[1fr_repeat(5,35px)] md:grid-cols-[1fr_repeat(6,48px)]")} style={{ gridTemplateColumns: gridFormat }}>
+    <div className={"mx-2 mb-8 max-w-4xl md:mx-auto grid bg-white items-center border border-gray-300 rounded-lg" + (numberOfSets===5 ? isLive ? " grid-cols-[1fr_repeat(6,35px)] md:grid-cols-[1fr_repeat(6,48px)]" : " grid-cols-[1fr_repeat(5,35px)] md:grid-cols-[1fr_repeat(5,48px)]" : numberOfSets===3 ? isLive ? " grid-cols-[1fr_repeat(4,35px)] md:grid-cols-[1fr_repeat(4,48px)]" : " grid-cols-[1fr_repeat(3,35px)] md:grid-cols-[1fr_repeat(3,48px)]" : "")} style={{ gridTemplateColumns: gridFormat }}>
       <div className="px-4 py-2 h-6" />
       {setsPlayed.map((set, index) => {
-        if (index === setsPlayed.length - 1) {
+        if (isLive && index === setsPlayed.length - 1) {
           return (
             <div
               key={set}
@@ -66,11 +71,11 @@ export const MatchSummary = ({
         <span>{playerA.firstname} {playerA.lastname}</span>
       </div>
       {setsPlayed.map((index, i) => {
-        if (i === setsPlayed.length - 1) {
+        if (isLive && i === setsPlayed.length - 1) {
           return (
             <div
               key={index}
-              className="text-center text-xs text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
+              className="text-xl font-display flex items-center justify-center border-l text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
             >
               {currentGame && FormatScore(currentGame.points_a, currentGame.points_b)}
             </div>
@@ -93,12 +98,12 @@ export const MatchSummary = ({
         <div><div className="bounce"></div><div className="bounceshadow"></div></div> : ""}
         <span>{playerB.firstname} {playerB.lastname}</span>
       </div>
-      {setsPlayed.map((index, i) => {
+      {isLive && setsPlayed.map((index, i) => {
         if (i === setsPlayed.length - 1) {
           return (
             <div
               key={index}
-              className="text-center text-xs text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
+              className="text-xl font-display flex items-center justify-center border-l text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
             >
               {currentGame && FormatScore(currentGame.points_b, currentGame.points_a)}
             </div>

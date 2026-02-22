@@ -30,12 +30,13 @@ const createDefaultLiveMatch = (match: MatchType): LiveMatch => ({
   tournament: match.tournament,
   round: match.round,
   surface: match.surface,
+  format: match.format,
   date: match.date,
   playerA: match.playerA,
   playerB: match.playerB,
   winner: match.winner,
   tossWinner: match.tossWinner,
-  status: "scheduled",
+  status: "created",
   currentSet: 1,
   currentServer: match.tossWinner === "A" ? "A" : "B",
   sets: [],
@@ -134,12 +135,13 @@ const Match = () => {
       </div>
       {displayLiveMatch && !displayLiveMatch.error && (
         <MatchSummary
+          format={match.format}
           currentGame={displayLiveMatch.currentGame}
           isLive={displayLiveMatch.status === "in-progress"}
           sets={displayLiveMatch.sets}
-          playerA={displayLiveMatch.playerA}
-          playerB={displayLiveMatch.playerB}
-          winner={displayLiveMatch.winner}
+          playerA={match.playerA}
+          playerB={match.playerB}
+          winner={match.winner}
         />
       )}
 
