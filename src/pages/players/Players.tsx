@@ -53,7 +53,7 @@ const Players = () => {
           </Link>
         </div>
       </div>
-      <div className="m-8">
+      <div className="md:m-8">
         <div className="max-w-3xl mx-auto px-4 py-8">
           {/* Search */}
           <motion.div
@@ -65,7 +65,7 @@ const Players = () => {
             <div className="flex gap-4">
               <Input
                 id="search"
-                label="Search player"
+                label={t("players.searchPlayer")}
                 placeholder="Rafael Nadal"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -106,7 +106,7 @@ const Players = () => {
                           {player.firstname} {player.lastname}
                         </h2>
                         <p className="text-xs text-muted-foreground font-mono">
-                          {t(`players.${player.hand}`)} • {t(`players.${player.backhand}`)}
+                          {t(`players.${player.hand?.toLowerCase()}`)} • {t(`players.${player.backhand?.toLowerCase()}`)}
                         </p>
                       </div>
                     </div>

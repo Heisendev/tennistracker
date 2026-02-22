@@ -44,12 +44,12 @@ const Matches = () => {
           </Link>
         </div>
       </header>
-      <main className="m-8">
-        <div className="max-w-3xl mx-auto px-4 py-8">
+      <main className="md:m-8">
+        <div className="max-w-3xl mx-auto px-0 py-0">
           <h2 className="mt-4 text-xl font-semibold">Recent Matches</h2>
           {isLoading && <p>Loading...</p>}
           <motion.ul
-            className="grid gap-3 list-none pl-0"
+            className="flex flex-col list-none pl-0"
             variants={container}
             initial="hidden"
             animate="show"
@@ -57,11 +57,11 @@ const Matches = () => {
             {matches &&
               matches.length > 0 &&
               matches.map((match) => (
-                <motion.li animate="show" key={match.id} variants={item}>
+                <motion.li animate="show" key={match.id} variants={item} className="flex py-2">
                     <Link
                       key={match.id}
                       to={`/matches/${match.id}`}
-                      className="mt-4 px-6 py-3 hover:bg-primary-dark transition-colors"
+                      className="px-6 hover:bg-primary-dark transition-colors w-full"
                     >
                     <div className="group relative bg-white border border-gray-400  rounded-lg p-4 md:p-5 hover:border-gray-600 transition-all duration-300 hover:glow-primary">
                       {match.playerA.firstname} {match.playerA.lastname} vs{" "}
