@@ -4,14 +4,14 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { AppProviders } from "@providers/AppProviders";
 import "./i18n";
 
-import Match from "@pages/matches/Match";
 import Home from "@pages/Home.tsx";
-import MatchTracker from "@pages/matches/CreateMatch";
+import CreateMatch from "@pages/matches/CreateMatch";
 import Matches from "@pages/matches/Matches";
+import Match from "@pages/matches/Match";
 import CreatePlayer from "@pages/players/CreatePlayer";
+import Players from "@pages/players/Players";
 
 import "./index.css";
-import Players from "@pages/players/Players";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/newmatch" element={<MatchTracker />} />
+          <Route path="/newmatch" element={<CreateMatch />} />
           <Route path="/matches/" element={<Matches />} />
           <Route path="/matches/:id" element={<Match />} />
           <Route path="/players" element={<Players />} />
