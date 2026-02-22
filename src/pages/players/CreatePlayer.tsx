@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import type { SelectMenuOption } from "@components/ui/Countryselector/types";
 import Input from "@components/ui/Input";
 import CountrySelector from "@components/ui/Countryselector/CountrySelector";
@@ -19,6 +20,7 @@ const defaultValues = {
 };
 
 const CreatePlayer = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { mutate } = useCreatePlayer();
   const [country, setCountry] = useState<SelectMenuOption["value"]>("FR");
@@ -58,10 +60,10 @@ const CreatePlayer = () => {
   return (
     <>
       <Header title="Create a new player" />
-      <section className="bg-white max-w-3xl mx-auto p-6 m-8 rounded-xl border border-gray-400">
+      <section className="bg-white max-w-3xl mx-4 md:mx-auto p-6 m-8 rounded-xl border border-gray-400">
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
-          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
             <Input
               id="firstname"
               label="First name"
@@ -69,7 +71,7 @@ const CreatePlayer = () => {
               {...register("firstname")}
             />
           </div>
-          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
             <Input
               id="lastname"
               label="Last name"
@@ -77,27 +79,22 @@ const CreatePlayer = () => {
               {...register("lastname")}
             />
           </div>
-          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-            <label htmlFor="hand">Hand</label>
-            <div role="radiogroup">
-              <input type="radio" value="Left" {...register("hand")} /> Left
-              <input type="radio" value="Right" {...register("hand")} /> Right
+          <div role="radiogroup" aria-labelledby="handlabel" className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
+            <span id="handlabel" className="flex items-center gap-2">{t('players.hand')}</span>
+            <div className="toggle">
+              <input id="hand-left" type="radio" value="Left" {...register("hand")} /> <label htmlFor="hand-left">{t('players.left')}</label>
+              <input id="hand-right" type="radio" value="Right" {...register("hand")} /> <label htmlFor="hand-right">{t('players.right')}</label>
             </div>
           </div>
-          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-            <label htmlFor="backhand">Backhand</label>
-            <div role="radiogroup">
-              <input type="radio" value="One-handed" {...register("backhand")} />{" "}
-              One-handed
-              <input
-                type="radio"
-                value="Two-handed"
-                {...register("backhand")}
-              />{" "}
-              Two-handed
+          <div role="radiogroup" aria-labelledby="backhandlabel mb-4" className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
+            <span id="backhandlabel" className="flex items-center gap-2">{t('players.backhand')}</span>
+            <div className="toggle">
+              <input id="backhand-one" type="radio" value="One-handed" {...register("backhand")} /> <label htmlFor="backhand-one">{t('players.oneHanded')}</label>
+              <input id="backhand-two" type="radio" value="Two-handed" {...register("backhand")} /> <label htmlFor="backhand-two">{t('players.twoHanded')}</label>
             </div>
           </div>
-          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
             <Input
               id="rank"
               label="Rank"
@@ -106,7 +103,8 @@ const CreatePlayer = () => {
               {...register("rank")}
             />
           </div>
-          <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
+            {/* use a another select component for */}
             <label htmlFor="player_country">Country</label>
             <CountrySelector
               id="country"

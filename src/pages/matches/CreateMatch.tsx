@@ -1,5 +1,6 @@
 import { useForm, type SubmitHandler, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import Input from "@components/ui/Input";
 import { usePlayers } from "../../hooks/usePlayers";
 import { useCreateMatch } from "../../hooks/useMatchs";
@@ -18,8 +19,9 @@ const defaultValues = {
   playerB: "",
 };
 
-const MatchTracker = () => {
+const CreateMatch = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { mutate } = useCreateMatch();
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
@@ -64,96 +66,99 @@ const MatchTracker = () => {
   return (
     <>
       <Header title="Create Match" />
-      <section className="m-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 bg-white max-w-3xl mx-auto p-6 m-8 rounded-xl border border-gray-400">
-          <fieldset className="border-0 flex flex-col text-left mb-4 max-w-md mx-auto">
-            <legend className="font-display text-xl mb-4">
-              Tournament Informations
-            </legend>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input
-                id="tournament"
-                label="Tournament's name"
-                placeholder="Wimbledon"
-                {...register("tournament")}
-              />
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label htmlFor="surface">Surface</label>
-              <div role="radiogroup">
-                <input type="radio" value="Clay" {...register("surface")} /> Clay
-                <input type="radio" value="Hard" {...register("surface")} /> Hard
-                <input type="radio" value="Grass" {...register("surface")} />{" "}
-                Grass
+      <section className="md:m-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 bg-white mx-2 md:max-w-3xl md:mx-auto md:p-6 p-2 rounded-xl border border-gray-400">
+          <div className="flex mx-auto md:w-fit flex-col">
+            <fieldset className="border-0 flex flex-col text-left md:mb-4 max-w-md mr-auto mb-4 p-0">
+              <legend className="font-display text-xl mb-4">
+                Tournament Informations
+              </legend>
+              <div className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
+                <Input
+                  id="tournament"
+                  label={t("matches.tournament")}
+                  placeholder="Wimbledon"
+                  {...register("tournament")}
+                />
               </div>
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <Input
-                id="round"
-                label="Round"
-                placeholder="Round 1"
-                {...register("round")}
-              />
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label htmlFor="date">Date</label>
-              <DatePicker
-                id="date"
-                selected={selectedDate}
-                onChange={handleChange}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-          </fieldset>
-          <fieldset className="border-0 mx-auto max-w-md text-left">
-            <legend className="font-display text-xl mb-4">Players</legend>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label className="flex items-center gap-2" htmlFor="player1">
-                Player A
-              </label>
-              <select
-                id="player1"
-                {...register("playerA")}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">Select an existing player</option>
-                {players &&
-                  players
-                    .filter((player) => player.id.toString() !== selectedPlayer2)
-                    .map((player) => (
-                      <option key={player.id} value={player.id}>
-                        {player.firstname} {player.lastname}
-                      </option>
-                    ))}
-              </select>
-            </div>
-            <div className="grid grid-cols-[150px_1fr] gap-4 mb-2">
-              <label className="flex items-center gap-2" htmlFor="player2">
-                Player B
-              </label>
-              <select
-                id="player2"
-                {...register("playerB")}
-                className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">Select an existing player</option>
-                {players &&
-                  players
-                    .filter((player) => player.id.toString() !== selectedPlayer1)
-                    .map((player) => (
-                      <option key={player.id} value={player.id}>
-                        {player.firstname} {player.lastname}
-                      </option>
-                    ))}
-              </select>
-            </div>
-          </fieldset>
+              <div>
+                <div role="radiogroup" aria-labelledby="surface-label" className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
+                  <span id="surface-label" className="flex items-center gap-2">{t("matches.surface")}</span>
+                  <div className="toggle">
+                    <input type="radio" id="clay" value="Clay" {...register("surface")} /><label htmlFor="clay" className="basis-20 md:basis-33">{t("matches.clay")}</label>
+                    <input type="radio" id="hard" value="Hard" {...register("surface")} /><label htmlFor="hard" className="basis-20 md:basis-33">{t("matches.hard")}</label>
+                    <input type="radio" id="grass" value="Grass" {...register("surface")} /><label htmlFor="grass" className="basis-20  md:basis-33">{t("matches.grass")}</label>
+                  </div>
+                </div>
+              </div>
+              <div className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
+                <Input
+                  id="round"
+                  label="Round"
+                  placeholder="Round 1"
+                  {...register("round")}
+                />
+              </div>
+              <div className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
+                <label htmlFor="date">Date</label>
+                <DatePicker
+                  id="date"
+                  selected={selectedDate}
+                  onChange={handleChange}
+                  className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </fieldset>
+            <fieldset className="flex flex-col border-0 mr-auto max-w-md text-left mb-4 p-0">
+              <legend className="font-display text-xl mb-4">Players</legend>
+              <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2">
+                <label className="flex items-center gap-2" htmlFor="player1">
+                  {t("matches.player")} A
+                </label>
+                <select
+                  id="player1"
+                  {...register("playerA")}
+                  className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="">{t("matches.selectPlayer")}</option>
+                  {players &&
+                    players
+                      .filter((player) => player.id.toString() !== selectedPlayer2)
+                      .map((player) => (
+                        <option key={player.id} value={player.id}>
+                          {player.firstname} {player.lastname}
+                        </option>
+                      ))}
+                </select>
+              </div>
+              <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2">
+                <label className="flex items-center gap-2" htmlFor="player2">
+                  {t("matches.player")} B
+                </label>
+                <select
+                  id="player2"
+                  {...register("playerB")}
+                  className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="">{t("matches.selectPlayer")}</option>
+                  {players &&
+                    players
+                      .filter((player) => player.id.toString() !== selectedPlayer1)
+                      .map((player) => (
+                        <option key={player.id} value={player.id}>
+                          {player.firstname} {player.lastname}
+                        </option>
+                      ))}
+                </select>
+              </div>
+            </fieldset>
+          </div>
           <Input
             id="createMatch"
             label=""
             type="submit"
             variant="submit"
-            value="Create Match"
+            value={t("matches.createMatch")}
           />
         </form>
       </section>
@@ -161,4 +166,4 @@ const MatchTracker = () => {
   );
 };
 
-export default MatchTracker;
+export default CreateMatch;
