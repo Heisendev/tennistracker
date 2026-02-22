@@ -116,15 +116,3 @@ export const MatchSummary = ({
     </div>
   );
 };
-
-// <div key={index} className={`text-center py-4 font-medium h-6 border-t border-gray-300 ${playerA.sets[index] > playerB.sets[index] ? 'text-green-500' : ''}`}>
-{
-  /* playerA.sets[index] || "" */
-}
-// </div>
-
-// <div key={index} className={`text-center py-4 font-medium h-6 border-t border-gray-300 ${playerB.sets[index] > playerA.sets[index] ? 'text-green-500' : ''}`}>
-{
-  /* playerB.sets[index] || "" */
-}
-// </div>
