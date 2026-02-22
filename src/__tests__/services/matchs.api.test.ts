@@ -15,6 +15,7 @@ describe('Matchs API Service', () => {
           id: 1,
           tournament: 'Wimbledon',
           surface: 'Grass',
+          format: 0,
           date: '2024-06-01',
           tossWinner: 'A',
           winner: 'A',
@@ -34,6 +35,7 @@ describe('Matchs API Service', () => {
         {
           id: 2,
           tournament: 'Roland Garros',
+          format: 0,
           playerA: {
             id: 1,
             firstname: 'Novak',
@@ -93,6 +95,7 @@ describe('Matchs API Service', () => {
         id: 5,
         tournament: 'US Open',
         surface: 'Hard',
+        format: 0,
         playerA: {
           id: 1,
           firstname: 'Novak',
@@ -145,6 +148,7 @@ describe('Matchs API Service', () => {
           country: 'Spain',
         },
         surface: 'Grass',
+        format: 0,
         date: '2024-06-01',
         tossWinner: 'A',
         winner: 'A',
@@ -193,6 +197,7 @@ describe('Matchs API Service', () => {
         playerB: "6",
         date: '2024-01-20',
         surface: 'Hard',
+        format: 0,
       };
       const createdMatch: Match = {
         tournament: 'Australian Open',
@@ -210,6 +215,7 @@ describe('Matchs API Service', () => {
         },
         date: '2024-01-20',
         surface: 'Hard',
+        format: 0,
         id: 100,
       };
       setupMockFetch(createdMatch);
@@ -254,6 +260,7 @@ describe('Matchs API Service', () => {
         playerB: "1000", // Non-existent player
         date: '2024-01-20',
         surface: 'Hard',
+        format: 0,
       };
       setupMockFetchError('Player not found', 404);
 
@@ -276,6 +283,7 @@ describe('Matchs API Service', () => {
         playerB: "6",
         date: '2024-01-20',
         surface: 'A',
+        format: 0,
       };
       const createdMatch: Match = {
         ...newMatch,
