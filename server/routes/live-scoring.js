@@ -522,8 +522,18 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     VALUES (?, ?, ?, ?)
                 `).run(sessionId, 'set-won', session.current_set, setWinner);
 
+                const matchFormat = db.prepare('SELECT format FROM matchs WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').get(sessionId).format;
+                const setsToWin = matchFormat === 1 ? 2 : 3; // Assuming BO3 or BO5 formats
+                const setsWon = db.prepare(`
+                        SELECT
+                            SUM(CASE WHEN set_winner = 'A' THEN 1 ELSE 0 END) as sets_a,
+                            SUM(CASE WHEN set_winner = 'B' THEN 1 ELSE 0 END) as sets_b
+                        FROM live_sets
+                        WHERE session_id = ?
+                    `).get(sessionId);
+
                 // Create next set if needed
-                if (session.current_set < 3) { // Update if you support BO5
+                if (setsWon.sets_a < setsToWin && setsWon.sets_b < setsToWin) {
                     const nextSet = session.current_set + 1;
                     db.prepare('UPDATE live_match_sessions SET current_set = ? WHERE id = ?')
                         .run(nextSet, sessionId);
@@ -540,14 +550,6 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                         VALUES (?, ?, ?, ?, ?)
                     `).run(newSetResult.lastInsertRowid, 1, 0, 0, nextServer);
                 } else {
-                    const setsWon = db.prepare(`
-                        SELECT 
-                            SUM(CASE WHEN set_winner = 'A' THEN 1 ELSE 0 END) as sets_a,
-                            SUM(CASE WHEN set_winner = 'B' THEN 1 ELSE 0 END) as sets_b
-                        FROM live_sets
-                        WHERE session_id = ?
-                    `).get(sessionId);
-
                     const matchWinner = setsWon.sets_a > setsWon.sets_b ? 'A' : 'B';
                     db.prepare(`UPDATE matchs SET winner = ${matchWinner} WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)`).run(sessionId);
                     // Match over - update session status
