@@ -93,4 +93,5 @@ export type CurrentGame = {
   points_b: number;
   server: "A" | "B";
   gameNumber: number;
+  is_tiebreak?: boolean;
 }

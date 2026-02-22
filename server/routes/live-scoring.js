@@ -184,7 +184,7 @@ router.get('/sessions/:matchId', (req, res) => {
 
         // Get current game score
         const currentGame = db.prepare(`
-            SELECT lg.points_a, lg.points_b, lg.game_number, lg.server
+            SELECT lg.points_a, lg.points_b, lg.game_number, lg.server, lg.set_id, ls.is_tiebreak
             FROM live_games lg
             JOIN live_sets ls ON ls.id = lg.set_id
             WHERE ls.session_id = ? AND lg.set_id = (
@@ -466,6 +466,11 @@ router.post('/sessions/:sessionId/point', (req, res) => {
         const isTiebreak = db.prepare('SELECT is_tiebreak FROM live_sets WHERE id = ?').get(currentGame.set_id).is_tiebreak;
 
         if (isTiebreak) {
+            if ((newPoints + otherPoints) % 2 !== 0) {
+                // Alternate server every odd point in tiebreak
+                const nextServer = currentGame.server === 'A' ? 'B' : 'A';
+                db.prepare('UPDATE live_games SET server = ? WHERE id = ?').run(nextServer, currentGame.id);
+            }
             if ((newPoints >= 7 && newPoints - otherPoints >= 2) || (otherPoints >= 7 && otherPoints - newPoints >= 2)) {
                 gameWinner = newPoints > otherPoints ? pointWinner : (pointWinner === 'A' ? 'B' : 'A');
             }

@@ -77,7 +77,7 @@ export const MatchSummary = ({
               key={index}
               className="text-xl font-display flex items-center justify-center border-l text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
             >
-              {currentGame && FormatScore(currentGame.points_a, currentGame.points_b)}
+              {currentGame && !currentGame.is_tiebreak ? FormatScore(currentGame.points_a, currentGame.points_b) : currentGame && currentGame.points_a}
             </div>
           )
         }
@@ -105,7 +105,7 @@ export const MatchSummary = ({
               key={index}
               className="text-xl font-display flex items-center justify-center border-l text-muted-foreground font-medium h-6 py-4 border-t border-gray-300"
             >
-              {currentGame && FormatScore(currentGame.points_b, currentGame.points_a)}
+              {currentGame && !currentGame.is_tiebreak ? FormatScore(currentGame.points_b, currentGame.points_a) : currentGame && currentGame.points_b}
             </div>
           )
         }
