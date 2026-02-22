@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS players (
     backhand TEXT CHECK(backhand IN ('One-handed', 'Two-handed')),
     country TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);`); 
+);`);
 
 // Matchs table
 db.exec(`
@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS matchs (
     surface TEXT NOT NULL,
     date TEXT NOT NULL,
     duration TEXT,
+    format INTEGER DEFAULT 1,
     playerA_id INTEGER NOT NULL,
     playerB_id INTEGER NOT NULL,
     playerA_seed INTEGER,
@@ -52,7 +53,7 @@ CREATE TABLE IF NOT EXISTS matchs (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (playerA_id) REFERENCES players(id),
     FOREIGN KEY (playerB_id) REFERENCES players(id)
-);`); 
+);`);
 
 // Live Match Sessions - tracks active/ongoing matches
 db.exec(`
@@ -155,9 +156,9 @@ CREATE TABLE IF NOT EXISTS live_match_stats (
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (session_id) REFERENCES live_match_sessions(id),
     UNIQUE(session_id, set_number, player)
-);`); 
+);`);
 
-console.log('Database initialized successfully.'); 
+console.log('Database initialized successfully.');
 
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_matchs_playerA_id ON matchs(playerA_id);
@@ -173,7 +174,7 @@ db.exec(`
 
 db.exec(`
     INSERT INTO players (rank, firstname, lastname, hand, backhand, country) VALUES 
-    (1, 'Carlos', 'Alcaraz', 'Right', 'Two-handed', 'ES'), 
+    (1, 'Carlos', 'Alcaraz', 'Right', 'Two-handed', 'ES'),
     (2, 'Jannik', 'Sinner', 'Right', 'Two-handed', 'IT'),
     (3, 'Novak', 'Djokovic', 'Right', 'Two-handed', 'RS'),
     (4, 'Alexander', 'Zverev', 'Right', 'Two-handed', 'DE'), 
@@ -184,10 +185,11 @@ db.exec(`
     (9, 'Roger', 'Federer', 'Right', 'One-handed', 'CH');
 `);
 
-db.exec(`INSERT INTO matchs (tournament, round, surface, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES 
-    ('Wimbledon', 'Final', 'Grass', '2026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A'), 
-    ('US Open', 'Semi-Final', 'Hard', '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B'), 
-    ('Roland Garros', 'Quarter-Final', 'Clay', '2023-06-12T15:57:31.000Z', '2h45m', 1, 2, 1, 2, 'A'); `);
+db.exec(`INSERT INTO matchs (tournament, round, surface, format, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES
+    ('Wimbledon', 'Final', 'Grass', 0, '2026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A'),
+    ('US Open', 'Semi-Final', 'Hard', 0, '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B'),
+    ('Open de Saran', '1st round', 'hard', 1, '2023-06-12T15:57:31.000Z', '2h45m', 9, 8, 1, 2, 'A'),
+    ('Roland Garros', 'Quarter-Final', 'Clay', 0, '2023-06-12T15:57:31.000Z', '2h45m', 1, 2, 1, 2, 'A'); `);
 
 console.log('');
 console.log('✅ Database initialization complete!');

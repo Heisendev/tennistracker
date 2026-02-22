@@ -259,7 +259,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
 
         // Determine actual point winner based on serve result
         let pointWinner = winner;
-        
+
         // On first serve error, no point is awarded
         if (serve_result === 'error' && serve_type === 'first') {
             pointWinner = null;
@@ -268,7 +268,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
         else if (serve_result === 'double-fault') {
             const server = currentGame.server;
             pointWinner = server === 'A' ? 'B' : 'A';
-        } 
+        }
         else if (serve_result === 'ace') {
             // Ace always results in point for server
             pointWinner = currentGame.server;
@@ -295,12 +295,12 @@ router.post('/sessions/:sessionId/point', (req, res) => {
         const receiver = server === 'A' ? 'B' : 'A';
         const serverPts = server === 'A' ? currentGame.points_a : currentGame.points_b;
         const receiverPts = receiver === 'A' ? currentGame.points_a : currentGame.points_b;
-        
+
         const isBreakPointSituation = (
-            (serverPts  < 3 && receiverPts === 3) ||
+            (serverPts < 3 && receiverPts === 3) ||
             (serverPts > 2 && receiverPts - serverPts === 1)
         );
-        
+
         // Handle double fault stats on the server
         if (serve_result === 'double-fault') {
             const server = currentGame.server;
@@ -322,7 +322,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                 `).run(sessionId, session_data.current_set, server);
             }
         }
-        
+
         // Only update stats if there's an actual point winner
         if (pointWinner) {
             let statsRecord = db.prepare(`
@@ -373,6 +373,8 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                 if (winner_shot === 'winner') {
                     statsInsert.winners = 1;
                 } else if (winner_shot === 'error') {
+                    // TODO - ideally we would differentiate between forced and unforced errors, but for now we'll just count all errors as unforced
+                    // TODO - errors should be inputed to the player committing the error, not the point winner, but for now we'll just assign it to the point winner for simplicity
                     statsInsert.unforced_errors = 1;
                 }
 
@@ -445,7 +447,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     WHERE session_id = ? AND set_number = ? AND player = ?
                 `).run(sessionId, session_data.current_set, server);
             }
-            
+
             res.json({
                 message: 'First serve fault recorded',
                 game: { points_a: currentGame.points_a, points_b: currentGame.points_b },
@@ -476,10 +478,6 @@ router.post('/sessions/:sessionId/point', (req, res) => {
         }
 
         if (gameWinner) {
-            // Game is won
-            const points = gameWinner === 'A' ? pointsUpdate.points_a : pointsUpdate.points_b;
-            const otherPlayerPoints = gameWinner === 'A' ? pointsUpdate.points_b : pointsUpdate.points_a;
-
             db.prepare('UPDATE live_games SET game_winner = ?, points_a = ?, points_b = ? WHERE id = ?')
                 .run(gameWinner, pointsUpdate.points_a, pointsUpdate.points_b, currentGame.id);
             console.log(`Game won by Player ${gameWinner}, final score: ${pointsUpdate.points_a}-${pointsUpdate.points_b}, server: ${currentGame.server}`);
@@ -512,6 +510,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
             } else if (gamesA === 6 && gamesB === 6 && !isTiebreak) {
                 // Start tiebreak
                 db.prepare('UPDATE live_sets SET is_tiebreak = 1 WHERE id = ?').run(currentGame.set_id);
+                // TODO implement the serve logic for tiebreaks (first serve by next server, then alternate every 2 points)
             }
 
             if (setWinner) {
@@ -540,6 +539,20 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                         INSERT INTO live_games (set_id, game_number, points_a, points_b, server)
                         VALUES (?, ?, ?, ?, ?)
                     `).run(newSetResult.lastInsertRowid, 1, 0, 0, nextServer);
+                } else {
+                    const setsWon = db.prepare(`
+                        SELECT 
+                            SUM(CASE WHEN set_winner = 'A' THEN 1 ELSE 0 END) as sets_a,
+                            SUM(CASE WHEN set_winner = 'B' THEN 1 ELSE 0 END) as sets_b
+                        FROM live_sets
+                        WHERE session_id = ?
+                    `).get(sessionId);
+
+                    const matchWinner = setsWon.sets_a > setsWon.sets_b ? 'A' : 'B';
+                    db.prepare(`UPDATE matchs SET winner = ${matchWinner} WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)`).run(sessionId);
+                    // Match over - update session status
+                    db.prepare('UPDATE live_match_sessions SET status = ?, match_end_time = ? WHERE id = ?')
+                        .run('completed', new Date().toISOString(), sessionId);
                 }
             } else {
                 // Next game - alternate server
@@ -569,7 +582,8 @@ router.post('/sessions/:sessionId/point', (req, res) => {
 });
 
 router.get('/sessions/:sessionId/points', (req, res) => {
-    try {        const db = getDatabase();
+    try {
+        const db = getDatabase();
         const { sessionId } = req.params;
 
         const points = db.prepare(`
