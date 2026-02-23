@@ -239,7 +239,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
         const { sessionId } = req.params;
         const { winner, serve_type, serve_result, rally_type, winner_shot, notes } = req.body;
 
-        // Get current game first to determine server
+        // Validation reads — outside the transaction
         const session = db.prepare('SELECT current_set FROM live_match_sessions WHERE id = ?').get(sessionId);
         if (!session) {
             return res.status(404).json({ error: 'Session not found' });
@@ -257,85 +257,85 @@ router.post('/sessions/:sessionId/point', (req, res) => {
             return res.status(400).json({ error: 'No active game found' });
         }
 
-        // Determine actual point winner based on serve result
+        // Determine point winner — pure logic, no DB writes
         let pointWinner = winner;
-
-        // On first serve error, no point is awarded
         if (serve_result === 'error' && serve_type === 'first') {
             pointWinner = null;
-        }
-        // On double fault, opponent gets the point
-        else if (serve_result === 'double-fault') {
-            const server = currentGame.server;
-            pointWinner = server === 'A' ? 'B' : 'A';
-        }
-        else if (serve_result === 'ace') {
-            // Ace always results in point for server
+        } else if (serve_result === 'double-fault') {
+            pointWinner = currentGame.server === 'A' ? 'B' : 'A';
+        } else if (serve_result === 'ace') {
             pointWinner = currentGame.server;
-        }
-        // If no serve_result, winner is required
-        else if (!pointWinner || !['A', 'B'].includes(pointWinner)) {
+        } else if (!pointWinner || !['A', 'B'].includes(pointWinner)) {
             return res.status(400).json({ error: 'winner must be A or B, or serve_result must be error/double-fault' });
         }
 
-        // Record point
-        const newPoints = pointWinner === 'A' ? currentGame.points_a + 1 : (pointWinner === 'B' ? currentGame.points_b + 1 : null);
-        const otherPoints = pointWinner === 'A' ? currentGame.points_b : (pointWinner === 'B' ? currentGame.points_a : null);
-
-        db.prepare(`
-            INSERT INTO live_points (game_id, point_number, winner, serve_type, serve_result, rally_type, winner_shot, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `).run(currentGame.id, (currentGame.points_a || 0) + (currentGame.points_b || 0) + 1, pointWinner || null, serve_type || null, serve_result || null, rally_type || null, winner_shot || null, notes || null);
-
-        // Update live_match_stats for the session
-        const session_data = db.prepare('SELECT current_set FROM live_match_sessions WHERE id = ?').get(sessionId);
-
-        // Detect if we were in a break point situation before this point
         const server = currentGame.server;
         const receiver = server === 'A' ? 'B' : 'A';
         const serverPts = server === 'A' ? currentGame.points_a : currentGame.points_b;
         const receiverPts = receiver === 'A' ? currentGame.points_a : currentGame.points_b;
-
         const isBreakPointSituation = (
             (serverPts < 3 && receiverPts === 3) ||
             (serverPts > 2 && receiverPts - serverPts === 1)
         );
+        const newPoints = pointWinner === 'A' ? currentGame.points_a + 1 : (pointWinner === 'B' ? currentGame.points_b + 1 : null);
+        const otherPoints = pointWinner === 'A' ? currentGame.points_b : (pointWinner === 'B' ? currentGame.points_a : null);
 
-        // Handle double fault stats on the server
-        if (serve_result === 'double-fault') {
-            const server = currentGame.server;
-            let serverStatsRecord = db.prepare(`
-                SELECT id FROM live_match_stats 
-                WHERE session_id = ? AND set_number = ? AND player = ?
-            `).get(sessionId, session_data.current_set, server);
+        const matchFormat = db.prepare('SELECT format FROM matchs WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').get(sessionId).format;
 
-            if (!serverStatsRecord) {
-                db.prepare(`
-                    INSERT INTO live_match_stats (session_id, set_number, player, double_faults, serves_total)
-                    VALUES (?, ?, ?, 1, 2)
-                `).run(sessionId, session_data.current_set, server);
-            } else {
-                db.prepare(`
-                    UPDATE live_match_stats 
-                    SET double_faults = double_faults + 1, serves_total = serves_total + 2, updated_at = CURRENT_TIMESTAMP
-                    WHERE session_id = ? AND set_number = ? AND player = ?
-                `).run(sessionId, session_data.current_set, server);
+        // All DB writes in a single atomic transaction.
+        // The transaction returns the response payload; if any write throws, everything rolls back.
+        const response = db.transaction(() => {
+            // Record the point
+            db.prepare(`
+                INSERT INTO live_points (game_id, point_number, winner, serve_type, serve_result, rally_type, winner_shot, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `).run(currentGame.id, (currentGame.points_a || 0) + (currentGame.points_b || 0) + 1, pointWinner || null, serve_type || null, serve_result || null, rally_type || null, winner_shot || null, notes || null);
+
+            // Handle double fault stats on the server
+            if (serve_result === 'double-fault') {
+                const serverStatsRecord = db.prepare(
+                    'SELECT id FROM live_match_stats WHERE session_id = ? AND set_number = ? AND player = ?'
+                ).get(sessionId, session.current_set, server);
+
+                if (!serverStatsRecord) {
+                    db.prepare('INSERT INTO live_match_stats (session_id, set_number, player, double_faults, serves_total) VALUES (?, ?, ?, 1, 2)')
+                        .run(sessionId, session.current_set, server);
+                } else {
+                    db.prepare('UPDATE live_match_stats SET double_faults = double_faults + 1, serves_total = serves_total + 2, updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND set_number = ? AND player = ?')
+                        .run(sessionId, session.current_set, server);
+                }
             }
-        }
 
-        // Only update stats if there's an actual point winner
-        if (pointWinner) {
-            let statsRecord = db.prepare(`
-                SELECT id FROM live_match_stats 
-                WHERE session_id = ? AND set_number = ? AND player = ?
-            `).get(sessionId, session_data.current_set, pointWinner);
+            // First serve fault: update serve count stats and return early — no game points change
+            if (!pointWinner) {
+                const serverStatsRecord = db.prepare(
+                    'SELECT id FROM live_match_stats WHERE session_id = ? AND set_number = ? AND player = ?'
+                ).get(sessionId, session.current_set, server);
+
+                if (!serverStatsRecord) {
+                    db.prepare('INSERT INTO live_match_stats (session_id, set_number, player, first_serve_count, serves_total) VALUES (?, ?, ?, 1, 1)')
+                        .run(sessionId, session.current_set, server);
+                } else {
+                    db.prepare('UPDATE live_match_stats SET first_serve_count = first_serve_count + 1, serves_total = serves_total + 1, updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND set_number = ? AND player = ?')
+                        .run(sessionId, session.current_set, server);
+                }
+
+                return {
+                    message: 'First serve fault recorded',
+                    game: { points_a: currentGame.points_a, points_b: currentGame.points_b },
+                    gameWon: false
+                };
+            }
+
+            // Update point winner stats
+            const statsRecord = db.prepare(
+                'SELECT id FROM live_match_stats WHERE session_id = ? AND set_number = ? AND player = ?'
+            ).get(sessionId, session.current_set, pointWinner);
 
             if (!statsRecord) {
-                // Create stats record if doesn't exist
-                // Build the stats object with proper initialization
                 const statsInsert = {
                     session_id: sessionId,
-                    set_number: session_data.current_set,
+                    set_number: session.current_set,
                     player: pointWinner,
                     total_points_won: 1,
                     aces: 0,
@@ -350,7 +350,6 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     serves_total: 0
                 };
 
-                // Update based on serve results
                 if (serve_result === 'ace' && serve_type === 'first') {
                     statsInsert.aces = 1;
                     statsInsert.first_serve_won = 1;
@@ -369,16 +368,12 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     statsInsert.serves_total = 1;
                 }
 
-                // Update based on shot type
                 if (winner_shot === 'winner') {
                     statsInsert.winners = 1;
                 } else if (winner_shot === 'error') {
-                    // TODO - ideally we would differentiate between forced and unforced errors, but for now we'll just count all errors as unforced
-                    // TODO - errors should be inputed to the player committing the error, not the point winner, but for now we'll just assign it to the point winner for simplicity
                     statsInsert.unforced_errors = 1;
                 }
 
-                // Update break points if in break point situation
                 if (isBreakPointSituation) {
                     if (pointWinner === receiver) {
                         statsInsert.break_points_won = 1;
@@ -392,11 +387,9 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `).run(statsInsert.session_id, statsInsert.set_number, statsInsert.player, statsInsert.total_points_won, statsInsert.aces, statsInsert.double_faults, statsInsert.first_serve_count, statsInsert.first_serve_won, statsInsert.second_serve_won, statsInsert.winners, statsInsert.unforced_errors, statsInsert.break_points_won, statsInsert.break_points_faced, statsInsert.serves_total);
             } else {
-                // Update existing stats
                 let updateQuery = 'UPDATE live_match_stats SET total_points_won = total_points_won + 1';
-                const params = [sessionId, session_data.current_set, pointWinner];
+                const params = [sessionId, session.current_set, pointWinner];
 
-                // Update based on serve results (only for point winner's perspective)
                 if (serve_result === 'ace' && serve_type === 'first') {
                     updateQuery += ', aces = aces + 1, first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
                 } else if (serve_result === 'ace' && serve_type === 'second') {
@@ -407,14 +400,12 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     updateQuery += ', second_serve_won = second_serve_won + 1, serves_total = serves_total + 1';
                 }
 
-                // Update based on shot type
                 if (winner_shot === 'winner') {
                     updateQuery += ', winners = winners + 1';
                 } else if (winner_shot === 'error') {
                     updateQuery += ', unforced_errors = unforced_errors + 1';
                 }
 
-                // Update break points if in break point situation
                 if (isBreakPointSituation) {
                     if (pointWinner === receiver) {
                         updateQuery += ', break_points_won = break_points_won + 1';
@@ -424,111 +415,68 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                 }
 
                 updateQuery += ', updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND set_number = ? AND player = ?';
-
                 db.prepare(updateQuery).run(...params);
             }
-        } else {
-            // First serve error - no game points change, just record the serve attempt
-            const server = currentGame.server;
-            let serverStatsRecord = db.prepare(`
-                SELECT id FROM live_match_stats 
-                WHERE session_id = ? AND set_number = ? AND player = ?
-            `).get(sessionId, session_data.current_set, server);
 
-            if (!serverStatsRecord) {
-                db.prepare(`
-                    INSERT INTO live_match_stats (session_id, set_number, player, first_serve_count, serves_total)
-                    VALUES (?, ?, ?, 1, 1)
-                `).run(sessionId, session_data.current_set, server);
+            // Update game points and check for game/set/match winner
+            const pointsUpdate = pointWinner === 'A'
+                ? { points_a: newPoints, points_b: otherPoints }
+                : { points_a: otherPoints, points_b: newPoints };
+
+            const isTiebreak = db.prepare('SELECT is_tiebreak FROM live_sets WHERE id = ?').get(currentGame.set_id).is_tiebreak;
+
+            let gameWinner = null;
+            if (isTiebreak) {
+                if ((newPoints + otherPoints) % 2 !== 0) {
+                    const nextServer = currentGame.server === 'A' ? 'B' : 'A';
+                    db.prepare('UPDATE live_games SET server = ? WHERE id = ?').run(nextServer, currentGame.id);
+                }
+                // FR2 third set is a super tiebreak (first to 10); all other tiebreaks are first to 7
+                const tiebreakTarget = matchFormat === 'FR2' && session.current_set === 3 ? 10 : 7;
+                if ((newPoints >= tiebreakTarget && newPoints - otherPoints >= 2) || (otherPoints >= tiebreakTarget && otherPoints - newPoints >= 2)) {
+                    gameWinner = newPoints > otherPoints ? pointWinner : (pointWinner === 'A' ? 'B' : 'A');
+                }
             } else {
-                db.prepare(`
-                    UPDATE live_match_stats 
-                    SET first_serve_count = first_serve_count + 1, serves_total = serves_total + 1, updated_at = CURRENT_TIMESTAMP
-                    WHERE session_id = ? AND set_number = ? AND player = ?
-                `).run(sessionId, session_data.current_set, server);
+                if (newPoints >= 4 && newPoints - otherPoints >= 2) {
+                    gameWinner = pointWinner;
+                } else if (otherPoints >= 4 && otherPoints - newPoints >= 2) {
+                    gameWinner = pointWinner === 'A' ? 'B' : 'A';
+                }
             }
 
-            res.json({
-                message: 'First serve fault recorded',
-                game: { points_a: currentGame.points_a, points_b: currentGame.points_b },
-                gameWon: false
-            });
-            return;
-        }
+            if (gameWinner) {
+                db.prepare('UPDATE live_games SET game_winner = ?, points_a = ?, points_b = ? WHERE id = ?')
+                    .run(gameWinner, pointsUpdate.points_a, pointsUpdate.points_b, currentGame.id);
+                db.prepare('INSERT INTO live_match_events (session_id, event_type, set_number, player) VALUES (?, ?, ?, ?)')
+                    .run(sessionId, 'game-won', session.current_set, gameWinner);
 
-        // Update game points
-        const pointsUpdate = pointWinner === 'A'
-            ? { points_a: newPoints, points_b: otherPoints }
-            : { points_a: otherPoints, points_b: newPoints };
+                const setScores = db.prepare(`
+                    SELECT SUM(CASE WHEN game_winner = 'A' THEN 1 ELSE 0 END) as games_a,
+                           SUM(CASE WHEN game_winner = 'B' THEN 1 ELSE 0 END) as games_b
+                    FROM live_games
+                    WHERE set_id = ? AND game_winner IS NOT NULL
+                `).get(currentGame.set_id);
 
-        let gameWinner = null;
-        // Check if game is won (first to 4 with 2+ lead, or tiebreak to 7 with 2+ lead)
-        const isTiebreak = db.prepare('SELECT is_tiebreak FROM live_sets WHERE id = ?').get(currentGame.set_id).is_tiebreak;
+                const gamesA = setScores.games_a || 0;
+                const gamesB = setScores.games_b || 0;
 
-        if (isTiebreak) {
-            if ((newPoints + otherPoints) % 2 !== 0) {
-                // Alternate server every odd point in tiebreak
-                const nextServer = currentGame.server === 'A' ? 'B' : 'A';
-                db.prepare('UPDATE live_games SET server = ? WHERE id = ?').run(nextServer, currentGame.id);
-            }
-            if ((newPoints >= 7 && newPoints - otherPoints >= 2) || (otherPoints >= 7 && otherPoints - newPoints >= 2)) {
-                gameWinner = newPoints > otherPoints ? pointWinner : (pointWinner === 'A' ? 'B' : 'A');
-            }
-        } else {
-            if (newPoints >= 4 && newPoints - otherPoints >= 2) {
-                gameWinner = pointWinner;
-            } else if (otherPoints >= 4 && otherPoints - newPoints >= 2) {
-                gameWinner = pointWinner === 'A' ? 'B' : 'A';
-            }
-        }
+                db.prepare('UPDATE live_sets SET games_a = ?, games_b = ? WHERE id = ?')
+                    .run(gamesA, gamesB, currentGame.set_id);
 
-        if (gameWinner) {
-            db.prepare('UPDATE live_games SET game_winner = ?, points_a = ?, points_b = ? WHERE id = ?')
-                .run(gameWinner, pointsUpdate.points_a, pointsUpdate.points_b, currentGame.id);
-            console.log(`Game won by Player ${gameWinner}, final score: ${pointsUpdate.points_a}-${pointsUpdate.points_b}, server: ${currentGame.server}`);
-            // Record game won event
-            db.prepare(`
-                INSERT INTO live_match_events (session_id, event_type, set_number, player)
-                VALUES (?, ?, ?, ?)
-            `).run(sessionId, 'game-won', session.current_set, gameWinner);
+                let setWinner = null;
+                if ((gamesA >= 6 && gamesA - gamesB >= 2) || (gamesB >= 6 && gamesB - gamesA >= 2) || (gamesA === 7) || (gamesB === 7) || (matchFormat === 'FR2' && session.current_set === 3 && ((pointsUpdate.points_a >= 10 && pointsUpdate.points_a - pointsUpdate.points_b >= 2) || (pointsUpdate.points_b >= 10 && pointsUpdate.points_b - pointsUpdate.points_a >= 2)))) {
+                    setWinner = gamesA > gamesB ? 'A' : 'B';
+                } else if (gamesA === 6 && gamesB === 6 && !isTiebreak) {
+                    db.prepare('UPDATE live_sets SET is_tiebreak = 1 WHERE id = ?').run(currentGame.set_id);
+                }
 
-            // Check if set is won
-            const setScores = db.prepare(`
-                SELECT SUM(CASE WHEN game_winner = 'A' THEN 1 ELSE 0 END) as games_a,
-                       SUM(CASE WHEN game_winner = 'B' THEN 1 ELSE 0 END) as games_b
-                FROM live_games
-                WHERE set_id = ? AND game_winner IS NOT NULL
-            `).get(currentGame.set_id);
+                if (setWinner) {
+                    db.prepare('UPDATE live_sets SET set_winner = ? WHERE id = ?').run(setWinner, currentGame.set_id);
+                    db.prepare('INSERT INTO live_match_events (session_id, event_type, set_number, player) VALUES (?, ?, ?, ?)')
+                        .run(sessionId, 'set-won', session.current_set, setWinner);
 
-            const gamesA = setScores.games_a || 0;
-            const gamesB = setScores.games_b || 0;
-
-            // Update the set with new game counts
-            db.prepare('UPDATE live_sets SET games_a = ?, games_b = ? WHERE id = ?')
-                .run(gamesA, gamesB, currentGame.set_id);
-
-            let setWinner = null;
-
-            // Check set winner logic
-            if ((gamesA >= 6 && gamesA - gamesB >= 2) || (gamesB >= 6 && gamesB - gamesA >= 2) || (gamesA === 7) || (gamesB === 7)) {
-                setWinner = gamesA > gamesB ? 'A' : 'B';
-            } else if (gamesA === 6 && gamesB === 6 && !isTiebreak) {
-                // Start tiebreak
-                db.prepare('UPDATE live_sets SET is_tiebreak = 1 WHERE id = ?').run(currentGame.set_id);
-            }
-
-            if (setWinner) {
-                db.prepare('UPDATE live_sets SET set_winner = ? WHERE id = ?').run(setWinner, currentGame.set_id);
-
-                // Record set won event
-                db.prepare(`
-                    INSERT INTO live_match_events (session_id, event_type, set_number, player)
-                    VALUES (?, ?, ?, ?)
-                `).run(sessionId, 'set-won', session.current_set, setWinner);
-
-                const matchFormat = db.prepare('SELECT format FROM matchs WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').get(sessionId).format;
-                const setsToWin = matchFormat === 1 ? 2 : 3; // Assuming BO3 or BO5 formats
-                const setsWon = db.prepare(`
+                    const setsToWin = matchFormat === 'BO5' ? 3 : 2;
+                    const setsWon = db.prepare(`
                         SELECT
                             SUM(CASE WHEN set_winner = 'A' THEN 1 ELSE 0 END) as sets_a,
                             SUM(CASE WHEN set_winner = 'B' THEN 1 ELSE 0 END) as sets_b
@@ -536,51 +484,44 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                         WHERE session_id = ?
                     `).get(sessionId);
 
-                // Create next set if needed
-                if (setsWon.sets_a < setsToWin && setsWon.sets_b < setsToWin) {
-                    const nextSet = session.current_set + 1;
-                    db.prepare('UPDATE live_match_sessions SET current_set = ? WHERE id = ?')
-                        .run(nextSet, sessionId);
+                    if (setsWon.sets_a < setsToWin && setsWon.sets_b < setsToWin) {
+                        const nextSet = session.current_set + 1;
+                        db.prepare('UPDATE live_match_sessions SET current_set = ? WHERE id = ?').run(nextSet, sessionId);
 
-                    const newSetResult = db.prepare(`
-                        INSERT INTO live_sets (session_id, set_number, games_a, games_b, is_tiebreak)
-                        VALUES (?, ?, ?, ?, ?)
-                    `).run(sessionId, nextSet, 0, 0, 0);
+                        // FR2: the 3rd set is a super tiebreak, so mark it as a tiebreak from the start
+                        const nextSetIsTiebreak = matchFormat === 'FR2' && nextSet === 3 ? 1 : 0;
+                        const newSetResult = db.prepare('INSERT INTO live_sets (session_id, set_number, games_a, games_b, is_tiebreak) VALUES (?, ?, ?, ?, ?)')
+                            .run(sessionId, nextSet, 0, 0, nextSetIsTiebreak);
 
-                    // Create first game of new set - alternate server
-                    const nextServer = currentGame.server === 'A' ? 'B' : 'A';
-                    db.prepare(`
-                        INSERT INTO live_games (set_id, game_number, points_a, points_b, server)
-                        VALUES (?, ?, ?, ?, ?)
-                    `).run(newSetResult.lastInsertRowid, 1, 0, 0, nextServer);
+                        const nextServer = currentGame.server === 'A' ? 'B' : 'A';
+                        db.prepare('INSERT INTO live_games (set_id, game_number, points_a, points_b, server) VALUES (?, ?, ?, ?, ?)')
+                            .run(newSetResult.lastInsertRowid, 1, 0, 0, nextServer);
+                    } else {
+                        const matchWinner = setsWon.sets_a > setsWon.sets_b ? 'A' : 'B';
+                        db.prepare('UPDATE matchs SET winner = ? WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').run(matchWinner, sessionId);
+                        db.prepare('UPDATE live_match_sessions SET status = ?, match_end_time = ? WHERE id = ?')
+                            .run('completed', new Date().toISOString(), sessionId);
+                    }
                 } else {
-                    const matchWinner = setsWon.sets_a > setsWon.sets_b ? 'A' : 'B';
-                    db.prepare(`UPDATE matchs SET winner = ${matchWinner} WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)`).run(sessionId);
-                    // Match over - update session status
-                    db.prepare('UPDATE live_match_sessions SET status = ?, match_end_time = ? WHERE id = ?')
-                        .run('completed', new Date().toISOString(), sessionId);
+                    const nextGameNumber = (db.prepare('SELECT MAX(game_number) as max FROM live_games WHERE set_id = ?')
+                        .get(currentGame.set_id).max || 0) + 1;
+                    const nextServer = currentGame.server === 'A' ? 'B' : 'A';
+                    db.prepare('INSERT INTO live_games (set_id, game_number, points_a, points_b, server) VALUES (?, ?, ?, ?, ?)')
+                        .run(currentGame.set_id, nextGameNumber, 0, 0, nextServer);
                 }
             } else {
-                // Next game - alternate server
-                const nextGameNumber = (db.prepare('SELECT MAX(game_number) as max FROM live_games WHERE set_id = ?')
-                    .get(currentGame.set_id).max || 0) + 1;
-                const nextServer = currentGame.server === 'A' ? 'B' : 'A';
-
-                db.prepare(`
-                    INSERT INTO live_games (set_id, game_number, points_a, points_b, server)
-                    VALUES (?, ?, ?, ?, ?)
-                `).run(currentGame.set_id, nextGameNumber, 0, 0, nextServer);
+                db.prepare('UPDATE live_games SET points_a = ?, points_b = ? WHERE id = ?')
+                    .run(pointsUpdate.points_a, pointsUpdate.points_b, currentGame.id);
             }
-        } else {
-            db.prepare('UPDATE live_games SET points_a = ?, points_b = ? WHERE id = ?')
-                .run(pointsUpdate.points_a, pointsUpdate.points_b, currentGame.id);
-        }
 
-        res.json({
-            message: 'Point recorded',
-            game: { points_a: pointsUpdate.points_a, points_b: pointsUpdate.points_b },
-            gameWon: gameWinner ? true : false
-        });
+            return {
+                message: 'Point recorded',
+                game: { points_a: pointsUpdate.points_a, points_b: pointsUpdate.points_b },
+                gameWon: !!gameWinner
+            };
+        })();
+
+        res.json(response);
     } catch (error) {
         console.error('Error recording point:', error);
         res.status(500).json({ error: 'Failed to record point' });

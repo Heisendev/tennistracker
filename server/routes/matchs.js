@@ -55,7 +55,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    console.log(req.body);
     try {
         const {tournament, surface, round, format, date, playerA, playerB} = req.body;
         if(!tournament || !playerA || !playerB|| !surface || !format || !date || !round ){
@@ -69,7 +68,7 @@ router.post('/', (req, res) => {
         `);
         const result = stmt.run(tournament, surface, round, format, playerA, playerB, date);
 
-        res.status(201).json({id: result.lastInsertRowId, tournament, surface, round, format, playerA, playerB, date})
+        res.status(201).json({id: result.lastInsertRowid, tournament, surface, round, format, playerA, playerB, date})
     } catch (error) {
         console.error("Error creating match:", error);
         res.status(500).json({ error: "Internal server error" });
