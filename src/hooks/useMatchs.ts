@@ -28,11 +28,3 @@ export function useCreateMatch() {
     },
   });
 }
-
-export function useLiveMatch(id: string) {
-  return useQuery<Match, Error>({
-    queryKey: ["liveMatch", id],
-    queryFn: () => matchsApi.getmatchById(id),
-    refetchInterval: 5000, // Refetch every 5 seconds for live updates
-  });
-}

@@ -22,12 +22,11 @@ export const playersApi: PlayersApi = {
   getPlayerById: async (id: string): Promise<Player> => {
     // Simulate fetching a player by ID
     const response = await fetch(`${API_URL}/players/${id}`);
+    if (!response.ok) {
+            throw new Error(`Failed to create live match: ${response.statusText}`);
+        }
     const data = await response.json();
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(data);
-      }, 500); // Simulate 1 second delay
-    });
+    return data;
   },
   createPlayer: async (newPlayer: NewPlayer): Promise<Player> => {
     // Simulate creating a new player
@@ -38,11 +37,10 @@ export const playersApi: PlayersApi = {
       },
       body: JSON.stringify(newPlayer),
     });
+    if (!response.ok) {
+            throw new Error(`Failed to create player: ${response.statusText}`);
+        }
     const data = await response.json();
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(data);
-      }, 500); // Simulate 1 second delay
-    });
+    return data;
   },
 };

@@ -9,11 +9,19 @@ const LIVE_MATCH_QUERY_KEY = ["LiveMatch"];
 export function useCreateLiveMatch() {
     return useMutation({
         mutationFn: (matchId: number) => liveMatchApi.createLiveMatch(matchId),
-        onSuccess: (data, variables) => {
-            console.log('Live match created successfully, refetching match data:', data, variables);
-            // Invalidate and refetch matches after creating a new one
-            queryClient.invalidateQueries({ queryKey: [...LIVE_MATCH_QUERY_KEY, ...MATCHES_QUERY_KEY, variables] });
-        },
+        onSuccess: (variables) => {
+            // Invalidate the specific liveMatch query with the correct ID to trigger refetch
+             queryClient.invalidateQueries({
+                queryKey: [...LIVE_MATCH_QUERY_KEY, ...MATCHES_QUERY_KEY, "matches", variables]
+            });
+         },
+        onError: (error, variables) => {
+            console.error('Error creating live match:', error);
+             // Invalidate the specific liveMatch query with the correct ID to trigger refetch
+             queryClient.invalidateQueries({
+                queryKey: [...LIVE_MATCH_QUERY_KEY, ...MATCHES_QUERY_KEY, "matches", variables]
+            });
+         },
     });
 }
 
@@ -57,24 +65,3 @@ export function useAddPointToLiveMatch() {
         },
     });
 }
-
-/* export function useGetMatches() {
-  return useQuery<Match[], Error>({
-    queryKey: MATCHES_QUERY_KEY,
-    queryFn: matchsApi.getMatchs,
-  });
-}
-/* export function useGetMatches() {
-  return useQuery<Match[], Error>({
-    queryKey: MATCHES_QUERY_KEY,
-    queryFn: matchsApi.getMatchs,
-  });
-}
-
-export function useMatchById(id: string) {
-  return useQuery<Match, Error>({
-    queryKey: ["match", id],
-    queryFn: () => matchsApi.getmatchById(id),
-  });
-}} */
-

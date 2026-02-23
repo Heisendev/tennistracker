@@ -205,15 +205,17 @@ export const matchsApi: MatchsApi = {
   getMatchs: async () => {
     // Simulate an API call with a delay
     const response = await fetch(`${API_URL}/matchs`);
+    if (!response.ok) {
+            throw new Error(`Failed to fetch matchs: ${response.statusText}`);
+        }
     const data = await response.json();
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(data);
-      }, 1000); // Simulate 1 second delay
-    });
+    return data;
   },
   getmatchById: async (id: string) => {
     const response = await fetch(`${API_URL}/matchs/${id}`);
+    if (!response.ok) {
+            throw new Error(`Failed to fetch match by id: ${response.statusText}`);
+        }
     const data = await response.json();
     return data;
   },
@@ -225,6 +227,9 @@ export const matchsApi: MatchsApi = {
       },
       body: JSON.stringify(match),
     });
+    if (!response.ok) {
+            throw new Error(`Failed to create match: ${response.statusText}`);
+        }
     const data = await response.json();
     return data;
   },

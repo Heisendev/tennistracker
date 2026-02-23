@@ -49,6 +49,54 @@ const createDefaultLiveMatch = (match: MatchType): LiveMatch => ({
   matchStats: {},
 });
 
+const initialStats: MatchStatsSet = {
+  A: {
+    aces: 0,
+    break_points_faced: 0,
+    break_points_won: 0,
+    double_faults: 0,
+    first_serve_count: 0,
+    first_serve_won: 0,
+    player: "A",
+    second_serve_won: 0,
+    serves_total: 0,
+    set_number: 0,
+    total_points_won: 0,
+    unforced_errors: 0,
+    winners: 0
+  },
+  B: {
+    aces: 0,
+    break_points_faced: 0,
+    break_points_won: 0,
+    double_faults: 0,
+    first_serve_count: 0,
+    first_serve_won: 0,
+    player: "B",
+    second_serve_won: 0,
+    serves_total: 0,
+    set_number: 0,
+    total_points_won: 0,
+    unforced_errors: 0,
+    winners: 0
+  }
+};
+
+const formatStats = (stats: MatchStatsSet) => {
+  if (!stats) return "No stats available";
+  const playerA = stats.A || initialStats.A;
+  const playerB = stats.B || initialStats.B;
+
+  return Object.entries(playerA || {}).map(([key, value]) => {
+    const statsDisplay = {
+      "label": key,
+      "playerA": value,
+      "playerB": playerB[key as keyof typeof playerB],
+    };
+    return <MatchStats key={key} {...statsDisplay} />;
+  });
+}
+
 const Match = () => {
   const params = useParams();
   const { data: match, isLoading } = useMatchById(params.id!);
@@ -74,55 +122,6 @@ const Match = () => {
     return <div>Loading...</div>;
   }
 
-  const initialStats: MatchStatsSet = {
-    A: {
-      aces: 0,
-      break_points_faced: 0,
-      break_points_won: 0,
-      double_faults: 0,
-      first_serve_count: 0,
-      first_serve_won: 0,
-      player: "A",
-      second_serve_won: 0,
-      serves_total: 0,
-      set_number: 0,
-      total_points_won: 0,
-      unforced_errors: 0,
-      winners: 0
-    },
-    B: {
-      aces: 0,
-      break_points_faced: 0,
-      break_points_won: 0,
-      double_faults: 0,
-      first_serve_count: 0,
-      first_serve_won: 0,
-      player: "B",
-      second_serve_won: 0,
-      serves_total: 0,
-      set_number: 0,
-      total_points_won: 0,
-      unforced_errors: 0,
-      winners: 0
-    }
-  };
-
-  const formatStats = (stats: MatchStatsSet) => {
-    if (!stats) return "No stats available";
-    const playerA = stats.A || initialStats.A;
-    const playerB = stats.B || initialStats.B;
-
-    return Object.entries(playerA || {}).map(([key, value]) => {
-      console.log(`Player A - ${key}: ${value}`);
-      const statsDisplay = {
-        "label": key,
-        "playerA": value,
-        "playerB": playerB[key as keyof typeof playerB],
-      };
-      return <MatchStats key={key} {...statsDisplay} />;
-    });
-  }
-
   return (
     <>
       <MatchHeader
@@ -145,7 +144,7 @@ const Match = () => {
         />
       )}
 
-      {/* If live match is in progress, show controls to update score and stats */} 
+      {/* If live match is in progress, show controls to update score and stats */}
       {displayLiveMatch && !displayLiveMatch.error && displayLiveMatch.status === "in-progress" && (
         <>
           <h2 className="text-xl font-bold mb-4">{t('liveMatch.controls')}</h2>
@@ -212,7 +211,7 @@ const Match = () => {
                 {Object.entries(displayLiveMatch.matchStats).map(([key]) => {
                   const statKey = `${key}` as keyof typeof displayLiveMatch.matchStats;
                   if (displayLiveMatch && displayLiveMatch.matchStats && displayLiveMatch.matchStats[statKey]) {
-                    return <TabPanel>
+                    return <TabPanel key={key}>
                       {formatStats(displayLiveMatch.matchStats[statKey])}
                     </TabPanel>;
                   }
