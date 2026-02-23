@@ -12,10 +12,10 @@ npm install
 npm run test
 #
 # ✓ src/__tests__/services/players.api.test.ts (12)
-# ✓ src/__tests__/services/matchs.api.test.ts (16)
+# ✓ src/__tests__/services/matches.api.test.ts (16)
 # ✓ src/__tests__/services/liveMatch.api.test.ts (20)
 # ✓ src/__tests__/hooks/useLiveMatch.test.ts (25)
-# ✓ src/__tests__/hooks/useMatchs.test.ts (28)
+# ✓ src/__tests__/hooks/useMatches.test.ts (28)
 #
 # Test Files  5 passed (5)
 # Tests  90 + passed (101)
@@ -309,7 +309,7 @@ npm run test -- --reporter=verbose   # More details
 
 You have 90+ tests. Next:
 
-1. **usePlayersHook** (similar to useMatchs)
+1. **usePlayersHook** (similar to useMatches)
 2. **MatchSummary component** (using patterns from hooks)
 3. **Server backend routes** (similar API service pattern)
 

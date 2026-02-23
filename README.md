@@ -166,9 +166,9 @@ Open [http://localhost:5173](http://localhost:5173) in your browser to start usi
 ### Matches Endpoints
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
-| `GET` | `/matchs` | Get all matches |
-| `POST` | `/matchs` | Create a new match |
-| `GET` | `/matchs/:id` | Get match by ID |
+| `GET` | `/matches` | Get all matches |
+| `POST` | `/matches` | Create a new match |
+| `GET` | `/matches/:id` | Get match by ID |
 
 ### Live Scoring Endpoints
 | Method | Endpoint | Purpose |
@@ -218,12 +218,12 @@ tennistracker/
 │   │
 │   ├── 📂 hooks/                    # Custom React hooks
 │   │   ├── useLiveMatch.ts
-│   │   ├── useMatchs.ts
+│   │   ├── useMatches.ts
 │   │   └── usePlayers.ts
 │   │
 │   ├── 📂 services/                 # API service layer
 │   │   ├── liveMatch.api.ts
-│   │   ├── matchs.api.ts
+│   │   ├── matches.api.ts
 │   │   └── players.api.ts
 │   │
 │   ├── 📂 providers/                # Providers & context
@@ -243,7 +243,7 @@ tennistracker/
 ├── 📂 server/                        # Backend source code
 │   ├── 📂 routes/                   # API route handlers
 │   │   ├── players.js
-│   │   ├── matchs.js
+│   │   ├── matches.js
 │   │   └── live-scoring.js
 │   ├── db.js                        # Database connection & init
 │   ├── init-db.js                   # Database schema & seeding
@@ -296,7 +296,7 @@ npm run init-db     # Initialize SQLite database with schema & seed data
 **Players**
 - Player profiles with name, country, playing hand, backhand type, ranking
 
-**Matchs**
+**Matches**
 - Match records with tournament info, surface type, date, participants, scores
 
 ### Live Scoring Tables
@@ -426,7 +426,7 @@ FRONTEND_URL=https://your-vercel-domain.vercel.app
 
 **Frontend** (React + TypeScript)
 - Component-based UI with type safety
-- Custom hooks for business logic (useLiveMatch, useMatchs, usePlayers)
+- Custom hooks for business logic (useLiveMatch, useMatches, usePlayers)
 - API service layer for clean separation
 - TanStack Query for server state management
 

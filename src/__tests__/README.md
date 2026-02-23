@@ -53,11 +53,11 @@ src/__tests__/
 │   └── mockFetch.ts                 # Fetch mocking utilities
 ├── services/
 │   ├── players.api.test.ts         # Players API tests
-│   ├── matchs.api.test.ts          # Matchs API tests
+│   ├── matches.api.test.ts          # Matches API tests
 │   └── liveMatch.api.test.ts       # Live match API tests
 ├── hooks/
 │   ├── usePlayers.test.ts          # usePlayers hook tests
-│   ├── useMatchs.test.ts           # useMatchs hook tests
+│   ├── useMatches.test.ts           # useMatches hook tests
 │   └── useLiveMatch.test.ts        # useLiveMatch hook tests
 └── components/
     ├── MatchSummary.test.tsx       # Component tests (future)
@@ -109,17 +109,17 @@ Hooks are tested with React Testing Library and need a QueryClientProvider wrapp
 
 ```typescript
 import { renderHook, waitFor } from '@testing-library/react';
-import { useMatchs } from '../../hooks/useMatchs';
+import { useMatches } from '../../hooks/useMatches';
 
 const wrapper = createQueryWrapper(); // Helper from setup
 
-describe('useMatchs Hook', () => {
+describe('useMatches Hook', () => {
   it('should fetch matches', async () => {
     setupMockFetch([
       { id: 1, tournament: 'Wimbledon', playerA_id: 1, playerB_id: 2 }
     ]);
 
-    const { result } = renderHook(() => useMatchs(), { wrapper });
+    const { result } = renderHook(() => useMatches(), { wrapper });
 
     // Wait for loading to complete
     await waitFor(() => {

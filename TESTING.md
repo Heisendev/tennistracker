@@ -18,12 +18,12 @@
 ### Test Files Created
 1. **API Services** (3 test suites, 35+ test cases)
    - `src/__tests__/services/players.api.test.ts` (12 tests)
-   - `src/__tests__/services/matchs.api.test.ts` (16 tests)
+   - `src/__tests__/services/matches.api.test.ts` (16 tests)
    - `src/__tests__/services/liveMatch.api.test.ts` (20+ tests)
 
 2. **Custom Hooks** (3 test suites, 40+ test cases)
    - `src/__tests__/hooks/useLiveMatch.test.ts` (25 tests)
-   - `src/__tests__/hooks/useMatchs.test.ts` (28 tests)
+   - `src/__tests__/hooks/useMatches.test.ts` (28 tests)
    - `src/__tests__/hooks/hooks.test.ts` (pattern examples)
 
 ---
@@ -38,7 +38,7 @@
 - ✅ Create player (success, errors, validation)
 - ✅ Edge cases and different player types
 
-#### Matches API (`matchs.api.test.ts`)
+#### Matches API (`matches.api.test.ts`)
 - ✅ Get all matches (success, empty, error states)
 - ✅ Get match by ID (success, 404, server errors)
 - ✅ Create match (success, missing fields, non-existent players)
@@ -65,7 +65,7 @@
 - ✅ Multiple state mutations in sequence
 - ✅ Query cache sharing across instances
 
-#### useMatchs (`useMatchs.test.ts`)
+#### useMatches (`useMatches.test.ts`)
 - ✅ Get all matches (success, empty, error)
 - ✅ Get match by ID (success, not found, errors)
 - ✅ Create match (success, errors, validation)
@@ -102,11 +102,11 @@ src/__tests__/
 │   └── mockFetch.ts                 # Fetch mocking helpers
 ├── services/
 │   ├── players.api.test.ts          # 12 tests
-│   ├── matchs.api.test.ts           # 16 tests
+│   ├── matches.api.test.ts           # 16 tests
 │   └── liveMatch.api.test.ts        # 20+ tests
 └── hooks/
     ├── useLiveMatch.test.ts         # 25 tests
-    ├── useMatchs.test.ts            # 28 tests
+    ├── useMatches.test.ts            # 28 tests
     └── hooks.test.ts                # Pattern examples
 ```
 
@@ -162,7 +162,7 @@ expect(result.current.data).toEqual(expectedData);
 ## 🔄 Next Steps
 
 ### Expand Test Coverage
-1. **usePlayers Hook** - Similar pattern to useMatchs
+1. **usePlayers Hook** - Similar pattern to useMatches
 2. **Component Tests** - Start with MatchSummary, MatchStats
 3. **Backend API Routes** - Test Express routes server-side
 4. **Database Tests** - Test initialization and schema

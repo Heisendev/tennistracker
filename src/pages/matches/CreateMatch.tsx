@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import Input from "@components/ui/Input";
 import { usePlayers } from "../../hooks/usePlayers";
-import { useCreateMatch } from "../../hooks/useMatchs";
+import { useCreateMatch } from "../../hooks/useMatches";
 import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
 
@@ -28,7 +28,6 @@ const CreateMatch = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
   const handleChange = (date: Date | null) => {
-    console.log(date?.toISOString());
     setSelectedDate(date);
   };
 
@@ -54,12 +53,9 @@ const CreateMatch = () => {
   }, [register]);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(selectedDate);
-    console.log(data);
     data.date = selectedDate!.toISOString();
     mutate(data, {
       onSuccess: async () => {
-        console.log("MATCH CREATED");
         navigate("/matches");
       },
     });

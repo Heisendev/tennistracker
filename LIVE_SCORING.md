@@ -10,7 +10,7 @@ Complete database structure and REST API for managing real-time tennis match sco
 Tracks active or completed match sessions
 ```sql
 - id: Primary key
-- match_id: Reference to matchs table
+- match_id: Reference to matches table
 - status: 'scheduled' | 'in-progress' | 'suspended' | 'completed'
 - current_set: Current set number (1-5)
 - current_server: 'A' | 'B'

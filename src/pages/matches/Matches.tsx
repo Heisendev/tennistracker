@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { useGetMatches } from "../../hooks/useMatchs";
+import { useGetMatches } from "../../hooks/useMatches";
 
 const container = {
   hidden: {},

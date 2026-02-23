@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS players (
 );`);
 
     db.exec(`
-CREATE TABLE IF NOT EXISTS matchs (
+CREATE TABLE IF NOT EXISTS matches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     tournament TEXT NOT NULL,
     round TEXT NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS live_match_sessions (
     match_end_time TEXT,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (match_id) REFERENCES matchs(id)
+    FOREIGN KEY (match_id) REFERENCES matches(id)
 );`);
 
     db.exec(`
@@ -157,8 +157,8 @@ CREATE TABLE IF NOT EXISTS live_match_stats (
 
     // Create indices
     db.exec(`
-CREATE INDEX IF NOT EXISTS idx_matchs_playerA_id ON matchs(playerA_id);
-CREATE INDEX IF NOT EXISTS idx_matchs_playerB_id ON matchs(playerB_id);
+CREATE INDEX IF NOT EXISTS idx_matches_playerA_id ON matches(playerA_id);
+CREATE INDEX IF NOT EXISTS idx_matches_playerB_id ON matches(playerB_id);
 CREATE INDEX IF NOT EXISTS idx_live_sessions_match_id ON live_match_sessions(match_id);
 CREATE INDEX IF NOT EXISTS idx_live_sessions_status ON live_match_sessions(status);
 CREATE INDEX IF NOT EXISTS idx_live_sets_session_id ON live_sets(session_id);
@@ -186,7 +186,7 @@ INSERT INTO players (rank, firstname, lastname, hand, backhand, country) VALUES
         `);
 
         db.exec(`
-INSERT INTO matchs (tournament, round, surface, format, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES
+INSERT INTO matches (tournament, round, surface, format, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES
 ('Wimbledon', 'Final', 'Grass', 'BO5', '2026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A'),
 ('US Open', 'Semi-Final', 'Hard', 'BO5', '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B'),
 ('Open de Saran', '1st round', 'Hard', 'BO3', '2023-06-12T15:57:31.000Z', '2h45m', 9, 8, 1, 2, 'A'),

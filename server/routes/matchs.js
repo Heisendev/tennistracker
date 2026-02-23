@@ -6,8 +6,8 @@ const router = express.Router();
 router.get('/', (req, res) => {
     try {
         const db = getDatabase();
-        const matchs = [];
-        const matchsRequest = db.prepare(`
+        const matches = [];
+        const matchesRequest = db.prepare(`
             SELECT
                 m.id,
                 m.tournament,
@@ -35,21 +35,31 @@ router.get('/', (req, res) => {
                     'seed', m.playerB_seed
                 ) AS playerB
 
-            FROM matchs m
+            FROM matches m
             JOIN players pa ON pa.id = m.playerA_id
             JOIN players pb ON pb.id = m.playerB_id
             `);
             //for each match, we want to get the playerA and playerB info as a JSON object
-            for (const match of matchsRequest.iterate()) {
-                match.playerA = JSON.parse(match.playerA);
-                match.playerB = JSON.parse(match.playerB);
-                matchs.push(match);
+            for (const match of matchesRequest.iterate()) {
+                try {
+                    match.playerA = JSON.parse(match.playerA);
+                } catch (error) {
+                    console.error(`Error parsing playerA for match ${match.id}:`, error);
+                    match.playerA = null; // Set to null if parsing fails
+                }
+                try {
+                    match.playerB = JSON.parse(match.playerB);
+                } catch (error) {
+                    console.error(`Error parsing playerB for match ${match.id}:`, error);
+                    match.playerB = null; // Set to null if parsing fails
+                }
+                matches.push(match);
             }
 
         
-            res.json(matchs); 
+            res.json(matches); 
     } catch (error) {
-        console.error("Error fetching matchs:", error);
+        console.error("Error fetching matches:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -63,7 +73,7 @@ router.post('/', (req, res) => {
 
         const db = getDatabase();
         const stmt = db.prepare(`
-           INSERT INTO matchs (tournament, surface, round, format, playerA_id, playerB_id, date)
+           INSERT INTO matches (tournament, surface, round, format, playerA_id, playerB_id, date)
            VALUES (?, ?, ?, ?, ?, ?, ?) 
         `);
         const result = stmt.run(tournament, surface, round, format, playerA, playerB, date);
@@ -107,7 +117,7 @@ router.get('/:id', (req, res) => {
                     'seed', m.playerB_seed
                 ) AS playerB
 
-            FROM matchs m
+            FROM matches m
             JOIN players pa ON pa.id = m.playerA_id
             JOIN players pb ON pb.id = m.playerB_id
             WHERE m.id = ?

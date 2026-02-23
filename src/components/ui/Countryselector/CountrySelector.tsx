@@ -33,7 +33,6 @@ export default function CountrySelector({
         !mutableRef.current.contains(event.target as Node) &&
         isOpen
       ) {
-        console.log(isOpen);
         setIsOpen(false);
         setQuery("");
       }

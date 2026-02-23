@@ -15,10 +15,10 @@ You now have a **complete, production-ready unit testing framework** for TennisT
 | File | Tests | Focus |
 |------|-------|-------|
 | `players.api.test.ts` | 12 | API service patterns |
-| `matchs.api.test.ts` | 16 | API with different scenarios |
+| `matches.api.test.ts` | 16 | API with different scenarios |
 | `liveMatch.api.test.ts` | 20+ | Complex API with edge cases |
 | `useLiveMatch.test.ts` | 25 | Mutation hooks + queries |
-| `useMatchs.test.ts` | 28 | Hook patterns + integration |
+| `useMatches.test.ts` | 28 | Hook patterns + integration |
 | **Total** | **90+** | **High-quality examples** |
 
 ### 📚 Documentation
@@ -89,7 +89,7 @@ npm run test:ui
 
 ### What's Not Yet Tested (TODO)
 - React components (MatchSummary, PlayerHeader, etc.)
-- Backend API routes (/matchs, /players, /live-scoring)
+- Backend API routes (/matches, /players, /live-scoring)
 - Database operations (schema, seeding)
 - Integration tests (full user workflows)
 
@@ -114,7 +114,7 @@ npm run test:ui
 
 ### Short-term (This Sprint)
 1. **Test remaining hooks**
-   - usePlayers (copy useMatchs pattern)
+   - usePlayers (copy useMatches pattern)
    - useCreatePlayer (similar to useCreateMatch)
    - Any custom business logic hooks
 
@@ -186,8 +186,8 @@ npm run test:ui
 | [TEST_TEMPLATES.md](./TEST_TEMPLATES.md) | Copy-paste templates | Writing new tests |
 | [src/__tests__/setup.ts](./src/__tests__/setup.ts) | Global test setup | Understanding test initialization |
 | [src/__tests__/utils/mockFetch.ts](./src/__tests__/utils/mockFetch.ts) | Mock helpers | Using mock utilities |
-| [src/__tests__/services/matchs.api.test.ts](./src/__tests__/services/matchs.api.test.ts) | Example API tests | API test patterns |
-| [src/__tests__/hooks/useMatchs.test.ts](./src/__tests__/hooks/useMatchs.test.ts) | Example hook tests | Hook test patterns |
+| [src/__tests__/services/matches.api.test.ts](./src/__tests__/services/matches.api.test.ts) | Example API tests | API test patterns |
+| [src/__tests__/hooks/useMatches.test.ts](./src/__tests__/hooks/useMatches.test.ts) | Example hook tests | Hook test patterns |
 
 ---
 

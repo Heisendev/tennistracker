@@ -12,7 +12,7 @@ db.exec(`
     DELETE FROM live_games;
     DELETE FROM live_sets;
     DELETE FROM live_match_sessions;
-    DELETE FROM matchs;
+    DELETE FROM matches;
     DELETE FROM players;
 `);
 
@@ -32,7 +32,7 @@ INSERT INTO players (rank, firstname, lastname, hand, backhand, country) VALUES
 
 console.log('Seeding matches...');
 db.exec(`
-INSERT INTO matchs (tournament, round, surface, format, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES
+INSERT INTO matches (tournament, round, surface, format, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES
 ('Wimbledon', 'Final', 'Grass', 'BO5', '2026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A'),
 ('US Open', 'Semi-Final', 'Hard', 'BO5', '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B'),
 ('Open de Saran', '1st round', 'Hard', 'BO3', '2023-06-12T15:57:31.000Z', '2h45m', 9, 8, 1, 2, 'A'),

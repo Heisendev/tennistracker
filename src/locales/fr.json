@@ -19,14 +19,14 @@
     "createMatch": "Créer un Match",
     "createMatchDesc": "Enregistrez un nouveau match avec les scores, les statistiques et les détails des joueurs",
     "liveTracker": "Suivi en Direct",
-    "liveTrackerDesc": "Suivez les matchs en temps réel avec les mises à jour point par point",
-    "matches": "Matchs",
-    "matchesDesc": "Consultez l'archive complète des matchs enregistrés"
+    "liveTrackerDesc": "Suivez les matches en temps réel avec les mises à jour point par point",
+    "matches": "Matches",
+    "matchesDesc": "Consultez l'archive complète des matches enregistrés"
   },
   "navigation": {
     "home": "Accueil",
     "players": "Joueurs",
-    "matches": "Matchs",
+    "matches": "Matches",
     "newMatch": "Nouveau Match"
   },
   "buttons": {
@@ -61,8 +61,8 @@
     "right": "Droitier"
   },
   "matches": {
-    "title": "Matchs",
-    "allMatches": "Tous les Matchs",
+    "title": "Matches",
+    "allMatches": "Tous les Matches",
     "createMatch": "Créer un Match",
     "editMatch": "Modifier le Match",
     "matchDetails": "Détails du Match",
@@ -75,7 +75,7 @@
     "date": "Date",
     "duration": "Durée",
     "noMatches": "Aucun match trouvé",
-    "confirmedMatches": "Matchs Confirmés",
+    "confirmedMatches": "Matches Confirmés",
     "surface": "Surface",
     "clay": "Terre Battue",
     "hard": "Dur",

@@ -18,7 +18,7 @@ import type { MatchStatsSet, Match as MatchType, LiveMatch } from "src/types";
 
 import { useTranslation } from "react-i18next";
 
-import { useMatchById } from "../../hooks/useMatchs";
+import { useMatchById } from "../../hooks/useMatches";
 import { useLiveMatch, useAddPointToLiveMatch } from "../../hooks/useLiveMatch";
 import { AlertCircle, Target, Zap } from "lucide-react";
 import { useState } from "react";

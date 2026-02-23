@@ -13,17 +13,13 @@ export const playersApi: PlayersApi = {
     // Simulate an API call with a delay
     const response = await fetch(`${API_URL}/players`);
     const data = await response.json();
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(data);
-      }, 500); // Simulate 1 second delay
-    });
+    return data;
   },
   getPlayerById: async (id: string): Promise<Player> => {
     // Simulate fetching a player by ID
     const response = await fetch(`${API_URL}/players/${id}`);
     if (!response.ok) {
-            throw new Error(`Failed to create live match: ${response.statusText}`);
+            throw new Error(`Failed to fetch player: ${response.statusText}`);
         }
     const data = await response.json();
     return data;

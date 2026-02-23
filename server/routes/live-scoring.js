@@ -40,7 +40,7 @@ router.get('/sessions', (req, res) => {
                     'country', pb.country
                 ) AS playerB
             FROM live_match_sessions s
-            JOIN matchs m ON m.id = s.match_id
+            JOIN matches m ON m.id = s.match_id
             JOIN players pa ON pa.id = m.playerA_id
             JOIN players pb ON pb.id = m.playerB_id
         `;
@@ -80,7 +80,7 @@ router.post('/sessions', (req, res) => {
         }
 
         // Check if match exists
-        const matchExists = db.prepare('SELECT id FROM matchs WHERE id = ?').get(match_id);
+        const matchExists = db.prepare('SELECT id FROM matches WHERE id = ?').get(match_id);
         if (!matchExists) {
             return res.status(404).json({ error: 'Match not found' });
         }
@@ -161,7 +161,7 @@ router.get('/sessions/:matchId', (req, res) => {
                     'country', pb.country
                 ) AS playerB
             FROM live_match_sessions s
-            JOIN matchs m ON m.id = s.match_id
+            JOIN matches m ON m.id = s.match_id
             JOIN players pa ON pa.id = m.playerA_id
             JOIN players pb ON pb.id = m.playerB_id
             WHERE s.match_id = ?
@@ -280,7 +280,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
         const newPoints = pointWinner === 'A' ? currentGame.points_a + 1 : (pointWinner === 'B' ? currentGame.points_b + 1 : null);
         const otherPoints = pointWinner === 'A' ? currentGame.points_b : (pointWinner === 'B' ? currentGame.points_a : null);
 
-        const matchFormat = db.prepare('SELECT format FROM matchs WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').get(sessionId).format;
+        const matchFormat = db.prepare('SELECT format FROM matches WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').get(sessionId).format;
 
         // All DB writes in a single atomic transaction.
         // The transaction returns the response payload; if any write throws, everything rolls back.
@@ -498,7 +498,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                             .run(newSetResult.lastInsertRowid, 1, 0, 0, nextServer);
                     } else {
                         const matchWinner = setsWon.sets_a > setsWon.sets_b ? 'A' : 'B';
-                        db.prepare('UPDATE matchs SET winner = ? WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').run(matchWinner, sessionId);
+                        db.prepare('UPDATE matches SET winner = ? WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').run(matchWinner, sessionId);
                         db.prepare('UPDATE live_match_sessions SET status = ?, match_end_time = ? WHERE id = ?')
                             .run('completed', new Date().toISOString(), sessionId);
                     }

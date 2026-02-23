@@ -2,12 +2,12 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { setupMockFetch, setupMockFetchError, resetMocks } from '../utils/mockFetch';
 import type { Match, NewMatch } from '../../types';
 
-describe('Matchs API Service', () => {
+describe('Matches API Service', () => {
   beforeEach(() => {
     resetMocks();
   });
 
-  describe('getMatchs', () => {
+  describe('getMatches', () => {
     it('should fetch all matches successfully', async () => {
       // Arrange
       const mockMatches: Match[] = [
@@ -58,7 +58,7 @@ describe('Matchs API Service', () => {
       setupMockFetch(mockMatches);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs');
+      const response = await fetch('http://localhost:3003/matches');
       const data = await response.json();
 
       // Assert
@@ -72,7 +72,7 @@ describe('Matchs API Service', () => {
       setupMockFetch([]);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs');
+      const response = await fetch('http://localhost:3003/matches');
       const data = await response.json();
 
       // Assert
@@ -85,7 +85,7 @@ describe('Matchs API Service', () => {
       setupMockFetchError('Failed to fetch matches');
 
       // Act & Assert
-      const response = await fetch('http://localhost:3003/matchs');
+      const response = await fetch('http://localhost:3003/matches');
       expect(response.status).not.toBe(200);
     });
 
@@ -115,7 +115,7 @@ describe('Matchs API Service', () => {
       setupMockFetch([mockMatch]);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs');
+      const response = await fetch('http://localhost:3003/matches');
       const data = await response.json();
 
       // Assert
@@ -128,7 +128,7 @@ describe('Matchs API Service', () => {
     });
   });
 
-  describe('getmatchById', () => {
+  describe('getMatchById', () => {
     it('should fetch a match by ID', async () => {
       // Arrange
       const matchId = '1';
@@ -156,7 +156,7 @@ describe('Matchs API Service', () => {
       setupMockFetch(mockMatch);
 
       // Act
-      const response = await fetch(`http://localhost:3003/matchs/${matchId}`);
+      const response = await fetch(`http://localhost:3003/matches/${matchId}`);
       const data = await response.json();
 
       // Assert
@@ -170,7 +170,7 @@ describe('Matchs API Service', () => {
       setupMockFetchError('Not Found', 404);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs/999');
+      const response = await fetch('http://localhost:3003/matches/999');
 
       // Assert
       expect(response.status).toBe(404);
@@ -181,7 +181,7 @@ describe('Matchs API Service', () => {
       setupMockFetchError('Server error', 500);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs/1');
+      const response = await fetch('http://localhost:3003/matches/1');
 
       // Assert
       expect(response.status).toBe(500);
@@ -221,7 +221,7 @@ describe('Matchs API Service', () => {
       setupMockFetch(createdMatch);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs', {
+      const response = await fetch('http://localhost:3003/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMatch),
@@ -242,7 +242,7 @@ describe('Matchs API Service', () => {
       setupMockFetchError('Missing required fields', 400);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs', {
+      const response = await fetch('http://localhost:3003/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(invalidMatch),
@@ -265,7 +265,7 @@ describe('Matchs API Service', () => {
       setupMockFetchError('Player not found', 404);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs', {
+      const response = await fetch('http://localhost:3003/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMatch),
@@ -304,7 +304,7 @@ describe('Matchs API Service', () => {
       setupMockFetch(createdMatch);
 
       // Act
-      const response = await fetch('http://localhost:3003/matchs', {
+      const response = await fetch('http://localhost:3003/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMatch),

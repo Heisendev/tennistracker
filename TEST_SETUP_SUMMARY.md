@@ -36,13 +36,13 @@ tennistracker/
     │
     ├── services/                             API service tests
     │   ├── players.api.test.ts              12 tests
-    │   ├── matchs.api.test.ts               16 tests
+    │   ├── matches.api.test.ts               16 tests
     │   └── liveMatch.api.test.ts            20+ tests
     │
     └── hooks/                                Custom hook tests
         ├── hooks.test.ts                    Pattern examples
         ├── useLiveMatch.test.ts             25 tests
-        └── useMatchs.test.ts                28 tests
+        └── useMatches.test.ts                28 tests
 ```
 
 ---
@@ -72,7 +72,7 @@ tennistracker/
 ✅ Different player types and countries
 ```
 
-#### `matchs.api.test.ts` (16 tests)
+#### `matches.api.test.ts` (16 tests)
 ```
 ✅ Get all matches (success, empty, error)
 ✅ Get match by ID (success, 404, server error)
@@ -103,7 +103,7 @@ tennistracker/
 ✅ Query cache sharing
 ```
 
-#### `useMatchs.test.ts` (28 tests)
+#### `useMatches.test.ts` (28 tests)
 ```
 ✅ useGetMatches query (fetch all, empty, error)
 ✅ useMatchById query (by ID, 404, server error)
