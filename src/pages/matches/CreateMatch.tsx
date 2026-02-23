@@ -17,6 +17,7 @@ const defaultValues = {
   date: "",
   playerA: "",
   playerB: "",
+  format: "BO3" as const,
 };
 
 const CreateMatch = () => {
@@ -36,7 +37,7 @@ const CreateMatch = () => {
     playerB: string;
     tournament: string;
     date: string;
-    format: number;
+    format: "BO3" | "BO5" | "FR2";
     surface: "Clay" | "Hard" | "Grass";
     round: string;
   };
@@ -65,9 +66,9 @@ const CreateMatch = () => {
   };
 
   const matchFormats = [
-    { value: 0, label: "Grand Slam" },
-    { value: 1, label: "1. Best of 3" },
-    { value: 2, label: "2. (2sets, super tiebreak in 3rd set)" },
+    { value: 'BO5', label: "Grand Slam" },
+    { value: 'BO3', label: "1. Best of 3" },
+    { value: 'FR2', label: "2. (2sets, super tiebreak in 3rd set)" },
   ];
 
   return (

@@ -211,7 +211,7 @@ const Match = () => {
                 {Object.entries(displayLiveMatch.matchStats).map(([key]) => {
                   const statKey = `${key}` as keyof typeof displayLiveMatch.matchStats;
                   if (displayLiveMatch && displayLiveMatch.matchStats && displayLiveMatch.matchStats[statKey]) {
-                    return <TabPanel key={key}>
+                    return <TabPanel>
                       {formatStats(displayLiveMatch.matchStats[statKey])}
                     </TabPanel>;
                   }
