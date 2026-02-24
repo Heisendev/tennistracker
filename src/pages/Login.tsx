@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import { LanguageSelector } from "@components/LanguageSelector";
 import Input from "@components/ui/Input";
-import { useAuth } from "@providers/AuthContext";
+import { useAuth } from "@providers/useAuth";
 
 const loginSchema = z.object({
   username: z.string().trim().min(3, "auth.errors.usernameMin"),

@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router";
 
 import "./i18n";
 
+import ProtectedRoute from "@components/ProtectedRoute";
 import Home from "@pages/Home.tsx";
 import Login from "@pages/Login.tsx";
 import CreateMatch from "@pages/matches/CreateMatch";
@@ -11,7 +12,6 @@ import Match from "@pages/matches/Match";
 import Matches from "@pages/matches/Matches";
 import CreatePlayer from "@pages/players/CreatePlayer";
 import Players from "@pages/players/Players";
-import ProtectedRoute from "@components/ProtectedRoute";
 import { AppProviders } from "@providers/AppProviders";
 
 import "./index.css";

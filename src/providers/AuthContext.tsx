@@ -1,18 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
+import type { User } from "src/types";
+
+import { AuthContext } from "./AuthContext";
+
 import { authApi } from "../services/auth.api";
-import type { User } from "../types";
-
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  signup: (username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -47,10 +40,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
 };

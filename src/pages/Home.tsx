@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 import { LanguageSelector } from "@components/LanguageSelector";
 import SectionCard from "@components/SectionCard";
-import { useAuth } from "@providers/AuthContext";
+import { useAuth } from "@providers/useAuth";
 
 const Home = () => {
   const { t } = useTranslation();
