@@ -112,6 +112,8 @@
       "winners": "Winners",
       "break_points_won": "Break Points Won",
       "break_points_faced": "Break Points Faced",
+      "error": "Forced Error",
+      "errors": "Forced Errors",
       "unforced_error": "Unforced Error",
       "unforced_errors": "Unforced Errors",
       "total_points_won": "Total Points Won",

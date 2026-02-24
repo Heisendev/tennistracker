@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS live_points (
     serve_type TEXT CHECK(serve_type IN ('first', 'second', 'N/A')),
     serve_result TEXT CHECK(serve_result IN ('ace', 'won', 'error', 'double-fault', 'N/A')),
     rally_type TEXT CHECK(rally_type IN ('service-winner', 'baseline', 'net-play', 'N/A')),
-    winner_shot TEXT,
+    winner_shot TEXT CHECK(winner_shot IN ('winner', 'error', 'unforced-error', 'N/A')),
     notes TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (game_id) REFERENCES live_games(id)
@@ -146,6 +146,7 @@ CREATE TABLE IF NOT EXISTS live_match_stats (
     second_serve_won INTEGER DEFAULT 0,
     winners INTEGER DEFAULT 0,
     unforced_errors INTEGER DEFAULT 0,
+    errors INTEGER DEFAULT 0,
     break_points_won INTEGER DEFAULT 0,
     break_points_faced INTEGER DEFAULT 0,
     total_points_won INTEGER DEFAULT 0,

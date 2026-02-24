@@ -190,7 +190,7 @@ router.get('/sessions/:matchId', (req, res) => {
         // Get match stats for all sets
         const matchStats = db.prepare(`
             SELECT set_number, player, aces, double_faults, first_serve_count, first_serve_won, 
-                   second_serve_won, winners, unforced_errors, break_points_won, break_points_faced, 
+                   second_serve_won, winners, errors, unforced_errors, break_points_won, break_points_faced, 
                    total_points_won, serves_total
             FROM live_match_stats
             WHERE session_id = ?
@@ -323,6 +323,7 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                 'SELECT id FROM live_match_stats WHERE session_id = ? AND set_number = ? AND player = ?'
             ).get(sessionId, session.current_set, pointWinner);
 
+            console.log('Inserting new stats record for player', pointWinner);
             if (!statsRecord) {
                 const statsInsert = {
                     session_id: sessionId,
@@ -333,51 +334,43 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     double_faults: 0,
                     first_serve_count: 0,
                     first_serve_won: 0,
+                    second_serve_count: 0,
                     second_serve_won: 0,
                     winners: 0,
                     unforced_errors: 0,
+                    errors: 0,
                     break_points_won: 0,
                     break_points_faced: 0,
                     serves_total: 0
                 };
 
-                if (serve_result === 'ace' && serve_type === 'first') {
-                    statsInsert.aces = 1;
-                    statsInsert.first_serve_won = 1;
+                if (serve_type === 'first') {
                     statsInsert.first_serve_count = 1;
                     statsInsert.serves_total = 1;
-                } else if (serve_result === 'ace' && serve_type === 'second') {
-                    statsInsert.aces = 1;
-                    statsInsert.second_serve_won = 1;
-                    statsInsert.serves_total = 1;
-                } else if (serve_result === 'won' && serve_type === 'first') {
-                    statsInsert.first_serve_won = 1;
-                    statsInsert.first_serve_count = 1;
-                    statsInsert.serves_total = 1;
-                } else if (serve_result === 'won' && serve_type === 'second') {
-                    statsInsert.second_serve_won = 1;
-                    statsInsert.serves_total = 1;
-                }
-
-                if (winner_shot === 'winner') {
-                    statsInsert.winners = 1;
-                } else if (winner_shot === 'error') {
-                    statsInsert.unforced_errors = 1;
-                }
-
-                if (isBreakPointSituation) {
-                    if (pointWinner === receiver) {
-                        statsInsert.break_points_won = 1;
-                    } else {
-                        statsInsert.break_points_faced = 1;
+                    if (serve_result === 'ace') {
+                        statsInsert.aces = 1;
+                        statsInsert.first_serve_won = 1;
+                    }
+                    if (winner_shot === 'winner') {
+                        statsInsert.winners = 1;
                     }
                 }
 
+                if (winner_shot === 'error' || winner_shot === 'unforced-error') {
+                    const otherPlayer = pointWinner === 'A' ? 'B' : 'A';
+                    const errorType = winner_shot === 'error' ? 'errors' : 'unforced_errors';
+                    db.prepare(`
+                    INSERT INTO live_match_stats (session_id, set_number, player, ${errorType})
+                    VALUES (?, ?, ?, ?)
+                `).run(statsInsert.session_id, statsInsert.set_number, otherPlayer, 1);
+                }
+
                 db.prepare(`
-                    INSERT INTO live_match_stats (session_id, set_number, player, total_points_won, aces, double_faults, first_serve_count, first_serve_won, second_serve_won, winners, unforced_errors, break_points_won, break_points_faced, serves_total)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                `).run(statsInsert.session_id, statsInsert.set_number, statsInsert.player, statsInsert.total_points_won, statsInsert.aces, statsInsert.double_faults, statsInsert.first_serve_count, statsInsert.first_serve_won, statsInsert.second_serve_won, statsInsert.winners, statsInsert.unforced_errors, statsInsert.break_points_won, statsInsert.break_points_faced, statsInsert.serves_total);
-            } else {
+                    INSERT INTO live_match_stats (session_id, set_number, player, total_points_won, aces, double_faults, first_serve_count, first_serve_won, second_serve_won, winners, break_points_won, break_points_faced, serves_total)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `).run(statsInsert.session_id, statsInsert.set_number, statsInsert.player, statsInsert.total_points_won, statsInsert.aces, statsInsert.double_faults, statsInsert.first_serve_count, statsInsert.first_serve_won, statsInsert.second_serve_won, statsInsert.winners, statsInsert.break_points_won, statsInsert.break_points_faced, statsInsert.serves_total);
+            } 
+            else {
                 let updateQuery = 'UPDATE live_match_stats SET total_points_won = total_points_won + 1';
                 const params = [sessionId, session.current_set, pointWinner];
 
@@ -385,16 +378,25 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                     updateQuery += ', aces = aces + 1, first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
                 } else if (serve_result === 'ace' && serve_type === 'second') {
                     updateQuery += ', aces = aces + 1, second_serve_won = second_serve_won + 1, second_serve_count = second_serve_count + 1, serves_total = serves_total + 1';
-                } else if (serve_result === 'won' && serve_type === 'first') {
-                    updateQuery += ', first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
-                } else if (serve_result === 'won' && serve_type === 'second') {
-                    updateQuery += ', second_serve_won = second_serve_won + 1, serves_total = serves_total + 1';
                 }
 
                 if (winner_shot === 'winner') {
                     updateQuery += ', winners = winners + 1';
-                } else if (winner_shot === 'error') {
-                    updateQuery += ', unforced_errors = unforced_errors + 1';
+                    if (serve_type === 'first') {
+                        updateQuery += ', first_serve_won = first_serve_won + 1, first_serve_count = first_serve_count + 1, serves_total = serves_total + 1';
+                    } else if (serve_type === 'second') {
+                        updateQuery += ', second_serve_won = second_serve_won + 1, second_serve_count = second_serve_count + 1, serves_total = serves_total + 1';
+                    }
+                }
+
+                if (winner_shot === 'error' || winner_shot === 'unforced-error') {
+                    const otherPlayer = pointWinner === 'A' ? 'B' : 'A';
+                    console.log('Recording unforced error for player', pointWinner, winner_shot, otherPlayer);
+                    const errorType = winner_shot === 'error' ? 'errors' : 'unforced_errors';
+                    db.prepare(`
+                    UPDATE live_match_stats SET ${errorType} = ${errorType} + 1
+                    WHERE session_id = ? AND set_number = ? AND player = ?
+                `).run(sessionId, session.current_set, otherPlayer);
                 }
 
                 if (isBreakPointSituation) {
@@ -562,7 +564,7 @@ router.patch('/sessions/:sessionId/status', (req, res) => {
         const timestamp = status === 'in-progress' ? new Date().toISOString() :
             status === 'completed' ? new Date().toISOString() : null;
 
-            // Create first game
+        // Create first game
         const setId = db.prepare('SELECT id FROM live_sets WHERE session_id = ? AND set_number = 1')
             .get(sessionId).id;
 
@@ -573,7 +575,7 @@ router.patch('/sessions/:sessionId/status', (req, res) => {
             `).run(setId, 1, 0, 0, toss_winner);
 
             db.prepare('UPDATE matches SET tossWinner = ? WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').run(toss_winner, sessionId);
-        
+
             const updateQuery = status === 'in-progress'
                 ? 'UPDATE live_match_sessions SET status = ?, match_start_time = ?, current_server = ? WHERE id = ?'
                 : status === 'completed'

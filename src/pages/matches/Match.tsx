@@ -163,21 +163,30 @@ const Match = () => {
               </div>
               <h4 className="text-left mb-1">{t('liveMatch.stats.winner')}</h4>
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'A', undefined, undefined, 'winner')}>
+                <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'A', undefined, serveType, 'winner')}>
                   <Target className="w-3.5 h-3.5 mr-2" />
                   {displayLiveMatch.playerA.firstname} {displayLiveMatch.playerA.lastname}
                 </Button>
-                <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'B', undefined, undefined, 'winner')}>
+                <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'B', undefined, serveType, 'winner')}>
                   <Target className="w-3.5 h-3.5 mr-2" />
                   {displayLiveMatch.playerB.firstname} {displayLiveMatch.playerB.lastname}
                 </Button>
               </div>
               <h4 className="text-left mb-1">{t('liveMatch.stats.unforced_error')}</h4>
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'B', undefined, undefined, 'error')}>
+                <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'B', undefined, serveType, 'unforced-error')}>
                   {displayLiveMatch.playerA.firstname} {displayLiveMatch.playerA.lastname}
                 </Button>
-                <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'A', undefined, undefined, 'error')}>
+                <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'A', undefined, serveType, 'unforced-error')}>
+                  {displayLiveMatch.playerB.firstname} {displayLiveMatch.playerB.lastname}
+                </Button>
+              </div>
+              <h4 className="text-left mb-1">{t('liveMatch.stats.error')}</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <Button variant="controlPlayerA" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'B', undefined, serveType, 'error')}>
+                  {displayLiveMatch.playerA.firstname} {displayLiveMatch.playerA.lastname}
+                </Button>
+                <Button variant="controlPlayerB" onClick={() => handleAddPoint(match.id, displayLiveMatch.id, 'A', undefined, serveType, 'error')}>
                   {displayLiveMatch.playerB.firstname} {displayLiveMatch.playerB.lastname}
                 </Button>
               </div>
