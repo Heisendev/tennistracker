@@ -36,6 +36,10 @@ const playerSchema = z.object({
 
 type Inputs = z.infer<typeof playerSchema>;
 
+const renderError = (message: string) => (
+  <p className="text-sm col-start-2 my-0 text-(--bg-interactive-danger) text-left pl-1">{message}</p>
+);
+
 const CreatePlayer = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -76,7 +80,7 @@ const CreatePlayer = () => {
       <Header title="Create a new player" />
       <section className="bg-white max-w-3xl mx-4 md:mx-auto p-6 m-8 rounded-xl border border-gray-400">
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-x-4 mb-4">
             <Input
               id="firstname"
               label="First name"
@@ -84,13 +88,9 @@ const CreatePlayer = () => {
               {...register("firstname")}
               variant={errors.firstname ? "error" : undefined}
             />
-            {errors.firstname?.message && (
-              <p className="text-sm my-0 text-(--bg-interactive-danger)">
-                {t(errors.firstname.message)}
-              </p>
-            )}
+            {errors.firstname?.message && renderError(t(errors.firstname.message))}
           </div>
-          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-x-4 mb-4">
             <Input
               id="lastname"
               label="Last name"
@@ -98,16 +98,12 @@ const CreatePlayer = () => {
               {...register("lastname")}
               variant={errors.lastname ? "error" : undefined}
             />
-            {errors.lastname?.message && (
-              <p className="text-sm my-0 text-(--bg-interactive-danger)">
-                {t(errors.lastname.message)}
-              </p>
-            )}
+            {errors.lastname?.message && renderError(t(errors.lastname.message))}
           </div>
           <div
             role="radiogroup"
             aria-labelledby="handlabel"
-            className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4"
+            className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-x-4 mb-4"
           >
             <span id="handlabel" className="flex items-center gap-2">
               {t("players.hand")}
@@ -128,16 +124,12 @@ const CreatePlayer = () => {
               />{" "}
               <label htmlFor="hand-right">{t("players.right")}</label>
             </div>
-            {errors.hand?.message && (
-              <p className="text-sm my-0 text-(--bg-interactive-danger)">
-                {t(errors.hand.message)}
-              </p>
-            )}
+            {errors.hand?.message && renderError(t(errors.hand.message))}
           </div>
           <div
             role="radiogroup"
             aria-labelledby="backhandlabel mb-4"
-            className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4"
+            className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-x-4 mb-4"
           >
             <span id="backhandlabel" className="flex items-center gap-2">
               {t("players.backhand")}
@@ -158,14 +150,10 @@ const CreatePlayer = () => {
               />{" "}
               <label htmlFor="backhand-two">{t("players.twoHanded")}</label>
             </div>
-            {errors.backhand?.message && (
-              <p className="text-sm my-0 text-(--bg-interactive-danger)">
-                {t(errors.backhand.message)}
-              </p>
-            )}
+            {errors.backhand?.message && renderError(t(errors.backhand.message))}
           </div>
 
-          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-x-4 mb-4">
             <Input
               id="rank"
               label="Rank"
@@ -177,13 +165,9 @@ const CreatePlayer = () => {
               })}
               variant={errors.rank ? "error" : undefined}
             />
-            {errors.rank?.message && (
-              <p className="text-sm my-0 text-(--bg-interactive-danger)">
-                {t(errors.rank.message)}
-              </p>
-            )}
+            {errors.rank?.message && renderError(t(errors.rank.message))}
           </div>
-          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-4">
+          <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-x-4 mb-4">
             {/* use a another select component for */}
             <span id="player_country" className="flex items-center gap-2">
               {t("players.country")}
@@ -196,11 +180,7 @@ const CreatePlayer = () => {
                 COUNTRIES[0]
               }
             />
-            {errors.country?.message && (
-              <p className="text-sm my-0 text-(--bg-interactive-danger)">
-                {t(errors.country.message)}
-              </p>
-            )}
+            {errors.country?.message && renderError(t(errors.country.message))}
           </div>
           <Input
             id="createPlayer"
