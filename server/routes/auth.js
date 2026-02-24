@@ -27,7 +27,12 @@ router.post('/signup', async (req, res) => {
         const password_hash = await bcrypt.hash(password, 10);
         const result = db.prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)').run(username.trim(), password_hash);
 
-        req.session.userId = result.lastInsertRowid;
+        // Ensure session exists before setting userId
+        if (req.session) {
+            req.session.userId = result.lastInsertRowid;
+        } else {
+            console.error('Session not initialized during signup');
+        }
         res.status(201).json({ id: result.lastInsertRowid, username: username.trim() });
     } catch (error) {
         console.error('Error during signup:', error);
@@ -54,7 +59,12 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-        req.session.userId = user.id;
+        // Ensure session exists before setting userId
+        if (req.session) {
+            req.session.userId = user.id;
+        } else {
+            console.error('Session not initialized during login');
+        }
         res.json({ id: user.id, username: user.username });
     } catch (error) {
         console.error('Error during login:', error);
