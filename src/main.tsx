@@ -1,15 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { AppProviders } from "@providers/AppProviders";
+
 import "./i18n";
 
 import Home from "@pages/Home.tsx";
 import CreateMatch from "@pages/matches/CreateMatch";
-import Matches from "@pages/matches/Matches";
 import Match from "@pages/matches/Match";
+import Matches from "@pages/matches/Matches";
 import CreatePlayer from "@pages/players/CreatePlayer";
 import Players from "@pages/players/Players";
+import { AppProviders } from "@providers/AppProviders";
 
 import "./index.css";
 

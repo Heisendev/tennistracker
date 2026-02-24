@@ -57,7 +57,7 @@ Use this for testing hooks that use `useQuery` (read-only operations).
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useYourHook } from '../../hooks/useYourHook';
+import { useYourHook } from '@hooks/useYourHook';
 import { setupMockFetch, resetMocks } from '../utils/mockFetch';
 
 // Helper to create wrapper
@@ -132,7 +132,7 @@ Use this for hooks that use `useMutation` (write operations like POST/PUT).
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useYourMutation } from '../../hooks/useYourHook';
+import { useYourMutation } from '@hooks/useYourHook';
 import { setupMockFetch, setupMockFetchError, resetMocks } from '../utils/mockFetch';
 
 function createQueryWrapper() {

@@ -1,15 +1,17 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import {
-    useLiveMatch,
-    useCreateLiveMatch,
-    useUpdateLiveMatchStatus,
-    useAddPointToLiveMatch,
-} from '../../hooks/useLiveMatch';
-import { setupMockFetch, resetMocks } from '../utils/mockFetch';
-import type { LiveMatch } from '../../types';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import {
+    useAddPointToLiveMatch,
+    useCreateLiveMatch,
+    useLiveMatch,
+    useUpdateLiveMatchStatus,
+} from '@hooks/useLiveMatch';
+
+import type { LiveMatch } from '../../types';
+import { resetMocks, setupMockFetch } from '../utils/mockFetch';
 
 // Helper to create a QueryClientProvider wrapper
 function createQueryWrapper() {

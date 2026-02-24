@@ -1,14 +1,15 @@
-import { useForm, type SubmitHandler, useWatch } from "react-hook-form";
-import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
-import Input from "@components/ui/Input";
-import { usePlayers } from "../../hooks/usePlayers";
-import { useCreateMatch } from "../../hooks/useMatches";
-import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
+import { DatePicker } from "react-datepicker";
+import { type SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+
+import Header from "@components/Header";
+import Input from "@components/ui/Input";
+import { useCreateMatch } from "@hooks/useMatches";
+import { usePlayers } from "@hooks/usePlayers";
 
 import "react-datepicker/dist/react-datepicker.css";
-import Header from "@components/Header";
 
 const defaultValues = {
   tournament: "",
@@ -43,7 +44,9 @@ const CreateMatch = () => {
 
   const { data: players } = usePlayers();
 
-  const { register, handleSubmit, control } = useForm<Inputs>({ defaultValues });
+  const { register, handleSubmit, control } = useForm<Inputs>({
+    defaultValues,
+  });
 
   const selectedPlayer1 = useWatch({ control, name: "playerA" });
   const selectedPlayer2 = useWatch({ control, name: "playerB" });
@@ -62,16 +65,19 @@ const CreateMatch = () => {
   };
 
   const matchFormats = [
-    { value: 'BO5', label: "Grand Slam" },
-    { value: 'BO3', label: "1. Best of 3" },
-    { value: 'FR2', label: "2. (2sets, super tiebreak in 3rd set)" },
+    { value: "BO5", label: "Grand Slam" },
+    { value: "BO3", label: "1. Best of 3" },
+    { value: "FR2", label: "2. (2sets, super tiebreak in 3rd set)" },
   ];
 
   return (
     <>
       <Header title="Create Match" />
       <section className="md:m-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 bg-white mx-2 md:max-w-3xl md:mx-auto md:p-6 p-2 rounded-xl border border-gray-400">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mt-6 bg-white mx-2 md:max-w-3xl md:mx-auto md:p-6 p-2 rounded-xl border border-gray-400"
+        >
           <div className="flex mx-auto md:w-fit flex-col">
             <fieldset className="border-0 flex flex-col text-left md:mb-4 max-w-md mr-auto mb-4 p-0">
               <legend className="font-display text-xl mb-4">
@@ -86,31 +92,65 @@ const CreateMatch = () => {
                 />
               </div>
               <div>
-                <div role="radiogroup" aria-labelledby="surface-label" className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
-                  <span id="surface-label" className="flex items-center gap-2">{t("matches.surface")}</span>
+                <div
+                  role="radiogroup"
+                  aria-labelledby="surface-label"
+                  className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col"
+                >
+                  <span id="surface-label" className="flex items-center gap-2">
+                    {t("matches.surface")}
+                  </span>
                   <div className="toggle">
-                    <input type="radio" id="clay" value="Clay" {...register("surface")} /><label htmlFor="clay" className="basis-20 md:basis-33">{t("matches.clay")}</label>
-                    <input type="radio" id="hard" value="Hard" {...register("surface")} /><label htmlFor="hard" className="basis-20 md:basis-33">{t("matches.hard")}</label>
-                    <input type="radio" id="grass" value="Grass" {...register("surface")} /><label htmlFor="grass" className="basis-20  md:basis-33">{t("matches.grass")}</label>
+                    <input
+                      type="radio"
+                      id="clay"
+                      value="Clay"
+                      {...register("surface")}
+                    />
+                    <label htmlFor="clay" className="basis-20 md:basis-33">
+                      {t("matches.clay")}
+                    </label>
+                    <input
+                      type="radio"
+                      id="hard"
+                      value="Hard"
+                      {...register("surface")}
+                    />
+                    <label htmlFor="hard" className="basis-20 md:basis-33">
+                      {t("matches.hard")}
+                    </label>
+                    <input
+                      type="radio"
+                      id="grass"
+                      value="Grass"
+                      {...register("surface")}
+                    />
+                    <label htmlFor="grass" className="basis-20  md:basis-33">
+                      {t("matches.grass")}
+                    </label>
                   </div>
                 </div>
               </div>
               <div>
-                <div role="radiogroup" aria-labelledby="surface-label" className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
-                  <label className="flex items-center gap-2" htmlFor="format">
-                  {t("matches.selectFormat")}
-                </label>
-                <select
-                  id="format"
-                  {...register("format")}
-                  className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                <div
+                  role="radiogroup"
+                  aria-labelledby="surface-label"
+                  className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col"
                 >
-                  {matchFormats.map((format) => (
-                    <option key={format.value} value={format.value}>
-                      {format.label}
-                    </option>
-                  ))}
-                </select>
+                  <label className="flex items-center gap-2" htmlFor="format">
+                    {t("matches.selectFormat")}
+                  </label>
+                  <select
+                    id="format"
+                    {...register("format")}
+                    className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    {matchFormats.map((format) => (
+                      <option key={format.value} value={format.value}>
+                        {format.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="md:grid md:grid-cols-[150px_1fr] md:gap-4 mb-2 flex flex-col">
@@ -145,7 +185,9 @@ const CreateMatch = () => {
                   <option value="">{t("matches.selectPlayer")}</option>
                   {players &&
                     players
-                      .filter((player) => player.id.toString() !== selectedPlayer2)
+                      .filter(
+                        (player) => player.id.toString() !== selectedPlayer2,
+                      )
                       .map((player) => (
                         <option key={player.id} value={player.id}>
                           {player.firstname} {player.lastname}
@@ -165,7 +207,9 @@ const CreateMatch = () => {
                   <option value="">{t("matches.selectPlayer")}</option>
                   {players &&
                     players
-                      .filter((player) => player.id.toString() !== selectedPlayer1)
+                      .filter(
+                        (player) => player.id.toString() !== selectedPlayer1,
+                      )
                       .map((player) => (
                         <option key={player.id} value={player.id}>
                           {player.firstname} {player.lastname}

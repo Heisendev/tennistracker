@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+
+import { queryClient } from "@providers/query-client";
+
 import { matchesApi } from "../services/matches.api";
 import type { Match, NewMatch } from "../types";
-import { queryClient } from "@providers/query-client";
 
 const MATCHES_QUERY_KEY = ["matches"];
 

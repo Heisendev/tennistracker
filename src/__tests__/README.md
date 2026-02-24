@@ -109,7 +109,7 @@ Hooks are tested with React Testing Library and need a QueryClientProvider wrapp
 
 ```typescript
 import { renderHook, waitFor } from '@testing-library/react';
-import { useMatches } from '../../hooks/useMatches';
+import { useMatches } from '@hooks/useMatches';
 
 const wrapper = createQueryWrapper(); // Helper from setup
 

@@ -8,13 +8,13 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const inputStyles = cva(
-  "rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+  "rounded-md border  px-3 py-2",
   {
     variants: {
       variant: {
-        default: "",
-        error: "border-red-500 focus:border-red-500 focus:ring-red-500",
-        submit: "bg-(--bg-interactive-primary) hover:bg-(--bg-interactive-primary-hover) text-white py-3 px-4 rounded border border-gray-400",
+        default: "border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+        error: "border-[var(--bg-interactive-danger)] focus:border-[var(--bg-interactive-danger)] focus:ring-[var(--bg-interactive-danger)]",
+        submit: "bg-[var(--bg-interactive-primary)] hover:bg-[var(--bg-interactive-primary-hover)] text-white py-3 px-4 rounded border border-gray-400",
       },
     },
     defaultVariants: {

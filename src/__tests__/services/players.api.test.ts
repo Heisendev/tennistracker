@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { setupMockFetch, setupMockFetchError, resetMocks } from '../utils/mockFetch';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import type { NewPlayer, Player } from '../../types';
+import { resetMocks, setupMockFetch, setupMockFetchError } from '../utils/mockFetch';
 
 // Mock the API_URL
 const TEST_API_URL = 'http://localhost:3003';

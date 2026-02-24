@@ -1,5 +1,6 @@
-import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
+
 import path from 'path';
 
 export default defineConfig({
@@ -25,6 +26,8 @@ export default defineConfig({
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@types': path.resolve(__dirname, 'src/types'),
       '@providers': path.resolve(__dirname, 'src/providers'),
+      '@hooks': path.resolve(__dirname, 'src/hooks'),
+      '@services': path.resolve(__dirname, 'src/services'),
     },
   },
 });

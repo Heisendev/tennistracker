@@ -1,9 +1,9 @@
-import { Link } from "react-router";
-import { BarChart3, Radio, PenSquare, Users, List } from "lucide-react";
+import { BarChart3, List, PenSquare, Radio, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
-import SectionCard from "@components/SectionCard";
 import { LanguageSelector } from "@components/LanguageSelector";
+import SectionCard from "@components/SectionCard";
 
 const Home = () => {
   const { t } = useTranslation();

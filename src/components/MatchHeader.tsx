@@ -1,9 +1,11 @@
-import type { LiveMatch, Match } from "src/types";
-import Header from "./Header";
-
 import { useTranslation } from "react-i18next";
-import { useUpdateLiveMatchStatus, useCreateLiveMatch } from "../hooks/useLiveMatch";
+
+import { useCreateLiveMatch, useUpdateLiveMatchStatus } from "@hooks/useLiveMatch";
+import type { LiveMatch, Match } from "src/types";
+
+import Header from "./Header";
 import { Button } from "./ui/Button";
+
 
 const formatDate = (date: string) =>
   new Date(date).toLocaleString("fr-FR", {

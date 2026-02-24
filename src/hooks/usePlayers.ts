@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { playersApi } from "../services/players.api";
-import type { Player, NewPlayer } from "../types";
+
 import { queryClient } from "@providers/query-client";
+
+import { playersApi } from "../services/players.api";
+import type { NewPlayer, Player } from "../types";
 const PLAYERS_QUERY_KEY = ["players"];
 
 export function usePlayers() {

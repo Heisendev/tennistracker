@@ -1,5 +1,6 @@
-import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Button } from './ui/Button';
 
 export const LanguageSelector = () => {

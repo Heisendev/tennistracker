@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { setupMockFetch, setupMockFetchError, resetMocks } from '../utils/mockFetch';
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import type { Match, NewMatch } from '../../types';
+import { resetMocks, setupMockFetch, setupMockFetchError } from '../utils/mockFetch';
 
 describe('Matches API Service', () => {
   beforeEach(() => {

@@ -5,7 +5,6 @@
     "french": "Français",
     "name": "Nom",
     "email": "Email",
-    "country": "Pays",
     "back": "Retour",
     "loading": "Chargement...",
     "error": "Erreur"
@@ -58,7 +57,15 @@
     "one-handed": "Revers à une main",
     "two-handed": "Revers à deux mains",
     "left": "Gaucher",
-    "right": "Droitier"
+    "right": "Droitier",
+    "country": "Pays",
+    "errors": {
+      "country": "Veuillez sélectionner un pays",
+      "firstname": "Veuillez entrer un prénom valide",
+      "lastname": "Veuillez entrer un nom valide",
+      "hand": "Veuillez sélectionner la main du joueur",
+      "backhand": "Veuillez sélectionner le type de revers du joueur"
+    }
   },
   "matches": {
     "title": "Matches",

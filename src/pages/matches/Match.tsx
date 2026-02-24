@@ -1,27 +1,25 @@
-import { useParams } from "react-router";
 
 // import type { MatchData } from '../types';
-import MatchHeader from "@components/MatchHeader";
-import PlayerHeader from "@components/PlayerHeader";
-import { MatchSummary } from "@components/MatchSummary";
-import { MatchStats } from "@components/MatchStats";
-import { Button } from "@components/ui/Button";
-import {
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-} from "@components/ui/Tabs";
-
-import type { MatchStatsSet, Match as MatchType, LiveMatch } from "src/types";
-
-import { useTranslation } from "react-i18next";
-
-import { useMatchById } from "../../hooks/useMatches";
-import { useLiveMatch, useAddPointToLiveMatch } from "../../hooks/useLiveMatch";
 import { AlertCircle, Target, Zap } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useParams } from "react-router";
+
+import MatchHeader from "@components/MatchHeader";
+import { MatchStats } from "@components/MatchStats";
+import { MatchSummary } from "@components/MatchSummary";
+import PlayerHeader from "@components/PlayerHeader";
+import { Button } from "@components/ui/Button";
+import {
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@components/ui/Tabs";
+import { useAddPointToLiveMatch, useLiveMatch } from "@hooks/useLiveMatch";
+import { useMatchById } from "@hooks/useMatches";
+import type { LiveMatch, MatchStatsSet, Match as MatchType } from "src/types";
 
 // Create a default live match from a regular match (used when match hasn't started)
 const createDefaultLiveMatch = (match: MatchType): LiveMatch => ({

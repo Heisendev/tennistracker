@@ -1,5 +1,6 @@
-import i18n from 'i18next';
+import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
+
 import enTranslations from './locales/en.json';
 import frTranslations from './locales/fr.json';
 
@@ -11,8 +12,8 @@ const resources = {
     translation: frTranslations,
   },
 };
-
-i18n
+// eslint-disable-next-line import/no-named-as-default-member
+i18next
   .use(initReactI18next)
   .init({
     resources,
@@ -23,4 +24,4 @@ i18n
     },
   });
 
-export default i18n;
+export default i18next;

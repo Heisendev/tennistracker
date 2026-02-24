@@ -30,14 +30,5 @@ INSERT INTO players (rank, firstname, lastname, hand, backhand, country) VALUES
 (9, 'Roger', 'Federer', 'Right', 'One-handed', 'CH');
 `);
 
-console.log('Seeding matches...');
-db.exec(`
-INSERT INTO matches (tournament, round, surface, format, date, duration, playerA_id, playerB_id, playerA_seed, playerB_seed, tossWinner) VALUES
-('Wimbledon', 'Final', 'Grass', 'BO5', '2026-06-06T15:57:31.000Z', '2h30m', 1, 3, 1, 3, 'A'),
-('US Open', 'Semi-Final', 'Hard', 'BO5', '2026-06-06T15:57:31.000Z', '3h15m', 3, 7, 3, 7, 'B'),
-('Open de Saran', '1st round', 'Hard', 'BO3', '2023-06-12T15:57:31.000Z', '2h45m', 9, 8, 1, 2, 'A'),
-('Roland Garros', 'Quarter-Final', 'Clay', 'BO5', '2023-06-12T15:57:31.000Z', '2h45m', 1, 2, 1, 2, 'A');
-`);
-
 console.log('✅ Database seeded successfully.');
 closeDatabase();

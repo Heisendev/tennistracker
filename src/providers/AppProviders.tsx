@@ -1,7 +1,9 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { I18nextProvider } from "react-i18next";
+
 import { queryClient } from "./query-client";
-import i18n from "../i18n";
+
+import i18next from "../i18n";
 
 type AppProvidersProps = {
   children: React.ReactNode;
@@ -9,7 +11,7 @@ type AppProvidersProps = {
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
-    <I18nextProvider i18n={i18n}>
+    <I18nextProvider i18n={i18next}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </I18nextProvider>
   );

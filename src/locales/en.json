@@ -5,7 +5,6 @@
     "french": "Français",
     "name": "Name",
     "email": "Email",
-    "country": "Country",
     "back": "Back",
     "loading": "Loading...",
     "error": "Error"
@@ -56,7 +55,15 @@
     "oneHanded": "One-handed backhand",
     "twoHanded": "Two-handed backhand",
     "left": "Left-handed",
-    "right": "Right-handed"
+    "right": "Right-handed",
+    "country": "Country",
+    "errors": {
+      "country": "Please select a country",
+      "firstname": "Please enter a valid first name",
+      "lastname": "Please enter a valid last name",
+      "hand": "Please select the player's hand",
+      "backhand": "Please select the player's backhand type"
+    }
   },
   "matches": {
     "title": "Matches",
