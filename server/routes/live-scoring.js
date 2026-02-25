@@ -323,7 +323,6 @@ router.post('/sessions/:sessionId/point', (req, res) => {
                 'SELECT id FROM live_match_stats WHERE session_id = ? AND set_number = ? AND player = ?'
             ).get(sessionId, session.current_set, pointWinner);
 
-            console.log('Inserting new stats record for player', pointWinner);
             if (!statsRecord) {
                 const statsInsert = {
                     session_id: sessionId,
@@ -391,7 +390,6 @@ router.post('/sessions/:sessionId/point', (req, res) => {
 
                 if (winner_shot === 'error' || winner_shot === 'unforced-error') {
                     const otherPlayer = pointWinner === 'A' ? 'B' : 'A';
-                    console.log('Recording unforced error for player', pointWinner, winner_shot, otherPlayer);
                     const errorType = winner_shot === 'error' ? 'errors' : 'unforced_errors';
                     db.prepare(`
                     UPDATE live_match_stats SET ${errorType} = ${errorType} + 1
@@ -564,17 +562,19 @@ router.patch('/sessions/:sessionId/status', (req, res) => {
         const timestamp = status === 'in-progress' ? new Date().toISOString() :
             status === 'completed' ? new Date().toISOString() : null;
 
-        // Create first game
-        const setId = db.prepare('SELECT id FROM live_sets WHERE session_id = ? AND set_number = 1')
+            // Create first game
+            const setId = db.prepare('SELECT id FROM live_sets WHERE session_id = ? AND set_number = 1')
             .get(sessionId).id;
-
+            
         db.transaction(() => {
-            db.prepare(`
-                INSERT INTO live_games (set_id, game_number, points_a, points_b, server)
-                VALUES (?, ?, ?, ?, ?)
-            `).run(setId, 1, 0, 0, toss_winner);
+            if (status === 'in-progress') { 
+                db.prepare(`
+                    INSERT INTO live_games (set_id, game_number, points_a, points_b, server)
+                    VALUES (?, ?, ?, ?, ?)
+                `).run(setId, 1, 0, 0, toss_winner);
 
-            db.prepare('UPDATE matches SET tossWinner = ? WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').run(toss_winner, sessionId);
+                db.prepare('UPDATE matches SET tossWinner = ? WHERE id = (SELECT match_id FROM live_match_sessions WHERE id = ?)').run(toss_winner, sessionId);
+            }
 
             const updateQuery = status === 'in-progress'
                 ? 'UPDATE live_match_sessions SET status = ?, match_start_time = ?, current_server = ? WHERE id = ?'
