@@ -3,7 +3,6 @@ import {
   BarChart3,
   Radio,
   Users,
-  Zap,
   Target,
   TrendingUp,
   Activity,
@@ -30,7 +29,6 @@ const stagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.12 } },
 };
-
 
 /* ─── data ─── */
 const features = [
@@ -67,26 +65,41 @@ const features = [
 ];
 
 const steps = [
-  { num: "01", title: "Add Players", desc: "Register your roster with names, rankings, and play styles." },
-  { num: "02", title: "Track Live", desc: "Start a match and log every point with one-tap controls." },
-  { num: "03", title: "Analyze", desc: "Review animated stat comparisons and performance trends." },
+  {
+    num: "01",
+    title: "Add Players",
+    desc: "Register your roster with names, rankings, and play styles.",
+  },
+  {
+    num: "02",
+    title: "Track Live",
+    desc: "Start a match and log every point with one-tap controls.",
+  },
+  {
+    num: "03",
+    title: "Analyze",
+    desc: "Review animated stat comparisons and performance trends.",
+  },
 ];
 
 const testimonials = [
   {
-    quote: "Finally a stats tool that actually feels like it was built for tennis. The live tracker is addictive.",
+    quote:
+      "Finally a stats tool that actually feels like it was built for tennis. The live tracker is addictive.",
     name: "Alex R.",
     role: "Club Coach",
     stars: 5,
   },
   {
-    quote: "I use it to review every match with my students. The animated breakdowns make it click instantly.",
+    quote:
+      "I use it to review every match with my students. The animated breakdowns make it click instantly.",
     name: "Maria S.",
     role: "Private Coach",
     stars: 5,
   },
   {
-    quote: "Clean, fast, no fluff. I can track a match and have the stats ready before I walk off court.",
+    quote:
+      "Clean, fast, no fluff. I can track a match and have the stats ready before I walk off court.",
     name: "James T.",
     role: "Competitive Player",
     stars: 5,
@@ -158,11 +171,18 @@ const Hero = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.5 }}
       >
-        <Link to="/dashboard" className="px-8 h-11 bg-(--color-text-static-accent) text-(--color-text-static-inverse) rounded-md hover:bg-(--color-text-static-accent)/70 transition-colors inline-flex items-center gap-2">
-            Open Dashboard <ArrowRight className="w-4 h-4" />
-          </Link>
-        <Link to="/live" className="px-8 h-11 bg-(--color-text-static-inverse) text-(--color-text-static-primary) rounded-md hover:text-(--color-text-static-primary)/70 transition-colors inline-flex items-center gap-2 border border-(--color-text-static-tertiary)" aria-disabled>
-            <Radio className="w-4 h-4" /> Try Live Tracker
+        <Link
+          to="/dashboard"
+          className="px-8 h-11 bg-(--color-text-static-accent) text-(--color-text-static-inverse) rounded-md hover:bg-(--color-text-static-accent)/70 transition-colors inline-flex items-center gap-2"
+        >
+          Open Dashboard <ArrowRight className="w-4 h-4" />
+        </Link>
+        <Link
+          to="/live"
+          className="px-8 h-11 bg-(--color-text-static-inverse) text-(--color-text-static-primary) rounded-md hover:text-(--color-text-static-primary)/70 transition-colors inline-flex items-center gap-2 border border-(--color-text-static-tertiary)"
+          aria-disabled
+        >
+          <Radio className="w-4 h-4" /> Try Live Tracker
         </Link>
       </motion.div>
 
@@ -179,8 +199,12 @@ const Hero = () => (
           { label: "Set Support", value: "Bo3 / Fr2" },
         ].map((s) => (
           <div key={s.label} className="text-center">
-            <p className="text-2xl md:text-3xl font-display text-primary m-0">{s.value}</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{s.label}</p>
+            <p className="text-2xl md:text-3xl font-display text-primary m-0">
+              {s.value}
+            </p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
+              {s.label}
+            </p>
           </div>
         ))}
       </motion.div>
@@ -198,7 +222,9 @@ const Features = () => (
         whileInView="show"
         viewport={{ once: true }}
       >
-        <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">Features</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">
+          Features
+        </p>
         <h2 className="text-4xl md:text-5xl font-display text-foreground">
           Built for Precision
         </h2>
@@ -223,8 +249,12 @@ const Features = () => (
             <div className="p-2.5 rounded-md bg-(--color-text-static-accent)/10 text-(--color-text-static-accent) w-fit mb-4">
               <f.icon className="w-5 h-5" />
             </div>
-            <h3 className="text-left font-display text-xl tracking-wide text-foreground">{f.title}</h3>
-            <p className="text-left text-sm text-muted-foreground mt-2 mb-0 leading-relaxed">{f.desc}</p>
+            <h3 className="text-left font-display text-xl tracking-wide text-foreground">
+              {f.title}
+            </h3>
+            <p className="text-left text-sm text-muted-foreground mt-2 mb-0 leading-relaxed">
+              {f.desc}
+            </p>
           </motion.div>
         ))}
       </motion.div>
@@ -242,7 +272,9 @@ const HowItWorks = () => (
         whileInView="show"
         viewport={{ once: true }}
       >
-        <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">How It Works</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">
+          How It Works
+        </p>
         <h2 className="text-4xl md:text-5xl font-display text-foreground">
           Three Steps. Full Insight.
         </h2>
@@ -256,10 +288,21 @@ const HowItWorks = () => (
         viewport={{ once: true }}
       >
         {steps.map((s, i) => (
-          <motion.div key={s.num} variants={fadeUp} custom={i} className="text-center md:text-left">
-            <span className="text-5xl font-display text-(--color-text-static-accent)/50">{s.num}</span>
-            <h3 className="text-2xl font-display text-foreground mt-2">{s.title}</h3>
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{s.desc}</p>
+          <motion.div
+            key={s.num}
+            variants={fadeUp}
+            custom={i}
+            className="text-center md:text-left"
+          >
+            <span className="text-5xl font-display text-(--color-text-static-accent)/50">
+              {s.num}
+            </span>
+            <h3 className="text-2xl font-display text-foreground mt-2">
+              {s.title}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+              {s.desc}
+            </p>
           </motion.div>
         ))}
       </motion.div>
@@ -277,7 +320,9 @@ const Testimonials = () => (
         whileInView="show"
         viewport={{ once: true }}
       >
-        <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">Testimonials</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">
+          Testimonials
+        </p>
         <h2 className="text-4xl md:text-5xl font-display text-foreground">
           Trusted on Court
         </h2>
@@ -301,7 +346,9 @@ const Testimonials = () => (
                 <Star key={i} className="w-4 h-4 fill-primary text-primary" />
               ))}
             </div>
-            <p className="text-sm text-foreground leading-relaxed italic">"{t.quote}"</p>
+            <p className="text-sm text-foreground leading-relaxed italic">
+              "{t.quote}"
+            </p>
             <div className="mt-4 pt-4 border-t border-border">
               <p className="text-sm font-medium text-foreground">{t.name}</p>
               <p className="text-xs text-muted-foreground">{t.role}</p>
@@ -325,7 +372,9 @@ const FAQ = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">FAQ</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">
+            FAQ
+          </p>
           <h2 className="text-4xl md:text-5xl font-display text-foreground">
             Common Questions
           </h2>
@@ -345,11 +394,13 @@ const FAQ = () => {
               className="border border-border rounded-lg overflow-hidden"
             >
               <Button
-              variant="secondary"
+                variant="secondary"
                 onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between p-5 text-left bg-card hover:bg-card transition-colors border-0!"
               >
-                <span className="text-sm font-medium text-foreground">{f.q}</span>
+                <span className="text-sm font-medium text-foreground">
+                  {f.q}
+                </span>
                 <ChevronDown
                   className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${
                     open === i ? "rotate-180" : ""
@@ -358,11 +409,16 @@ const FAQ = () => {
               </Button>
               <motion.div
                 initial={false}
-                animate={{ height: open === i ? "auto" : 0, opacity: open === i ? 1 : 0 }}
+                animate={{
+                  height: open === i ? "auto" : 0,
+                  opacity: open === i ? 1 : 0,
+                }}
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden border-t border-(--color-border-accent)/20"
               >
-                <p className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+                <p className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed">
+                  {f.a}
+                </p>
               </motion.div>
             </motion.div>
           ))}
@@ -377,7 +433,9 @@ const Footer = () => (
     <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div className="flex items-center gap-3">
         <Activity className="w-5 h-5 text-primary" />
-        <span className="font-display text-xl tracking-wider text-foreground">Tennis Lab</span>
+        <span className="font-display text-xl tracking-wider text-foreground">
+          Tennis Lab
+        </span>
       </div>
       <nav className="flex gap-6">
         {[
