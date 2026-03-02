@@ -7,7 +7,7 @@ import type { LiveMatch } from "src/types";
 import { liveMatchApi } from "../services/liveMatch.api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3003";
-const WS_URL = API_URL.replace(/^http/, "ws");
+const WS_URL = API_URL.replace(/^https/, "ws").replace(/^http/, "ws");
 
 function useLiveMatchSocket(matchId?: number) {
     useEffect(() => {
