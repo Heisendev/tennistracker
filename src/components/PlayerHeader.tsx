@@ -2,7 +2,7 @@ interface player {
   firstname: string;
   lastname: string;
   country: string;
-  seed?: number;
+  rank?: number;
 }
 
 interface PlayerHeaderProps {
@@ -26,9 +26,9 @@ const PlayerHeader = ({ player, winner }: PlayerHeaderProps) => {
         <h2 className="text-2xl md:text-3xl">
           {player.firstname} {player.lastname}
         </h2>
-        {player.seed &&
+        {player.rank &&
             <div className="border border-gray-200 pt-0.5 pb-0.5 pl-3 pr-3 text-xs text-muted-foreground rounded-sm">
-              {player.seed ? "[" + player.seed + "]" : "N/Add"}
+              {player.rank ? "[" + player.rank + "]" : "N/Add"}
             </div>
         }
       </div>
