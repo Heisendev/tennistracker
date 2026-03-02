@@ -1,8 +1,105 @@
 import express from 'express';
 import { getDatabase } from '../db.js';
-import e from 'express';
+import { requireAuth } from '../middleware/requireAuth.js';
+import { broadcastLiveMatchUpdate } from '../websocket.js';
 
 const router = express.Router();
+
+const buildSessionDetails = (db, matchId) => {
+    const session = db.prepare(`
+        SELECT 
+            s.id,
+            s.match_id,
+            s.status,
+            s.current_set,
+            s.current_server,
+            s.match_start_time,
+            s.match_end_time,
+            m.tournament,
+            m.round,
+            m.surface,
+            m.date,
+            m.format,
+            m.winner,
+            m.tossWinner,
+            json_object(
+                'id', pa.id,
+                'firstname', pa.firstname,
+                'lastname', pa.lastname,
+                'country', pa.country
+            ) AS playerA,
+            json_object(
+                'id', pb.id,
+                'firstname', pb.firstname,
+                'lastname', pb.lastname,
+                'country', pb.country
+            ) AS playerB
+        FROM live_match_sessions s
+        JOIN matches m ON m.id = s.match_id
+        JOIN players pa ON pa.id = m.playerA_id
+        JOIN players pb ON pb.id = m.playerB_id
+        WHERE s.match_id = ?
+    `).get(matchId);
+
+    if (!session) {
+        return null;
+    }
+
+    session.playerA = JSON.parse(session.playerA);
+    session.playerB = JSON.parse(session.playerB);
+    session.matchId = String(session.match_id);
+    session.currentSet = session.current_set;
+    session.currentServer = session.current_server;
+    session.matchStartTime = session.match_start_time;
+    session.matchEndTime = session.match_end_time;
+
+    // Get set scores
+    const sets = db.prepare(`
+        SELECT set_number, games_a, games_b, is_tiebreak, tiebreak_points_a, tiebreak_points_b, set_winner
+        FROM live_sets
+        WHERE session_id = ?
+        ORDER BY set_number
+    `).all(session.id);
+
+    // Get current game score
+    const currentGame = db.prepare(`
+        SELECT lg.points_a, lg.points_b, lg.game_number, lg.server, lg.set_id, ls.is_tiebreak
+        FROM live_games lg
+        JOIN live_sets ls ON ls.id = lg.set_id
+        WHERE ls.session_id = ? AND lg.set_id = (
+            SELECT id FROM live_sets WHERE session_id = ? AND set_number = ?
+        ) AND lg.game_number = (
+            SELECT MAX(game_number) FROM live_games WHERE set_id = (
+                SELECT id FROM live_sets WHERE session_id = ? AND set_number = ?
+            ) AND game_winner IS NULL
+        )
+    `).get(session.id, session.id, session.current_set, session.id, session.current_set);
+
+    // Get match stats for all sets
+    const matchStats = db.prepare(`
+        SELECT set_number, player, aces, double_faults, first_serve_count, first_serve_won, 
+               second_serve_won, winners, errors, unforced_errors, break_points_won, break_points_faced, 
+               total_points_won, serves_total
+        FROM live_match_stats
+        WHERE session_id = ?
+        ORDER BY set_number, player
+    `).all(session.id);
+
+    // Organize stats by set and player
+    const statsBySet = {};
+    matchStats.forEach(stat => {
+        if (!statsBySet["set_" + stat.set_number]) {
+            statsBySet["set_" + stat.set_number] = {};
+        }
+        statsBySet["set_" + stat.set_number][stat.player] = stat;
+    });
+
+    session.sets = sets;
+    session.currentGame = currentGame || {};
+    session.matchStats = statsBySet;
+
+    return session;
+};
 
 // ============ Live Match Session Endpoints ============
 
@@ -71,7 +168,7 @@ router.get('/sessions', (req, res) => {
  * POST /api/live-scoring/sessions
  * Create a new live match session
  */
-router.post('/sessions', (req, res) => {
+router.post('/sessions', requireAuth, (req, res) => {
     try {
         const db = getDatabase();
         const { match_id } = req.body;
@@ -112,6 +209,11 @@ router.post('/sessions', (req, res) => {
             current_set: 1,
             message: 'Live session created'
         });
+
+        const payload = buildSessionDetails(db, match_id);
+        if (payload) {
+            broadcastLiveMatchUpdate(match_id, payload);
+        }
     } catch (error) {
         console.error('Error creating live session:', error);
         res.status(500).json({ error: 'Failed to create live session' });
@@ -127,89 +229,11 @@ router.get('/sessions/:matchId', (req, res) => {
         const db = getDatabase();
         const { matchId } = req.params;
 
-        const session = db.prepare(`
-            SELECT 
-                s.id,
-                s.match_id,
-                s.status,
-                s.current_set,
-                s.current_server,
-                s.match_start_time,
-                s.match_end_time,
-                m.tournament,
-                m.round,
-                m.surface,
-                m.date,
-                json_object(
-                    'id', pa.id,
-                    'firstname', pa.firstname,
-                    'lastname', pa.lastname,
-                    'country', pa.country
-                ) AS playerA,
-                json_object(
-                    'id', pb.id,
-                    'firstname', pb.firstname,
-                    'lastname', pb.lastname,
-                    'country', pb.country
-                ) AS playerB
-            FROM live_match_sessions s
-            JOIN matches m ON m.id = s.match_id
-            JOIN players pa ON pa.id = m.playerA_id
-            JOIN players pb ON pb.id = m.playerB_id
-            WHERE s.match_id = ?
-        `).get(matchId);
+        const session = buildSessionDetails(db, matchId);
 
         if (!session) {
             return res.status(404).json({ error: 'Session not found' });
         }
-
-        session.playerA = JSON.parse(session.playerA);
-        session.playerB = JSON.parse(session.playerB);
-
-        // Get set scores
-        const sets = db.prepare(`
-            SELECT set_number, games_a, games_b, is_tiebreak, tiebreak_points_a, tiebreak_points_b, set_winner
-            FROM live_sets
-            WHERE session_id = ?
-            ORDER BY set_number
-        `).all(session.id);
-
-        // Get current game score
-        const currentGame = db.prepare(`
-            SELECT lg.points_a, lg.points_b, lg.game_number, lg.server, lg.set_id, ls.is_tiebreak
-            FROM live_games lg
-            JOIN live_sets ls ON ls.id = lg.set_id
-            WHERE ls.session_id = ? AND lg.set_id = (
-                SELECT id FROM live_sets WHERE session_id = ? AND set_number = ?
-            ) AND lg.game_number = (
-                SELECT MAX(game_number) FROM live_games WHERE set_id = (
-                    SELECT id FROM live_sets WHERE session_id = ? AND set_number = ?
-                ) AND game_winner IS NULL
-            )
-        `).get(session.id, session.id, session.current_set, session.id, session.current_set);
-
-        // Get match stats for all sets
-        const matchStats = db.prepare(`
-            SELECT set_number, player, aces, double_faults, first_serve_count, first_serve_won, 
-                   second_serve_won, winners, errors, unforced_errors, break_points_won, break_points_faced, 
-                   total_points_won, serves_total
-            FROM live_match_stats
-            WHERE session_id = ?
-            ORDER BY set_number, player
-        `).all(session.id);
-
-        // Organize stats by set and player
-        const statsBySet = {};
-        matchStats.forEach(stat => {
-            if (!statsBySet["set_" + stat.set_number]) {
-                statsBySet["set_" + stat.set_number] = {};
-            }
-            statsBySet["set_" + stat.set_number][stat.player] = stat;
-        });
-
-        session.sets = sets;
-        session.currentGame = currentGame || {};
-        session.matchStats = statsBySet;
 
         res.json(session);
     } catch (error) {
@@ -225,7 +249,7 @@ router.get('/sessions/:matchId', (req, res) => {
  * Record a point in the current game
  * Body: { winner: 'A' or 'B', serve_type?: 'first'|'second', serve_result?: 'ace'|'won'|'error'|'double-fault', rally_type?: ..., winner_shot?: 'string', notes?: 'string' }
  */
-router.post('/sessions/:sessionId/point', (req, res) => {
+router.post('/sessions/:sessionId/point', requireAuth, (req, res) => {
     try {
         const db = getDatabase();
         const { sessionId } = req.params;
@@ -556,6 +580,14 @@ router.post('/sessions/:sessionId/point', (req, res) => {
             };
         })();
 
+        const updatedSession = db.prepare('SELECT match_id FROM live_match_sessions WHERE id = ?').get(sessionId);
+        if (updatedSession) {
+            const payload = buildSessionDetails(db, updatedSession.match_id);
+            if (payload) {
+                broadcastLiveMatchUpdate(updatedSession.match_id, payload);
+            }
+        }
+
         res.json(response);
     } catch (error) {
         console.error('Error recording point:', error);
@@ -590,7 +622,7 @@ router.get('/sessions/:sessionId/points', (req, res) => {
  * Update session status
  * Body: { status: 'in-progress' | 'suspended' | 'completed' }
  */
-router.patch('/sessions/:sessionId/status', (req, res) => {
+router.patch('/sessions/:sessionId/status', requireAuth, (req, res) => {
     try {
         const db = getDatabase();
         const { sessionId } = req.params;
@@ -630,6 +662,14 @@ router.patch('/sessions/:sessionId/status', (req, res) => {
 
             db.prepare(updateQuery).run(...params);
         })();
+
+        const updatedSession = db.prepare('SELECT match_id FROM live_match_sessions WHERE id = ?').get(sessionId);
+        if (updatedSession) {
+            const payload = buildSessionDetails(db, updatedSession.match_id);
+            if (payload) {
+                broadcastLiveMatchUpdate(updatedSession.match_id, payload);
+            }
+        }
 
         res.json({ message: `Session status updated to ${status}` });
     } catch (error) {

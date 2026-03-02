@@ -11,6 +11,7 @@ import Login from "@pages/Login.tsx";
 import CreateMatch from "@pages/matches/CreateMatch";
 import Match from "@pages/matches/Match";
 import Matches from "@pages/matches/Matches";
+import ViewerMatch from "@pages/matches/ViewerMatch";
 import CreatePlayer from "@pages/players/CreatePlayer";
 import Players from "@pages/players/Players";
 import { AppProviders } from "@providers/AppProviders";
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/viewer/matches/:id" element={<ViewerMatch />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/newmatch" element={<CreateMatch />} />

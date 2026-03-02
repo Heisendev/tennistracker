@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import session from 'express-session';
 import BetterSqlite3Store from 'better-sqlite3-session-store';
+import { createServer } from 'http';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { getDatabase } from './db.js';
@@ -11,6 +12,7 @@ import matchesRouter from './routes/matches.js';
 import liveScoringRouter from './routes/live-scoring.js';
 import authRouter from './routes/auth.js';
 import { requireAuth } from './middleware/requireAuth.js';
+import { setupWebSocketServer } from './websocket.js';
 
 dotenv.config({ path: join(dirname(fileURLToPath(import.meta.url)), '.env') });
 
@@ -78,7 +80,7 @@ app.use('/auth', authRouter);
 // Protected API routes
 app.use('/players', requireAuth, playersRouter);
 app.use('/matches', requireAuth, matchesRouter);
-app.use('/live-scoring', requireAuth, liveScoringRouter);
+app.use('/live-scoring', liveScoringRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -87,6 +89,9 @@ app.use((err, req, res, next) => {
 });
 
 const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
-app.listen(PORT, host, () => {
+const server = createServer(app);
+setupWebSocketServer(server);
+
+server.listen(PORT, host, () => {
     console.log(`Server is running on http://${host}:${PORT}`);
 });

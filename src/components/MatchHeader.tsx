@@ -20,9 +20,11 @@ const formatDate = (date: string) =>
 const MatchHeader = ({
   match,
   liveMatch,
+  readOnly = false,
 }: {
   match: Match;
   liveMatch?: LiveMatch | undefined;
+  readOnly?: boolean;
 }) => {
   const { tournament, round, surface, date, duration } = match;
   const [tossWinner, setTossWinner] = useState<"A" | "B" | undefined>(undefined);
@@ -39,7 +41,7 @@ const MatchHeader = ({
     <>
       <Header title={t("matchStats")} />
       <div className="text-center mb-8">
-        {liveMatch && liveMatch.status && (
+        {!readOnly && liveMatch && liveMatch.status && (
           <div className="flex flex-col items-center gap-2 my-4 mx-auto justify-center">
             {liveMatch && liveMatch.status !== "created" && (
               <div className="flex items-center gap-2">
