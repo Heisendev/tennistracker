@@ -7,7 +7,28 @@ import type { LiveMatch } from "src/types";
 import { liveMatchApi } from "../services/liveMatch.api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3003";
-const WS_URL = API_URL.replace(/^http/, "ws");
+const WS_BASE_URL = import.meta.env.VITE_WS_URL || API_URL;
+
+const buildLiveUpdatesSocketUrl = (matchId: number) => {
+    try {
+        const parsed = new URL(
+            WS_BASE_URL,
+            typeof window !== "undefined" ? window.location.origin : "http://localhost",
+        );
+        const isSecure = parsed.protocol === "https:" || parsed.protocol === "wss:";
+        parsed.protocol = isSecure ? "wss:" : "ws:";
+
+        const hasCustomWsPath = Boolean(import.meta.env.VITE_WS_URL) && parsed.pathname !== "/";
+        parsed.pathname = hasCustomWsPath ? parsed.pathname : "/live-updates";
+        parsed.search = `?matchId=${matchId}`;
+
+        return parsed.toString();
+    } catch {
+        const protocol = typeof window !== "undefined" && window.location.protocol === "https:" ? "wss" : "ws";
+        const host = typeof window !== "undefined" ? window.location.host : "localhost:3003";
+        return `${protocol}://${host}/live-updates?matchId=${matchId}`;
+    }
+};
 
 function useLiveMatchSocket(matchId?: number) {
     useEffect(() => {
@@ -20,7 +41,7 @@ function useLiveMatchSocket(matchId?: number) {
         let isActive = true;
 
         const connect = () => {
-            socket = new WebSocket(`${WS_URL}/live-updates?matchId=${matchId}`);
+            socket = new WebSocket(buildLiveUpdatesSocketUrl(matchId));
 
             socket.onmessage = (event) => {
                 try {
