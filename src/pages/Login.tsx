@@ -165,11 +165,6 @@ const Login = () => {
         </form>
       </div>
 
-      {tab === "login" && (
-        <p className="mt-4 text-xs text-muted-foreground text-center">
-          {t("auth.defaultCredentials")}
-        </p>
-      )}
     </div>
   );
 };
