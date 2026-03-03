@@ -6,8 +6,8 @@ import type { LiveMatch } from "src/types";
 
 import { liveMatchApi } from "../services/liveMatch.api";
 
-//const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3003";
-//const WS_URL = API_URL.replace(/^https/, "ws").replace(/^http/, "ws");
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3003";
+const WS_URL = API_URL.replace(/^http/, "ws");
 
 function useLiveMatchSocket(matchId?: number) {
     useEffect(() => {
@@ -20,7 +20,7 @@ function useLiveMatchSocket(matchId?: number) {
         let isActive = true;
 
         const connect = () => {
-            socket = new WebSocket(`ws:/tennislab.mikahermet.fr/api/live-updates?matchId=${matchId}`);
+            socket = new WebSocket(`${WS_URL}/live-updates?matchId=${matchId}`);
 
             socket.onmessage = (event) => {
                 try {

@@ -583,6 +583,7 @@ router.post('/sessions/:sessionId/point', requireAuth, (req, res) => {
         const updatedSession = db.prepare('SELECT match_id FROM live_match_sessions WHERE id = ?').get(sessionId);
         if (updatedSession) {
             const payload = buildSessionDetails(db, updatedSession.match_id);
+            console.log('Broadcasting live match update after point recording:', payload);
             if (payload) {
                 broadcastLiveMatchUpdate(updatedSession.match_id, payload);
             }
