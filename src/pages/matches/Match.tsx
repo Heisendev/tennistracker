@@ -6,20 +6,13 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import MatchHeader from "@components/MatchHeader";
-import { MatchStats } from "@components/MatchStats";
+import MatchStatisticsTabs from "@components/MatchStatisticsTabs";
 import { MatchSummary } from "@components/MatchSummary";
 import PlayerHeader from "@components/PlayerHeader";
 import { Button } from "@components/ui/Button";
-import {
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-} from "@components/ui/Tabs";
 import { useAddPointToLiveMatch, useLiveMatch } from "@hooks/useLiveMatch";
 import { useMatchById } from "@hooks/useMatches";
-import type { LiveMatch, MatchStatsSet, Match as MatchType } from "src/types";
+import type { LiveMatch, Match as MatchType } from "src/types";
 
 // Create a default live match from a regular match (used when match hasn't started)
 const createDefaultLiveMatch = (match: MatchType): LiveMatch => ({
@@ -40,56 +33,6 @@ const createDefaultLiveMatch = (match: MatchType): LiveMatch => ({
   sets: [],
   matchStats: {},
 });
-
-const initialStats: MatchStatsSet = {
-  A: {
-    aces: 0,
-    break_points_faced: 0,
-    break_points_won: 0,
-    double_faults: 0,
-    first_serve_count: 0,
-    first_serve_won: 0,
-    player: "A",
-    second_serve_won: 0,
-    serves_total: 0,
-    set_number: 0,
-    total_points_won: 0,
-    unforced_errors: 0,
-    errors: 0,
-    winners: 0
-  },
-  B: {
-    aces: 0,
-    break_points_faced: 0,
-    break_points_won: 0,
-    double_faults: 0,
-    first_serve_count: 0,
-    first_serve_won: 0,
-    player: "B",
-    second_serve_won: 0,
-    serves_total: 0,
-    set_number: 0,
-    total_points_won: 0,
-    unforced_errors: 0,
-    errors: 0,
-    winners: 0
-  }
-};
-
-const formatStats = (stats: MatchStatsSet) => {
-  if (!stats) return "No stats available";
-  const playerA = stats.A || initialStats.A;
-  const playerB = stats.B || initialStats.B;
-
-  return Object.entries(playerA || {}).map(([key, value]) => {
-    const statsDisplay = {
-      "label": key,
-      "playerA": value,
-      "playerB": playerB[key as keyof typeof playerB],
-    };
-    return <MatchStats key={key} {...statsDisplay} />;
-  });
-}
 
 const Match = () => {
   const params = useParams();
@@ -197,33 +140,7 @@ const Match = () => {
         </>
       )}
 
-      {/* Match statistics
-      TODO export this into its own component */}
-      {displayLiveMatch && displayLiveMatch.matchStats &&
-        <>
-          <h2 className="text-xl font-bold mb-4">{t('liveMatch.matchStatistics')}</h2>
-          <div className="mx-2 max-w-4xl md:mx-auto bg-white border border-gray-300 mb-8 pb-4 pt-8">
-            <Tabs defaultIndex={0}>
-              <TabList>
-                {Object.entries(displayLiveMatch.matchStats).map(([key], i) => {
-                  return <Tab key={key} index={i}>Set {i + 1}</Tab>;
-                })}
-              </TabList>
-              <TabPanels>
-                {Object.entries(displayLiveMatch.matchStats).map(([key]) => {
-                  const statKey = `${key}` as keyof typeof displayLiveMatch.matchStats;
-                  if (displayLiveMatch && displayLiveMatch.matchStats && displayLiveMatch.matchStats[statKey]) {
-                    return <TabPanel>
-                      {formatStats(displayLiveMatch.matchStats[statKey])}
-                    </TabPanel>;
-                  }
-                  return "No stats available"
-                })}
-              </TabPanels>
-            </Tabs>
-          </div>
-        </>
-      }
+      <MatchStatisticsTabs matchStats={displayLiveMatch?.matchStats} />
     </>
   );
 };
