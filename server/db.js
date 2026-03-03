@@ -177,12 +177,15 @@ CREATE INDEX IF NOT EXISTS idx_live_events_session_id ON live_match_events(sessi
 CREATE INDEX IF NOT EXISTS idx_live_stats_session_id ON live_match_stats(session_id);
     `);
 
-    // Seed default admin user if users table is empty
+    // Seed default admin user only for local/dev bootstrapping
+    const shouldSeedDefaultAdmin = process.env.NODE_ENV !== 'production' && process.env.SEED_DEFAULT_ADMIN !== 'false';
     const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get().count;
-    if (userCount === 0) {
+    if (userCount === 0 && shouldSeedDefaultAdmin) {
         // Pre-computed bcrypt hash for 'tennis123'
         db.exec(`INSERT INTO users (username, password_hash) VALUES ('admin', '$2b$10$IBvAlrjswivSt00uzFNdS.liebzFefv0Y8E5hD3PBtWzIFrKlsT.O');`);
         console.log('   Seeded default user: admin / tennis123');
+    } else if (userCount === 0 && process.env.NODE_ENV === 'production') {
+        console.log('   No users found in production. Create an admin user via /auth/signup.');
     }
 
     // Seed default data if players table is empty

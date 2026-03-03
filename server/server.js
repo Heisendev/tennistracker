@@ -18,6 +18,11 @@ dotenv.config({ path: join(dirname(fileURLToPath(import.meta.url)), '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3003;
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction && !process.env.SESSION_SECRET) {
+  throw new Error('SESSION_SECRET must be set in production');
+}
 
 // Trust the first proxy (required for secure cookies behind Heroku/Railway/Render/etc.)
 app.set('trust proxy', 1);
@@ -56,11 +61,11 @@ app.use(session({
   store: new SqliteStore({ client: getDatabase() }),
   secret: process.env.SESSION_SECRET || 'dev-secret-change-me-in-production',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'None' : 'Lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   },
 }));
@@ -88,7 +93,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
+const host = isProduction ? '0.0.0.0' : '127.0.0.1';
 const server = createServer(app);
 setupWebSocketServer(server);
 
