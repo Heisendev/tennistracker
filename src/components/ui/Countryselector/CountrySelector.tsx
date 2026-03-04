@@ -53,7 +53,7 @@ export default function CountrySelector({
           type="button"
           className={`${
             disabled ? "bg-neutral-100" : "bg-white"
-          } relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+          } relative w-full border border-gray-300 shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
           aria-haspopup="listbox"
           aria-expanded={isOpen ? "true" : "false"}
           aria-labelledby="listbox-label"

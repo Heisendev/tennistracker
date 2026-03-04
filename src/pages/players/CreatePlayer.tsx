@@ -76,7 +76,7 @@ const CreatePlayer = () => {
   return (
     <>
       <Header title="Create a new player" />
-      <section className="bg-white max-w-3xl mx-4 md:mx-auto p-6 m-8 rounded-xl border border-gray-400">
+      <section className="bg-white max-w-3xl mx-4 md:mx-auto p-6 m-8 border border-gray-400">
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <div className="flex flex-col md:grid md:grid-cols-[150px_1fr] md:gap-x-4 mb-4">
             <Input

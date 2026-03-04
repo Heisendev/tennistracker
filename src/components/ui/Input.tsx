@@ -12,9 +12,9 @@ const inputStyles = cva(
   {
     variants: {
       variant: {
-        default: "px-3 py-2 rounded-md border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
-        error: "px-3 py-2 rounded-md border-[var(--bg-interactive-danger)] focus:border-[var(--bg-interactive-danger)] focus:ring-[var(--bg-interactive-danger)]",
-        submit: "bg-[var(--bg-interactive-primary)] hover:bg-[var(--bg-interactive-primary-hover)] text-white py-3 px-4 rounded border-gray-400",
+        default: "px-3 py-2 border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+        error: "px-3 py-2 border-[var(--bg-interactive-danger)] focus:border-[var(--bg-interactive-danger)] focus:ring-[var(--bg-interactive-danger)]",
+        submit: "bg-[var(--bg-interactive-primary)] hover:bg-[var(--bg-interactive-primary-hover)] text-white py-3 px-4 border border-gray-400",
       },
     },
     defaultVariants: {

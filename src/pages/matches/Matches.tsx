@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { useGetMatches } from "@hooks/useMatches";
+import Header from "@components/Header";
 
 const container = {
   hidden: {},
@@ -25,28 +26,19 @@ const Matches = () => {
 
   return (
     <>
-      <header className="backdrop-blur-sm sticky top-0 z-10 border-b border-gray-300 bg-white">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
-          <Link
-            to="/dashboard"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="text-3xl font-display tracking-wider text-foreground">
-            {t("home.matches")}
-          </h1>
-          <Link
-            className="bg-(--bg-interactive-secondary) hover:bg-(--bg-interactive-secondary-hover) border border-(--bg-color-brand) text-(--bg-color-brand) px-4 py-2 text-sm rounded ml-auto"
-            to="/newmatch"
-          >
-            {t("matches.createMatch")}
-          </Link>
-        </div>
-      </header>
+      <Header title={t("matches.title")}>
+        <Link
+          className="bg-(--bg-interactive-secondary) hover:bg-(--bg-interactive-secondary-hover) border border-(--bg-color-brand) text-(--bg-color-brand) px-4 py-2 text-sm rounded ml-auto"
+          to="/newmatch"
+        >
+          {t("matches.createMatch")}
+        </Link>
+      </Header>
       <main className="md:m-8">
         <div className="max-w-3xl mx-auto px-0 py-0">
-          <h2 className="mt-4 text-xl font-semibold">{t("matches.recentMatches")}</h2>
+          <h2 className="mt-4 text-xl font-semibold">
+            {t("matches.recentMatches")}
+          </h2>
           {isLoading && <p>Loading...</p>}
           <motion.ul
             className="flex flex-col list-none pl-0"
@@ -57,18 +49,23 @@ const Matches = () => {
             {matches &&
               matches.length > 0 &&
               matches.map((match) => (
-                <motion.li animate="show" key={match.id} variants={item} className="flex py-2">
-                    <Link
-                      key={match.id}
-                      to={`/matches/${match.id}`}
-                      className="px-6 hover:bg-primary-dark transition-colors w-full text-(--color-text-static-primary)"
-                    >
+                <motion.li
+                  animate="show"
+                  key={match.id}
+                  variants={item}
+                  className="flex py-2"
+                >
+                  <Link
+                    key={match.id}
+                    to={`/matches/${match.id}`}
+                    className="px-6 hover:bg-primary-dark transition-colors w-full text-(--color-text-static-primary)"
+                  >
                     <div className="group relative bg-white border border-gray-400 p-4 md:p-5 hover:border-gray-600 transition-all duration-300 hover:glow-primary">
                       {match.playerA.firstname} {match.playerA.lastname} vs{" "}
                       {match.playerB.firstname} {match.playerB.lastname} -{" "}
                       {match.tournament} {match.round}{" "}
-                  </div>
-                    </Link>
+                    </div>
+                  </Link>
                 </motion.li>
               ))}
           </motion.ul>

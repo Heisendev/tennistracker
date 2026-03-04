@@ -6,6 +6,7 @@ import { Link } from "react-router";
 
 import Input from "@components/ui/Input";
 import { usePlayers } from "@hooks/usePlayers";
+import Header from "@components/Header";
 
 const container = {
   hidden: {},
@@ -35,25 +36,14 @@ const Players = () => {
 
   return (
     <div>
-      <div className="backdrop-blur-sm sticky top-0 z-10 border-b border-gray-300 bg-white">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
-          <Link
-            to="/"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="text-3xl font-display tracking-wider text-foreground">
-            {t("players.title")}
-          </h1>
-          <Link
-            className="bg-(--bg-interactive-secondary) hover:bg-(--bg-interactive-secondary-hover) border border-(--bg-color-brand) text-(--bg-color-brand) px-4 py-2 text-sm rounded ml-auto"
-            to="/players/new"
-          >
-            {t("players.createPlayer")}
-          </Link>
-        </div>
-      </div>
+      <Header title={t("players.title")}>
+        <Link
+          className="bg-(--bg-interactive-secondary) hover:bg-(--bg-interactive-secondary-hover) border border-(--bg-color-brand) text-(--bg-color-brand) px-4 py-2 text-sm rounded ml-auto"
+          to="/players/new"
+        >
+          {t("players.createPlayer")}
+        </Link>
+      </Header>
       <div className="md:m-8">
         <div className="max-w-3xl mx-auto px-4 py-8">
           {/* Search */}

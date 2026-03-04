@@ -129,10 +129,6 @@ const faqs = [
 
 const Hero = () => (
   <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-    {/* ambient glow */}
-    <div className="absolute inset-0 court-texture" />
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-(--color-background-interactive-tertiary-default)/10 blur-[120px] pointer-events-none" />
-
     <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
       <motion.div
         className="inline-flex items-center gap-2 bg-(--color-text-static-accent)/10 border border-(--color-text-static-accent)/20 rounded-full px-4 py-1.5 mb-8"
